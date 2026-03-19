@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    color: #2C3E50;
+    background: #FFFFFF;
+  }
+
+  ::selection {
+    background: #D6EAF8;
+    color: #1A5276;
+  }
+}
+
+@layer components {
+  /* Shared button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3
+           bg-primary text-white font-semibold rounded-lg
+           hover:bg-accent transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3
+           border-2 border-primary text-primary font-semibold rounded-lg
+           hover:bg-primary hover:text-white transition-colors duration-200;
+  }
+
+  .btn-teal {
+    @apply inline-flex items-center justify-center px-6 py-3
+           bg-teal text-white font-semibold rounded-lg
+           hover:bg-emerald-400 transition-colors duration-200;
+  }
+
+  /* Section containers */
+  .section-padding {
+    @apply px-6 py-20 md:px-8 lg:px-12;
+  }
+
+  .container-narrow {
+    @apply max-w-5xl mx-auto;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* Showcase dark theme */
+  .showcase-dark {
+    @apply bg-slate-950 text-white;
+  }
+
+  .showcase-card {
+    @apply bg-slate-900/80 border border-slate-800 rounded-2xl p-6
+           hover:border-teal/50 transition-all duration-300;
+  }
+
+  /* Glow effects for showcase */
+  .glow-teal {
+    box-shadow: 0 0 30px rgba(26, 188, 156, 0.15);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 30px rgba(46, 134, 193, 0.15);
+  }
+}
+
+@layer utilities {
+  /* Gradient text for headings */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal to-accent;
+  }
+
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+
+  /* Subtle background patterns */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(26, 188, 156, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 188, 156, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(rgba(46, 134, 193, 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
