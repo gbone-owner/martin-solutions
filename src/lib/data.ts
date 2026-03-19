@@ -28,6 +28,25 @@ export interface ShowcaseEntry {
 // ---- PROJECTS ----
 export const projects: Project[] = [
   {
+    slug: 'aident',
+    title: 'AiDent',
+    tagline: 'AI-powered clinic operations for Norwegian dental practices',
+    description:
+      'AiDent automates the repetitive admin work dental clinics deal with every day — appointment reminders, patient replies, waitlist management, treatment follow-ups, review collection, and insurance coding. Built for Norway, integrated with Opus Dental, speaking fluent Norwegian.',
+    tags: ['Healthcare', 'Automation', 'Norwegian Market'],
+    status: 'active',
+    features: [
+      'AI-written personalised SMS reminders — no templates',
+      'Two-way conversational SMS — patients reply naturally',
+      'Instant waitlist fill when cancellations happen',
+      'No-show prediction with preemptive reminders',
+      'Voice AI receptionist that answers calls 24/7',
+      'HELFO insurance billing code suggestions',
+      'Smart review collection with satisfaction gating',
+      'Live receptionist dashboard',
+    ],
+  },
+  {
     slug: 'docuflow-ai',
     title: 'DocuFlow AI',
     tagline: 'Intelligent document processing that learns your workflow',

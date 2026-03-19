@@ -43,6 +43,30 @@ const demos = [
     tag: 'Document Intelligence',
     color: 'from-purple-500 to-pink-500',
   },
+  {
+    href: '/demo/writer',
+    title: 'Content Writer',
+    description: 'Describe what you need — blog post, email, product page, social media — and AI generates polished content instantly.',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+    tag: 'Content Generation',
+    color: 'from-amber-500 to-orange-500',
+  },
+  {
+    href: '/demo/translator',
+    title: 'Translator',
+    description: 'Translate text between 15+ languages with context-aware AI. Preserves tone, meaning, and formatting.',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+      </svg>
+    ),
+    tag: 'Multilingual AI',
+    color: 'from-rose-500 to-red-500',
+  },
 ];
 
 export default function DemoPage() {

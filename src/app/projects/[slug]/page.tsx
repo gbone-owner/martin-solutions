@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { projects, getProject, statusColors } from '@/lib/data';
 
@@ -19,6 +19,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+
+  // AiDent has its own dedicated product page
+  if (slug === 'aident') redirect('/products/aident');
+
   const project = getProject(slug);
   if (!project) notFound();
 
