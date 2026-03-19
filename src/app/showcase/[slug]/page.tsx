@@ -6,8 +6,9 @@ export function generateStaticParams() {
   return showcaseEntries.map((e) => ({ slug: e.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const entry = getShowcaseEntry(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const entry = getShowcaseEntry(slug);
   if (!entry) return { title: 'Not Found' };
   return {
     title: `${entry.title} — AI Showcase`,
@@ -15,8 +16,9 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function ShowcaseDetailPage({ params }: { params: { slug: string } }) {
-  const entry = getShowcaseEntry(params.slug);
+export default async function ShowcaseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const entry = getShowcaseEntry(slug);
   if (!entry) notFound();
 
   return (
