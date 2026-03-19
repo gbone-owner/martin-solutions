@@ -1,5 +1,9 @@
 name = "martin-solutions"
 compatibility_date = "2024-07-01"
+
+# For Cloudflare Pages:
+# - Set framework to "next" and Cloudflare will handle the build correctly
+# - It will serve static files from 'out/' and functions from 'functions/'
 pages_build_output_dir = "out"
 
 # ============================================================

@@ -9,8 +9,8 @@
     "lint": "next lint",
     "db:setup": "wrangler d1 execute martin-solutions-db --file=db/schema.sql",
     "db:setup:local": "wrangler d1 execute martin-solutions-db --local --file=db/schema.sql",
-    "pages:dev": "npx wrangler pages dev out --compatibility-date=2024-07-01 --d1=DB",
-    "pages:deploy": "npx wrangler pages deploy out"
+    "pages:dev": "npm run build && npx wrangler pages dev out --compatibility-date=2024-07-01 --d1=DB",
+    "pages:deploy": "npm run build && npx wrangler pages deploy out"
   },
   "dependencies": {
     "next": "15.1.0",
