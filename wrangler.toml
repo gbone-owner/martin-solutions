@@ -1,33 +1,17 @@
 name = "martin-solutions"
 compatibility_date = "2024-07-01"
+compatibility_flags = ["nodejs_compat"]
 
-# For Cloudflare Pages:
-# - Set framework to "next" and Cloudflare will handle the build correctly
-# - It will serve static files from 'out/' and functions from 'functions/'
-pages_build_output_dir = "out"
+# OpenNext build output
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
 
-# ============================================================
 # D1 Database
-# After creating: wrangler d1 create martin-solutions-db
-# Replace the database_id below with the ID from that command
-# ============================================================
 [[d1_databases]]
 binding = "DB"
 database_name = "martin-solutions-db"
 database_id = "3c1e767c-7c0f-4664-88b8-133e33e8f2b8"
 
-# ============================================================
-# Workers AI (free tier included with Cloudflare)
-# ============================================================
+# Workers AI
 [ai]
 binding = "AI"
-
-# ============================================================
-# Environment variables (set these in Cloudflare dashboard)
-# Settings → Environment variables
-#
-# ADMIN_JWT_SECRET    = (generate a random 64-char string)
-# RESEND_API_KEY      = (from resend.com — optional until newsletter)
-# TURNSTILE_SECRET    = (from Cloudflare Turnstile — optional)
-# SITE_URL            = https://martin.solutions
-# ============================================================
