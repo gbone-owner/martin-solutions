@@ -9,13 +9,14 @@ const navLinks = [
   { href: '/about', label: 'About' },
   { href: '/projects', label: 'Projects' },
   { href: '/showcase', label: 'AI Showcase' },
+  { href: '/demo', label: 'Try AI' },
   { href: '/contact', label: 'Contact' },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const isShowcase = pathname.startsWith('/showcase');
+  const isShowcase = pathname.startsWith('/showcase') || pathname.startsWith('/demo');
 
   return (
     <header

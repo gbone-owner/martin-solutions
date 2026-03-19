@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 export default function Footer() {
   const pathname = usePathname();
-  const isShowcase = pathname.startsWith('/showcase');
+  const isShowcase = pathname.startsWith('/showcase') || pathname.startsWith('/demo');
 
   return (
     <footer
