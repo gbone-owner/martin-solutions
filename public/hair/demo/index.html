@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Martin.solutions — Salong Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
+
+/* ═══════════════════════════════════════════
+   THEME SYSTEM — CSS Custom Properties
+   ═══════════════════════════════════════════ */
+:root {
+  /* Gold Premium (Default) */
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg-card: rgba(18,18,28,0.85);
+  --bg-card-solid: #12121c;
+  --bg-card-hover: rgba(26,26,40,0.9);
+  --bg-input: #1a1a2a;
+  --glass: rgba(255,215,100,0.03);
+  --glass-border: rgba(212,175,55,0.15);
+  --text: #f0ece2;
+  --text-muted: #8a8370;
+  --accent: #d4af37;
+  --accent2: #f0d060;
+  --accent-rgb: 212,175,55;
+  --accent-glow: rgba(212,175,55,0.08);
+  --accent-glow-strong: rgba(212,175,55,0.2);
+  --success: #6bdb8a;
+  --warning: #f0d060;
+  --danger: #e8655a;
+  --gradient: linear-gradient(135deg, #d4af37, #f0d060, #d4af37);
+  --gradient-bg: radial-gradient(ellipse at 20% 0%, rgba(212,175,55,0.06) 0%, transparent 60%),
+                 radial-gradient(ellipse at 80% 100%, rgba(212,175,55,0.04) 0%, transparent 60%);
+  --border: rgba(212,175,55,0.1);
+  --border-strong: rgba(212,175,55,0.25);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 40px rgba(212,175,55,0.08);
+  --font-display: 'Playfair Display', serif;
+  --card-blur: blur(20px);
+}
+
+/* ── Midnight Violet ── */
+.theme-violet {
+  --bg: #0c0a14; --bg2: #110f1c; --bg-card: rgba(20,16,36,0.85); --bg-card-solid: #141024;
+  --bg-card-hover: rgba(30,24,52,0.9); --bg-input: #1c1630; --glass: rgba(160,100,255,0.03);
+  --glass-border: rgba(140,80,240,0.15); --text: #ede8f5; --text-muted: #7b6f96;
+  --accent: #a06af0; --accent2: #c898ff; --accent-rgb: 160,106,240;
+  --accent-glow: rgba(160,106,240,0.08); --accent-glow-strong: rgba(160,106,240,0.2);
+  --success: #6bdb8a; --warning: #f0d060; --danger: #e8655a;
+  --gradient: linear-gradient(135deg, #8c50f0, #c898ff, #a06af0);
+  --gradient-bg: radial-gradient(ellipse at 30% 0%, rgba(140,80,240,0.08) 0%, transparent 60%),
+                 radial-gradient(ellipse at 70% 100%, rgba(200,152,255,0.05) 0%, transparent 60%);
+  --border: rgba(140,80,240,0.1); --border-strong: rgba(140,80,240,0.25);
+  --shadow-glow: 0 0 40px rgba(140,80,240,0.08);
+}
+
+/* ── Rose Blush ── */
+.theme-rose {
+  --bg: #fdf6f5; --bg2: #fff9f8; --bg-card: rgba(255,255,255,0.9); --bg-card-solid: #ffffff;
+  --bg-card-hover: rgba(255,240,238,0.95); --bg-input: #fceeed; --glass: rgba(220,80,100,0.03);
+  --glass-border: rgba(220,80,100,0.1); --text: #2d1f20; --text-muted: #9a7b7e;
+  --accent: #d4506a; --accent2: #f07090; --accent-rgb: 212,80,106;
+  --accent-glow: rgba(212,80,106,0.06); --accent-glow-strong: rgba(212,80,106,0.15);
+  --success: #4da868; --warning: #d4a03a; --danger: #c44a3a;
+  --gradient: linear-gradient(135deg, #d4506a, #f0a0b0, #d4506a);
+  --gradient-bg: radial-gradient(ellipse at 20% 0%, rgba(212,80,106,0.04) 0%, transparent 60%),
+                 radial-gradient(ellipse at 80% 100%, rgba(240,160,176,0.03) 0%, transparent 60%);
+  --border: rgba(212,80,106,0.08); --border-strong: rgba(212,80,106,0.2);
+  --shadow: 0 8px 40px rgba(100,20,30,0.06); --shadow-glow: 0 0 40px rgba(212,80,106,0.05);
+}
+
+/* ── Forest Sage ── */
+.theme-forest {
+  --bg: #0a0f0c; --bg2: #0f1610; --bg-card: rgba(14,22,16,0.85); --bg-card-solid: #0e1610;
+  --bg-card-hover: rgba(20,32,22,0.9); --bg-input: #162018; --glass: rgba(80,180,100,0.03);
+  --glass-border: rgba(80,180,100,0.12); --text: #e0ede4; --text-muted: #6e9478;
+  --accent: #50b464; --accent2: #80d890; --accent-rgb: 80,180,100;
+  --accent-glow: rgba(80,180,100,0.08); --accent-glow-strong: rgba(80,180,100,0.2);
+  --success: #50b464; --warning: #d4c040; --danger: #d46050;
+  --gradient: linear-gradient(135deg, #3a9a50, #80d890, #50b464);
+  --gradient-bg: radial-gradient(ellipse at 20% 0%, rgba(60,160,80,0.06) 0%, transparent 60%),
+                 radial-gradient(ellipse at 80% 100%, rgba(128,216,144,0.04) 0%, transparent 60%);
+  --border: rgba(80,180,100,0.1); --border-strong: rgba(80,180,100,0.2);
+  --shadow-glow: 0 0 40px rgba(80,180,100,0.06);
+}
+
+/* ── Neon Cyber ── */
+.theme-neon {
+  --bg: #050510; --bg2: #0a0a1a; --bg-card: rgba(10,10,30,0.85); --bg-card-solid: #0a0a1e;
+  --bg-card-hover: rgba(15,15,40,0.9); --bg-input: #10102a; --glass: rgba(0,220,255,0.03);
+  --glass-border: rgba(0,220,255,0.15); --text: #e0f0ff; --text-muted: #5588aa;
+  --accent: #00dcff; --accent2: #80eeff; --accent-rgb: 0,220,255;
+  --accent-glow: rgba(0,220,255,0.08); --accent-glow-strong: rgba(0,220,255,0.25);
+  --success: #00ff88; --warning: #ffdd00; --danger: #ff3366;
+  --gradient: linear-gradient(135deg, #00dcff, #ff3366, #00dcff);
+  --gradient-bg: radial-gradient(ellipse at 30% 0%, rgba(0,220,255,0.08) 0%, transparent 50%),
+                 radial-gradient(ellipse at 70% 100%, rgba(255,51,102,0.06) 0%, transparent 50%);
+  --border: rgba(0,220,255,0.1); --border-strong: rgba(0,220,255,0.3);
+  --shadow-glow: 0 0 60px rgba(0,220,255,0.1);
+}
+
+/* ── Clean White ── */
+.theme-clean {
+  --bg: #f4f4f6; --bg2: #fafafa; --bg-card: rgba(255,255,255,0.95); --bg-card-solid: #ffffff;
+  --bg-card-hover: rgba(248,248,252,1); --bg-input: #ededf0; --glass: rgba(60,60,100,0.02);
+  --glass-border: rgba(60,60,100,0.08); --text: #1a1a2e; --text-muted: #6b6b80;
+  --accent: #3a3af0; --accent2: #6060ff; --accent-rgb: 58,58,240;
+  --accent-glow: rgba(58,58,240,0.05); --accent-glow-strong: rgba(58,58,240,0.12);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+  --gradient: linear-gradient(135deg, #3a3af0, #6060ff, #3a3af0);
+  --gradient-bg: none;
+  --border: rgba(0,0,0,0.06); --border-strong: rgba(58,58,240,0.15);
+  --shadow: 0 4px 24px rgba(0,0,0,0.06); --shadow-glow: none;
+}
+
+/* ═══════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════ */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* Hide scrollbar everywhere */
+::-webkit-scrollbar { display:none; }
+html { scrollbar-width:none; -ms-overflow-style:none; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.6s ease, color 0.4s ease;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--gradient-bg);
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.6s ease;
+}
+
+/* ═══════════════════════════════════════════
+   THEME SWITCHER
+   ═══════════════════════════════════════════ */
+.theme-bar {
+  position: fixed; top:0; left:0; right:0; z-index:1000;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.theme-bar-label {
+  color: #777; font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:2px; margin-right:8px;
+}
+.theme-btn {
+  width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,0.1);
+  cursor:pointer; transition: all 0.3s; position:relative;
+}
+.theme-btn:hover { transform:scale(1.15); }
+.theme-btn.active { border-color:#fff; box-shadow: 0 0 12px rgba(255,255,255,0.2); transform:scale(1.1); }
+.theme-btn .tooltip {
+  position:absolute; bottom:-28px; left:50%; transform:translateX(-50%);
+  font-size:9px; color:#999; white-space:nowrap; opacity:0; transition:opacity 0.2s;
+  font-family: 'Inter',sans-serif; letter-spacing: 0.5px;
+}
+.theme-btn:hover .tooltip { opacity:1; }
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+.app { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding: 72px 24px 60px; }
+
+.section-label {
+  font-size:10px; font-weight:700; color:var(--accent); text-transform:uppercase;
+  letter-spacing:3px; margin-bottom:12px; margin-top:56px;
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════ */
+.hero { text-align:center; padding:56px 0 40px; position:relative; }
+.hero-brand {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:700; letter-spacing:4px; text-transform:uppercase;
+  color: var(--accent); margin-bottom:20px;
+  padding:6px 20px; border:1px solid var(--border-strong); border-radius:40px;
+  background: var(--accent-glow);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight:900; line-height:1.1; margin-bottom:16px;
+  background: var(--gradient);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero p { font-size:17px; color:var(--text-muted); max-width:520px; margin:0 auto; line-height:1.7; }
+
+/* floating particles */
+.hero-particles {
+  position:absolute; inset:0; overflow:hidden; pointer-events:none;
+}
+.particle {
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background: var(--accent); opacity:0.15;
+  animation: float-up linear infinite;
+}
+@keyframes float-up {
+  0% { transform: translateY(100%) scale(0); opacity:0; }
+  20% { opacity:0.2; }
+  100% { transform: translateY(-300px) scale(1); opacity:0; }
+}
+
+/* ═══════════════════════════════════════════
+   GLASS CARDS
+   ═══════════════════════════════════════════ */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: var(--card-blur); -webkit-backdrop-filter: var(--card-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+.glass::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.2), transparent);
+}
+.glass:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow), var(--shadow-glow);
+  transform: translateY(-3px);
+}
+
+/* ═══════════════════════════════════════════
+   STATS ROW
+   ═══════════════════════════════════════════ */
+.stats-row { display:grid; grid-template-columns: repeat(4,1fr); gap:14px; }
+@media(max-width:700px) { .stats-row { grid-template-columns: repeat(2,1fr); } }
+.stat-card { padding:24px; }
+.stat-card .stat-icon-bg {
+  width:44px; height:44px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; margin-bottom:14px;
+  background: var(--accent-glow); border: 1px solid var(--border);
+}
+.stat-label { font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.stat-value { font-size:32px; font-weight:800; line-height:1; }
+.stat-value .accent { color:var(--accent); }
+.stat-trend { font-size:11px; margin-top:6px; font-weight:600; }
+.stat-trend.up { color:var(--success); }
+
+/* ═══════════════════════════════════════════
+   MAIN GRID
+   ═══════════════════════════════════════════ */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:700px) { .grid-2 { grid-template-columns:1fr; } }
+.grid-full { grid-column: 1 / -1; }
+
+.card-pad { padding:28px; }
+.card-title {
+  font-size:15px; font-weight:800; margin-bottom:3px;
+  display:flex; align-items:center; gap:8px;
+}
+.card-sub { font-size:12px; color:var(--text-muted); margin-bottom:18px; }
+
+/* ═══════════════════════════════════════════
+   SMS CONVERSATION
+   ═══════════════════════════════════════════ */
+.sms-thread { display:flex; flex-direction:column; gap:8px; }
+.sms {
+  padding:14px 18px; border-radius:20px 20px 20px 6px;
+  background: var(--bg-input); font-size:14px; line-height:1.55;
+  max-width:85%; position:relative;
+}
+.sms.out {
+  background: var(--accent); color:#fff;
+  border-radius:20px 20px 6px 20px;
+  align-self:flex-end; max-width:55%;
+  font-weight:500;
+}
+.sms strong { font-weight:700; }
+.sms-meta { font-size:10px; color:var(--text-muted); margin-top:2px; padding-left:4px; }
+.sms-meta.right { text-align:right; padding-right:4px; }
+
+/* ═══════════════════════════════════════════
+   CLIENT LIST
+   ═══════════════════════════════════════════ */
+.client-row {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 0; border-bottom:1px solid var(--border);
+}
+.client-row:last-child { border-bottom:none; }
+.avatar {
+  width:42px; height:42px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:14px; color:#fff; flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.client-info { flex:1; min-width:0; }
+.client-name { font-weight:700; font-size:14px; }
+.client-detail { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.tag {
+  padding:5px 14px; border-radius:20px; font-size:10px; font-weight:700;
+  border:1px solid var(--border-strong); background:var(--accent-glow);
+  color:var(--accent); cursor:pointer; white-space:nowrap;
+  transition:all 0.2s; text-transform:uppercase; letter-spacing:0.5px;
+}
+.tag:hover { background:var(--accent); color:#fff; }
+.tag.danger { border-color: rgba(232,101,90,0.3); background:rgba(232,101,90,0.08); color:var(--danger); }
+.tag.danger:hover { background:var(--danger); color:#fff; }
+
+/* ═══════════════════════════════════════════
+   RING CHART (animated SVG)
+   ═══════════════════════════════════════════ */
+.ring-chart-wrap { display:flex; align-items:center; gap:24px; }
+.ring-chart { position:relative; width:120px; height:120px; flex-shrink:0; }
+.ring-chart svg { width:100%; height:100%; transform:rotate(-90deg); }
+.ring-chart circle {
+  fill:none; stroke-width:8; stroke-linecap:round;
+  transition: stroke-dashoffset 1s ease;
+}
+.ring-bg { stroke: var(--bg-input); }
+.ring-fg { stroke: var(--accent); filter: drop-shadow(0 0 6px rgba(var(--accent-rgb),0.4)); }
+.ring-center {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.ring-value { font-size:28px; font-weight:900; }
+.ring-label-inner { font-size:10px; color:var(--text-muted); font-weight:600; }
+.ring-legend { display:flex; flex-direction:column; gap:10px; }
+.ring-legend-item { display:flex; align-items:center; gap:8px; font-size:13px; }
+.ring-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ═══════════════════════════════════════════
+   BAR CHART (animated)
+   ═══════════════════════════════════════════ */
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:100px; padding-top:12px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.bar {
+  width:100%; border-radius:6px 6px 2px 2px; min-height:4px;
+  background: linear-gradient(to top, rgba(var(--accent-rgb),0.5), var(--accent));
+  transition: height 0.8s ease; position:relative;
+}
+.bar:hover { filter:brightness(1.2); }
+.bar-val {
+  position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+  font-size:9px; font-weight:700; color:var(--accent); opacity:0;
+  transition: opacity 0.2s;
+}
+.bar:hover .bar-val { opacity:1; }
+.bar-label { font-size:9px; color:var(--text-muted); font-weight:600; }
+
+/* ═══════════════════════════════════════════
+   STAFF PERFORMANCE
+   ═══════════════════════════════════════════ */
+.staff-item {
+  display:flex; align-items:center; gap:14px; padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.staff-item:last-child { border-bottom:none; }
+.staff-avatar {
+  width:36px; height:36px; border-radius:10px;
+  background: var(--accent-glow); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:12px; color:var(--accent);
+}
+.staff-name { font-weight:700; font-size:13px; width:60px; }
+.staff-track { flex:1; height:6px; background:var(--bg-input); border-radius:3px; overflow:hidden; }
+.staff-fill {
+  height:100%; border-radius:3px;
+  background: var(--gradient);
+  transition: width 1s ease;
+}
+.staff-pct { font-size:14px; font-weight:800; width:48px; text-align:right; }
+
+/* ═══════════════════════════════════════════
+   AI HAIR SECTION
+   ═══════════════════════════════════════════ */
+.hair-section {
+  padding:36px; display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:center;
+}
+@media(max-width:700px) { .hair-section { grid-template-columns:1fr; } }
+.hair-text h3 {
+  font-family:var(--font-display); font-size:26px; font-weight:900;
+  margin-bottom:10px; line-height:1.2;
+}
+.hair-text p { color:var(--text-muted); line-height:1.7; font-size:14px; margin-bottom:18px; }
+.check-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.check-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; line-height:1.5; }
+.check-icon {
+  width:22px; height:22px; border-radius:7px; flex-shrink:0;
+  background:var(--accent-glow); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:var(--accent); font-weight:900; margin-top:1px;
+}
+
+.hair-preview {
+  background: var(--bg-input); border-radius:var(--radius);
+  aspect-ratio:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; position:relative; overflow:hidden;
+  border:1px solid var(--border);
+}
+.hair-preview-badge {
+  position:absolute; top:14px; right:14px;
+  background:var(--accent); color:#000; font-size:9px; font-weight:800;
+  padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1.5px;
+}
+.face-area {
+  width:120px; height:140px; border-radius:50% 50% 46% 46%;
+  background: linear-gradient(180deg, var(--bg-card-solid), rgba(var(--accent-rgb),0.05));
+  border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:48px; margin-bottom:16px;
+  position:relative;
+}
+.face-area::before {
+  content:''; position:absolute; top:-20px; left:-30px; right:-30px; height:70px;
+  border-radius:50%; background:var(--accent-glow-strong); filter:blur(4px);
+  border-bottom:2px solid rgba(var(--accent-rgb),0.15);
+}
+.sliders { width:80%; display:flex; flex-direction:column; gap:10px; }
+.slider-row { display:flex; align-items:center; gap:10px; }
+.slider-row label { font-size:11px; font-weight:600; color:var(--text-muted); width:56px; text-align:right; }
+.slider-row input[type=range] {
+  flex:1; height:4px; accent-color:var(--accent); cursor:pointer;
+  -webkit-appearance:none; background:var(--border); border-radius:2px;
+}
+.slider-row input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 8px rgba(var(--accent-rgb),0.4);
+}
+.slider-val { font-size:11px; font-weight:700; color:var(--accent); width:28px; }
+
+/* ═══════════════════════════════════════════
+   FEATURE GRID
+   ═══════════════════════════════════════════ */
+.feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+@media(max-width:700px) { .feature-grid { grid-template-columns:1fr; } }
+.feature-card { padding:24px; text-align:center; cursor:default; }
+.feature-card .f-icon {
+  width:52px; height:52px; border-radius:16px; margin:0 auto 14px;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+  background:var(--accent-glow); border:1px solid var(--border);
+  transition: all 0.3s;
+}
+.feature-card:hover .f-icon {
+  background: var(--accent-glow-strong);
+  border-color: var(--accent);
+  transform:scale(1.1);
+  box-shadow: 0 0 20px rgba(var(--accent-rgb),0.15);
+}
+.feature-card h4 { font-size:14px; font-weight:800; margin-bottom:6px; }
+.feature-card p { font-size:12px; color:var(--text-muted); line-height:1.5; }
+
+/* ═══════════════════════════════════════════
+   PLATFORM STRIP
+   ═══════════════════════════════════════════ */
+.platform-row { display:flex; gap:12px; overflow-x:auto; padding:4px 0; }
+.p-pill {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 22px; border-radius:40px; white-space:nowrap;
+  background:var(--bg-card); border:1px solid var(--border);
+  transition:all 0.3s; flex-shrink:0;
+  backdrop-filter:var(--card-blur);
+}
+.p-pill:hover { border-color:var(--accent); transform:translateY(-2px); }
+.p-pill.active { border-color:var(--accent); background:var(--accent-glow-strong); }
+.p-pill-icon { font-size:20px; }
+.p-pill-name { font-weight:700; font-size:13px; }
+.p-pill-status { font-size:10px; color:var(--text-muted); }
+
+/* ═══════════════════════════════════════════
+   INTEGRATION BAR
+   ═══════════════════════════════════════════ */
+.integration-card { padding:32px; text-align:center; }
+.int-logos { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin:16px 0 12px; }
+.int-logo {
+  padding:10px 20px; border-radius:12px; font-size:13px; font-weight:700;
+  background:var(--bg-input); border:1px solid var(--border);
+  color:var(--text-muted); transition:all 0.3s;
+}
+.int-logo:hover { border-color:var(--accent); color:var(--text); }
+
+/* ═══════════════════════════════════════════
+   CTA
+   ═══════════════════════════════════════════ */
+.cta { text-align:center; padding:56px 32px; }
+.cta h2 { font-family:var(--font-display); font-size:30px; font-weight:900; margin-bottom:10px; }
+.cta p { color:var(--text-muted); font-size:15px; margin-bottom:28px; }
+.cta-btn {
+  display:inline-block; padding:16px 44px;
+  background:var(--gradient); color:#000; font-weight:800; font-size:15px;
+  border:none; border-radius:40px; cursor:pointer;
+  font-family:inherit; text-decoration:none;
+  transition:all 0.3s; letter-spacing:0.3px;
+}
+.cta-btn:hover { transform:translateY(-3px); box-shadow: 0 12px 40px rgba(var(--accent-rgb),0.3); }
+.cta-footer { margin-top:20px; font-size:12px; color:var(--text-muted); letter-spacing:1px; }
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+.anim { opacity:0; animation: fadeUp 0.6s ease forwards; }
+.d1 { animation-delay:0.08s; } .d2 { animation-delay:0.16s; }
+.d3 { animation-delay:0.24s; } .d4 { animation-delay:0.32s; }
+
+/* live pulse dot */
+.live-dot {
+  display:inline-block; width:7px; height:7px; border-radius:50%;
+  background:var(--success); margin-right:6px;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+</style>
+</head>
+<body>
+
+<!-- ═══ THEME BAR ═══ -->
+<div class="theme-bar">
+  <span class="theme-bar-label">Tema</span>
+  <button class="theme-btn active" style="background:linear-gradient(135deg,#d4af37,#f0d060)" onclick="setTheme('')"><span class="tooltip">Gull Premium</span></button>
+  <button class="theme-btn" style="background:linear-gradient(135deg,#8c50f0,#c898ff)" onclick="setTheme('theme-violet')"><span class="tooltip">Midnight Violet</span></button>
+  <button class="theme-btn" style="background:linear-gradient(135deg,#d4506a,#f0a0b0)" onclick="setTheme('theme-rose')"><span class="tooltip">Rose Blush</span></button>
+  <button class="theme-btn" style="background:linear-gradient(135deg,#3a9a50,#80d890)" onclick="setTheme('theme-forest')"><span class="tooltip">Forest Sage</span></button>
+  <button class="theme-btn" style="background:linear-gradient(135deg,#00dcff,#ff3366)" onclick="setTheme('theme-neon')"><span class="tooltip">Neon Cyber</span></button>
+  <button class="theme-btn" style="background:linear-gradient(135deg,#e8e8ec,#fff)" onclick="setTheme('theme-clean')"><span class="tooltip">Ren & Hvit</span></button>
+</div>
+
+<div class="app">
+
+<!-- ═══ HERO — "You Are Lena" immersive system view ═══ -->
+<div style="padding-top:20px;" class="anim">
+  <div class="hero-particles" id="particles"></div>
+
+  <!-- System top bar — looks like an actual app -->
+  <div class="glass" style="padding:0;overflow:hidden;border-radius:var(--radius);">
+
+    <!-- App header -->
+    <div style="padding:20px 28px 0;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:2px;">Mandag 14. april · 08:55</div>
+        <div style="font-size:26px;font-weight:900;margin-top:4px;font-family:var(--font-display);">God morgen, Lena</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;">🔔</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),rgba(var(--accent-rgb),0.6));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;">L</div>
+      </div>
+    </div>
+
+    <!-- Quick status strip -->
+    <div style="display:flex;gap:10px;padding:16px 28px;overflow-x:auto;">
+      <div style="padding:10px 18px;border-radius:30px;background:var(--accent-glow);border:1px solid var(--border);font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+        <span style="color:var(--success);">●</span> 6 timer i dag
+      </div>
+      <div style="padding:10px 18px;border-radius:30px;background:var(--accent-glow);border:1px solid var(--border);font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+        <span style="color:var(--accent);">●</span> 5 av 6 bekreftet
+      </div>
+      <div style="padding:10px 18px;border-radius:30px;background:var(--accent-glow);border:1px solid var(--border);font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+        <span style="color:var(--warning);">●</span> 1 anbefaling klar
+      </div>
+      <div style="padding:10px 18px;border-radius:30px;background:var(--accent-glow);border:1px solid var(--border);font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+        <span style="color:var(--success);">↑</span> 2 produktsalg i går
+      </div>
+    </div>
+
+    <!-- Today's schedule — the core of "what Lena sees" -->
+    <div style="padding:0 28px 6px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Dagens kunder</div>
+
+      <!-- 09:00 -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">09:00</div>
+          <div style="font-size:9px;color:var(--success);font-weight:700;">BEKREFTET</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Maren Haugen</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Klipp · 45 min · Fast kunde (12 besøk)</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-muted);">Ingen anbefalinger</span>
+        </div>
+      </div>
+
+      <!-- 10:00 -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">10:00</div>
+          <div style="font-size:9px;color:var(--success);font-weight:700;">BEKREFTET</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Emil Karlsen</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Herreklipp · 30 min · Klipper hver 6. uke</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-muted);">Ny kunde — 3. besøk</span>
+        </div>
+      </div>
+
+      <!-- 11:30 — the one with the AI recommendation -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:14px 0;border-bottom:1px solid var(--border);background:var(--accent-glow);margin:0 -28px;padding-left:28px;padding-right:28px;border-left:3px solid var(--accent);">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">11:30</div>
+          <div style="font-size:9px;color:var(--success);font-weight:700;">BEKREFTET</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Kristin Moe <span style="font-size:10px;font-weight:700;color:var(--accent);margin-left:4px;">★ Fast kunde</span></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Klipp & farge · 90 min · 18 besøk · Allergisk: ammoniakk</div>
+          <div style="margin-top:8px;padding:8px 14px;border-radius:12px;background:var(--accent-glow-strong);border:1px solid var(--border-strong);display:inline-flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:1px;padding:2px 6px;border:1px solid var(--border-strong);border-radius:6px;">AI</span>
+            <span style="font-size:12px;font-weight:600;">Olaplex No.3 trolig tom — foreslå påfyll (349 kr)</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <span style="font-size:10px;padding:4px 12px;border-radius:12px;background:var(--accent);color:#000;font-weight:800;cursor:pointer;">Anbefal</span>
+          <span style="font-size:10px;padding:4px 12px;border-radius:12px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;">Ikke nå</span>
+        </div>
+      </div>
+
+      <!-- 13:00 -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">13:00</div>
+          <div style="font-size:9px;color:var(--success);font-weight:700;">BEKREFTET</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Line Berg</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Balayage · 120 min · Bursdag om 3 dager 🎂</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--accent-glow);border:1px solid var(--border);color:var(--accent);">Bursdagstilbud?</span>
+        </div>
+      </div>
+
+      <!-- 15:00 -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">15:00</div>
+          <div style="font-size:9px;color:var(--warning);font-weight:700;">VENTER</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Sara Thorsen</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Klipp & føn · 60 min · Sist her: 91 dager siden</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(232,101,90,0.08);border:1px solid rgba(232,101,90,0.2);color:var(--danger);">Vinn-tilbake</span>
+        </div>
+      </div>
+
+      <!-- 16:30 -->
+      <div style="display:flex;gap:14px;align-items:stretch;padding:12px 0;">
+        <div style="width:52px;text-align:center;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:16px;font-weight:900;">16:30</div>
+          <div style="font-size:9px;color:var(--success);font-weight:700;">BEKREFTET</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px;">Jonas Vik</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Skjegg & klipp · 45 min · Ny kunde (1. besøk)</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-muted);">Velkommen-SMS sendt</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar — system handled this morning -->
+    <div style="padding:16px 28px;background:var(--accent-glow);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:11px;color:var(--text-muted);"><span style="font-weight:700;color:var(--accent);">Systemet har allerede i dag:</span></div>
+      <div style="display:flex;gap:12px;font-size:11px;font-weight:600;flex-wrap:wrap;">
+        <span>✓ Sendt 6 påminnelser</span>
+        <span>✓ Fått 5 bekreftelser</span>
+        <span>✓ Flagget 1 produktanbefaling</span>
+        <span>✓ Oppdaget 1 bursdag</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Brand line below the system view -->
+  <div style="text-align:center;padding:24px 0 8px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);">◆ Martin.solutions</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:6px;">Dette er hva frisøren din ser. Hver morgen. Automatisk.</div>
+  </div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="section-label anim d1"><span class="live-dot"></span>Sanntid dashbord</div>
+<div class="stats-row anim d1">
+  <div class="glass stat-card">
+    <div class="stat-icon-bg">📅</div>
+    <div class="stat-label">Timer i dag</div>
+    <div class="stat-value" data-count="24">0</div>
+    <div class="stat-trend up">↑ 12% fra forrige uke</div>
+  </div>
+  <div class="glass stat-card">
+    <div class="stat-icon-bg">🔄</div>
+    <div class="stat-label">Gjenbestillingsrate</div>
+    <div class="stat-value"><span data-count="78">0</span><span class="accent">%</span></div>
+    <div class="stat-trend up">↑ 6% denne måneden</div>
+  </div>
+  <div class="glass stat-card">
+    <div class="stat-icon-bg">⚠️</div>
+    <div class="stat-label">Ikke-møtt (mnd)</div>
+    <div class="stat-value" data-count="3">0</div>
+    <div class="stat-trend up">↓ 67% med AI-påminnelser</div>
+  </div>
+  <div class="glass stat-card">
+    <div class="stat-icon-bg">💰</div>
+    <div class="stat-label">Omsetning (mnd)</div>
+    <div class="stat-value"><span data-count="287">0</span><span class="accent">k</span></div>
+    <div class="stat-trend up">↑ 9% fra forrige måned</div>
+  </div>
+</div>
+
+<!-- ═══ SMS + WIN-BACK ═══ -->
+<div class="section-label anim d2">Automatisk kundekommunikasjon</div>
+<div class="grid-2 anim d2">
+  <div class="glass card-pad">
+    <div class="card-title">💬 Smart påminnelse</div>
+    <div class="card-sub">Automatisk SMS 48t og 2t før time</div>
+    <div class="sms-thread">
+      <div class="sms">Hei <strong>Kristin</strong>! 👋 Du har time hos <strong>Lena</strong> i morgen kl 14:00 (Klipp & farge). Passer det fortsatt?<br>Svar <strong>JA</strong> for å bekrefte eller <strong>ENDRE</strong> for ny tid.</div>
+      <div class="sms-meta">Automatisk · I dag 09:00</div>
+      <div class="sms out">JA ✓</div>
+      <div class="sms-meta right">Bekreftet · 09:02</div>
+    </div>
+  </div>
+  <div class="glass card-pad">
+    <div class="card-title">🎯 Vinn-tilbake kampanje</div>
+    <div class="card-sub">Kunder som har vært borte 3+ måneder</div>
+    <div class="sms-thread">
+      <div class="sms">Hei <strong>Sara</strong>! Vi savner deg 💇‍♀️ Det er 4 måneder siden sist — vi har ledig hos <strong>Oda</strong> denne uken. Skal vi booke deg inn?</div>
+      <div class="sms-meta">Automatisk vinn-tilbake · Tirsdag 11:00</div>
+      <div class="sms out">Ja, gjerne torsdag!</div>
+      <div class="sms-meta right">Reddet inntekt: ~1 200 kr 💰</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REVIEWS + ACTIVITY FEED ═══ -->
+<div class="grid-2 anim d3" style="margin-top:16px;">
+  <div class="glass card-pad">
+    <div class="card-title">⭐ Automatisk anmeldelsesinnhenting</div>
+    <div class="card-sub">Google-anmeldelser etter hvert besøk</div>
+    <div class="sms-thread">
+      <div class="sms">Hei <strong>Maren</strong>! Takk for besøket 💇‍♀️ Vi setter stor pris på en rask anmeldelse — det tar 30 sekunder!<br><br><span style="color:var(--accent);text-decoration:underline;cursor:pointer;">Legg igjen anmeldelse →</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <span style="font-size:32px;font-weight:900;">4.8</span>
+      <div>
+        <div style="color:var(--warning);font-size:16px;letter-spacing:2px;">★★★★★</div>
+        <div style="font-size:11px;color:var(--text-muted);">+14 nye denne måneden</div>
+      </div>
+    </div>
+  </div>
+  <div class="glass card-pad">
+    <div class="card-title"><span class="live-dot"></span>Aktivitetslogg</div>
+    <div class="card-sub">Sanntid — alt skjer automatisk</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--success);margin-top:5px;flex-shrink:0;"></div>
+        <div><div style="font-size:13px;"><strong>Kristin M.</strong> bekreftet time</div><div style="font-size:10px;color:var(--text-muted);">09:02</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0;"></div>
+        <div><div style="font-size:13px;"><strong>Oda L.</strong> — etter-besøk SMS sendt</div><div style="font-size:10px;color:var(--text-muted);">10:15</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--warning);margin-top:5px;flex-shrink:0;"></div>
+        <div><div style="font-size:13px;"><strong>Sara T.</strong> — vinn-tilbake planlagt</div><div style="font-size:10px;color:var(--text-muted);">Sendes i morgen 11:00</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--success);margin-top:5px;flex-shrink:0;"></div>
+        <div><div style="font-size:13px;"><strong>Maren H.</strong> la igjen ★★★★★</div><div style="font-size:10px;color:var(--text-muted);">I går 14:22</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0;"></div>
+        <div><div style="font-size:13px;"><strong>Line H.</strong> — mersalg-SMS sendt (Olaplex)</div><div style="font-size:10px;color:var(--text-muted);">I går 12:00</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLIENT LIST ═══ -->
+<div class="section-label">Kundeoversikt — AI-prioritert</div>
+<div class="glass card-pad grid-full">
+  <div class="card-title">👥 Kunder som trenger oppmerksomhet</div>
+  <div class="card-sub">Systemet finner automatisk hvem som er i fare for å falle fra</div>
+  <div class="client-row">
+    <div class="avatar" style="background:linear-gradient(135deg,var(--danger),#c04040)">ST</div>
+    <div class="client-info"><div class="client-name">Sara Thorsen</div><div class="client-detail">Sist besøk: 91 dager · Fast kunde (Oda) · Klipp + farge</div></div>
+    <span class="tag danger">Vinn-tilbake</span>
+  </div>
+  <div class="client-row">
+    <div class="avatar" style="background:linear-gradient(135deg,var(--warning),#c09020)">EK</div>
+    <div class="client-info"><div class="client-name">Emil Karlsen</div><div class="client-detail">Sist besøk: 68 dager · Herreklipp hver 6. uke</div></div>
+    <span class="tag">Påminn</span>
+  </div>
+  <div class="client-row">
+    <div class="avatar" style="background:linear-gradient(135deg,var(--success),#20a050)">LH</div>
+    <div class="client-info"><div class="client-name">Line Haugen</div><div class="client-detail">I dag kl 15:30 · Balayage · Bursdag neste uke 🎂</div></div>
+    <span class="tag">Tilbud?</span>
+  </div>
+  <div class="client-row">
+    <div class="avatar" style="background:linear-gradient(135deg,var(--accent),rgba(var(--accent-rgb),0.7))">KM</div>
+    <div class="client-info"><div class="client-name">Kristin Moe</div><div class="client-detail">I morgen 14:00 · Bekreftet ✓ · Produkt: Olaplex etterfylling</div></div>
+    <span class="tag">Mersalg</span>
+  </div>
+</div>
+
+<!-- ═══ ANALYTICS ═══ -->
+<div class="section-label">Innsikt & analyse</div>
+<div class="grid-2">
+  <!-- Rebooking Ring -->
+  <div class="glass card-pad">
+    <div class="card-title">📊 Gjenbestilling</div>
+    <div class="card-sub">Automatisk vs. manuell oppfølging</div>
+    <div class="ring-chart-wrap">
+      <div class="ring-chart">
+        <svg viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="50" />
+          <circle class="ring-fg" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="69" />
+        </svg>
+        <div class="ring-center">
+          <div class="ring-value">78%</div>
+          <div class="ring-label-inner">rebooked</div>
+        </div>
+      </div>
+      <div class="ring-legend">
+        <div class="ring-legend-item"><div class="ring-dot" style="background:var(--accent)"></div>AI-automatisk — 62%</div>
+        <div class="ring-legend-item"><div class="ring-dot" style="background:var(--text-muted)"></div>Manuell — 16%</div>
+        <div class="ring-legend-item"><div class="ring-dot" style="background:var(--danger)"></div>Ikke rebooked — 22%</div>
+      </div>
+    </div>
+  </div>
+  <!-- Weekly Revenue Chart -->
+  <div class="glass card-pad">
+    <div class="card-title">💰 Ukeomsetning</div>
+    <div class="card-sub">Denne uken vs. forrige (stiplet)</div>
+    <div class="bar-chart">
+      <div class="bar-col"><div class="bar" style="height:45%"><div class="bar-val">32k</div></div><div class="bar-label">Man</div></div>
+      <div class="bar-col"><div class="bar" style="height:62%"><div class="bar-val">44k</div></div><div class="bar-label">Tir</div></div>
+      <div class="bar-col"><div class="bar" style="height:80%"><div class="bar-val">58k</div></div><div class="bar-label">Ons</div></div>
+      <div class="bar-col"><div class="bar" style="height:72%"><div class="bar-val">52k</div></div><div class="bar-label">Tor</div></div>
+      <div class="bar-col"><div class="bar" style="height:95%"><div class="bar-val">68k</div></div><div class="bar-label">Fre</div></div>
+      <div class="bar-col"><div class="bar" style="height:88%"><div class="bar-val">63k</div></div><div class="bar-label">Lør</div></div>
+      <div class="bar-col"><div class="bar" style="height:20%"><div class="bar-val">14k</div></div><div class="bar-label">Søn</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STAFF ═══ -->
+<div class="grid-2" style="margin-top:16px;">
+  <div class="glass card-pad">
+    <div class="card-title">👩‍🎨 Gjenbestillingsrate per frisør</div>
+    <div class="card-sub">Siste 30 dager</div>
+    <div class="staff-item"><div class="staff-avatar">L</div><div class="staff-name">Lena</div><div class="staff-track"><div class="staff-fill" style="width:88%"></div></div><div class="staff-pct">88%</div></div>
+    <div class="staff-item"><div class="staff-avatar">O</div><div class="staff-name">Oda</div><div class="staff-track"><div class="staff-fill" style="width:82%"></div></div><div class="staff-pct">82%</div></div>
+    <div class="staff-item"><div class="staff-avatar">P</div><div class="staff-name">Priya</div><div class="staff-track"><div class="staff-fill" style="width:74%"></div></div><div class="staff-pct">74%</div></div>
+    <div class="staff-item"><div class="staff-avatar">J</div><div class="staff-name">Jonas</div><div class="staff-track"><div class="staff-fill" style="width:67%"></div></div><div class="staff-pct">67%</div></div>
+  </div>
+  <div class="glass card-pad">
+    <div class="card-title">💰 Omsetning per frisør</div>
+    <div class="card-sub">Denne måneden (kr)</div>
+    <div class="staff-item"><div class="staff-avatar">L</div><div class="staff-name">Lena</div><div class="staff-track"><div class="staff-fill" style="width:95%"></div></div><div class="staff-pct">82k</div></div>
+    <div class="staff-item"><div class="staff-avatar">O</div><div class="staff-name">Oda</div><div class="staff-track"><div class="staff-fill" style="width:78%"></div></div><div class="staff-pct">67k</div></div>
+    <div class="staff-item"><div class="staff-avatar">P</div><div class="staff-name">Priya</div><div class="staff-track"><div class="staff-fill" style="width:70%"></div></div><div class="staff-pct">61k</div></div>
+    <div class="staff-item"><div class="staff-avatar">J</div><div class="staff-name">Jonas</div><div class="staff-track"><div class="staff-fill" style="width:55%"></div></div><div class="staff-pct">48k</div></div>
+  </div>
+</div>
+
+<!-- ═══ SMART PRODUCT INTELLIGENCE ═══ -->
+<div class="section-label">🧠 Produktintelligens — Systemet som lærer</div>
+
+<!-- Pre-Appointment Briefing -->
+<div class="glass card-pad grid-full" style="position:relative;overflow:hidden;">
+  <div style="position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(var(--accent-rgb),0.06),transparent 70%);pointer-events:none;"></div>
+  <div class="card-title">📋 Frisørens briefing — før kunden setter seg</div>
+  <div class="card-sub">Lena åpner appen kl 13:55. Kristin Moe kommer kl 14:00. Systemet viser dette automatisk:</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px;">
+    <!-- Client Card -->
+    <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div class="avatar" style="background:linear-gradient(135deg,var(--accent),rgba(var(--accent-rgb),0.7));width:36px;height:36px;font-size:12px;">KM</div>
+        <div><div style="font-weight:800;font-size:14px;">Kristin Moe</div><div style="font-size:11px;color:var(--text-muted);">Kunde siden 2022 · 18 besøk</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;">Preferanser</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span style="padding:4px 10px;border-radius:20px;background:var(--accent-glow);border:1px solid var(--border);font-size:10px;font-weight:600;">Klipp & farge</span>
+        <span style="padding:4px 10px;border-radius:20px;background:var(--accent-glow);border:1px solid var(--border);font-size:10px;font-weight:600;">Balayage</span>
+        <span style="padding:4px 10px;border-radius:20px;background:var(--accent-glow);border:1px solid var(--border);font-size:10px;font-weight:600;">Liker varme toner</span>
+        <span style="padding:4px 10px;border-radius:20px;background:var(--accent-glow);border:1px solid var(--border);font-size:10px;font-weight:600;">Allergisk: ammoniakk</span>
+      </div>
+    </div>
+
+    <!-- Last Products -->
+    <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:12px;">Kjøpt sist (12. feb)</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;">🧴</div>
+          <div><div style="font-size:13px;font-weight:600;">Olaplex No.3</div><div style="font-size:10px;color:var(--text-muted);">Kjøpt 3 ganger · 349 kr</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;">🧴</div>
+          <div><div style="font-size:13px;font-weight:600;">Kevin Murphy Hydrate</div><div style="font-size:10px;color:var(--text-muted);">Kjøpt 1 gang · 289 kr</div></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--accent);font-weight:600;">
+        ⏰ Olaplex No.3 — trolig tom snart (8 uker siden kjøp)
+      </div>
+    </div>
+
+    <!-- AI Recommendation -->
+    <div style="background:var(--accent-glow-strong);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:18px;position:relative;">
+      <div style="position:absolute;top:10px;right:12px;font-size:8px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:2px;padding:3px 8px;border:1px solid var(--border-strong);border-radius:10px;">AI</div>
+      <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:12px;">Smart anbefaling</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:13px;line-height:1.5;">💡 <strong>«Hei Kristin, trenger du påfyll av Olaplex? Jeg har den klar til deg.»</strong></div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Basert på kjøpshistorikk — 8 uker siden sist, gjennomsnittlig brukstid: 7 uker.</div>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <span style="padding:4px 12px;border-radius:20px;background:var(--accent);color:#000;font-size:10px;font-weight:800;cursor:pointer;">Anbefal</span>
+          <span style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);font-size:10px;font-weight:600;cursor:pointer;color:var(--text-muted);">Ikke nå</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Catalog Intelligence -->
+<div class="grid-2" style="margin-top:16px;">
+  <div class="glass card-pad">
+    <div class="card-title">🧴 Produktkatalog</div>
+    <div class="card-sub">Ansatte legger til produkter — AI lærer hvem som trenger hva</div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--radius-sm);background:var(--bg-input);border:1px solid var(--border);">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">🧴</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Olaplex No.3</div><div style="font-size:10px;color:var(--text-muted);">Behandling · 349 kr · 24 solgt (3 mnd)</div></div>
+        <div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:var(--success);">↑ 34%</div><div style="font-size:9px;color:var(--text-muted);">salgsøkning</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--radius-sm);background:var(--bg-input);border:1px solid var(--border);">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">💆</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Kevin Murphy Hydrate-Me</div><div style="font-size:10px;color:var(--text-muted);">Shampoo · 289 kr · 18 solgt (3 mnd)</div></div>
+        <div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:var(--success);">↑ 21%</div><div style="font-size:9px;color:var(--text-muted);">salgsøkning</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--radius-sm);background:var(--bg-input);border:1px solid var(--border);">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">✨</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Moroccanoil Treatment</div><div style="font-size:10px;color:var(--text-muted);">Olje · 399 kr · 12 solgt (3 mnd)</div></div>
+        <div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:var(--warning);">→ 0%</div><div style="font-size:9px;color:var(--text-muted);">stabil</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;padding:12px;border-radius:var(--radius-sm);border:1px dashed var(--border-strong);text-align:center;cursor:pointer;color:var(--text-muted);font-size:12px;font-weight:600;transition:all 0.2s;">
+      + Legg til nytt produkt
+    </div>
+  </div>
+
+  <!-- How It Gets Smarter — Static Timeline (the one Martin liked) -->
+  <div class="glass card-pad">
+    <div class="card-title">🧠 Systemet blir smartere over tid</div>
+    <div class="card-sub">Jo mer dere bruker det, jo bedre anbefalinger gir det</div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:4px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--bg-input);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="font-size:10px;font-weight:800;color:var(--text-muted);">Uke 1</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">Påminnelser & bekreftelser</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">SMS-påminnelser, timebekreftelse, enkle varsler. Systemet samler data.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="font-size:10px;font-weight:800;color:var(--accent);">Mnd 1</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">Kundemønstre oppdages</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">AI ser at Kristin kjøper Olaplex hver 7. uke. Emil klipper hver 6. uke. Mønstrene dannes.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-glow-strong);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="font-size:10px;font-weight:800;color:var(--accent);">Mnd 3</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">Proaktive anbefalinger</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">Systemet foreslår riktig produkt til riktig kunde på riktig tidspunkt. Frisøren trenger bare bekrefte.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(var(--accent-rgb),0.2);">
+          <div style="font-size:10px;font-weight:900;color:var(--accent);">6m+</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">Full autopilot 🚀</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">AI driver mersalg, booking, oppfølging og kampanjer. Salongen tjener mer med mindre innsats. <strong style="color:var(--accent);">Deres data. Deres AI. Deres fortrinn.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product revenue impact -->
+<div class="glass card-pad" style="margin-top:16px;text-align:center;">
+  <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:16px;">Estimert ekstra produktomsetning med AI-anbefalinger</div>
+  <div style="display:flex;justify-content:center;align-items:baseline;gap:8px;margin-bottom:8px;">
+    <span style="font-size:48px;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">+23%</span>
+    <span style="font-size:16px;color:var(--text-muted);font-weight:600;">produktsalg</span>
+  </div>
+  <div style="font-size:13px;color:var(--text-muted);max-width:500px;margin:0 auto;line-height:1.6;">Basert på at systemet foreslår riktig produkt til riktig tidspunkt — uten at frisøren trenger å huske selv. Mer salg, mindre press, gladere kunder.</div>
+</div>
+
+<!-- ═══ AI HAIR VISUALIZATION ═══ -->
+<div class="section-label">AI Frisyrevisualering</div>
+<div class="glass hair-section">
+  <div class="hair-text">
+    <h3>Se klippet<br>før du klipper</h3>
+    <p>Kunden tar et bilde, velger stil og parametere — og ser resultatet med AI før saksen rører håret. Bedre kommunikasjon, færre misforståelser, mer fornøyde kunder.</p>
+    <ul class="check-list">
+      <li><span class="check-icon">✓</span>Ta bilde med mobil eller nettbrett i salongen</li>
+      <li><span class="check-icon">✓</span>Velg fra frisyrekatalog eller beskriv med ord</li>
+      <li><span class="check-icon">✓</span>Juster lengde, farge, volum i sanntid</li>
+      <li><span class="check-icon">✓</span>Kunde og frisør ser sammen — og blir enige</li>
+      <li><span class="check-icon">✓</span>Lagres i kundeprofil for neste besøk</li>
+    </ul>
+  </div>
+  <div class="hair-preview">
+    <div class="hair-preview-badge">AI Preview</div>
+    <div class="face-area">👤</div>
+    <div class="sliders">
+      <div class="slider-row"><label>Lengde</label><input type="range" min="0" max="100" value="65" oninput="this.nextElementSibling.textContent=this.value+'%'"><span class="slider-val">65%</span></div>
+      <div class="slider-row"><label>Volum</label><input type="range" min="0" max="100" value="40" oninput="this.nextElementSibling.textContent=this.value+'%'"><span class="slider-val">40%</span></div>
+      <div class="slider-row"><label>Farge</label><input type="range" min="0" max="100" value="25" oninput="this.nextElementSibling.textContent=this.value+'%'"><span class="slider-val">25%</span></div>
+      <div class="slider-row"><label>Tekstur</label><input type="range" min="0" max="100" value="70" oninput="this.nextElementSibling.textContent=this.value+'%'"><span class="slider-val">70%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FEATURE GRID ═══ -->
+<div class="section-label">Alt salongen trenger — i ett system</div>
+<div class="feature-grid">
+  <div class="glass feature-card"><div class="f-icon">📲</div><h4>SMS-påminnelser</h4><p>48t + 2t før time. Automatisk bekreftelse og enkel ombestilling.</p></div>
+  <div class="glass feature-card"><div class="f-icon">🔄</div><h4>Gjenbestilling</h4><p>AI foreslår neste time basert på tjenestetype og kundehistorikk.</p></div>
+  <div class="glass feature-card"><div class="f-icon">🎯</div><h4>Vinn-tilbake</h4><p>Automatisk for kunder borte 3+ måneder. Henter dem tilbake.</p></div>
+  <div class="glass feature-card"><div class="f-icon">⭐</div><h4>Anmeldelser</h4><p>Samler Google-anmeldelser etter besøk. Automatisk og diskret.</p></div>
+  <div class="glass feature-card"><div class="f-icon">🛒</div><h4>Mersalg</h4><p>Produkttilbud før time — basert på hva kunden bruker og trenger.</p></div>
+  <div class="glass feature-card"><div class="f-icon">📊</div><h4>Ansattdashbord</h4><p>Gjenbestillingsrate, omsetning og produktivitet per frisør.</p></div>
+  <div class="glass feature-card"><div class="f-icon">🏆</div><h4>Lojalitetsprogram</h4><p>Automatisk poengsporing og belønninger. Kunden ser saldo.</p></div>
+  <div class="glass feature-card"><div class="f-icon">📅</div><h4>Venteliste</h4><p>Avbestilling? Neste på listen varsles umiddelbart.</p></div>
+  <div class="glass feature-card"><div class="f-icon">💇‍♀️</div><h4>AI Frisyre</h4><p>Se klippet før det skjer. Bedre kommunikasjon, gladere kunder.</p></div>
+</div>
+
+<!-- ═══ PLATFORM BREADTH ═══ -->
+<div class="section-label">Én plattform — flere bransjer</div>
+<div class="platform-row">
+  <div class="p-pill active"><span class="p-pill-icon">💇‍♀️</span><div><div class="p-pill-name">Salong</div><div class="p-pill-status" style="color:var(--success);">● Aktiv</div></div></div>
+  <div class="p-pill"><span class="p-pill-icon">🦷</span><div><div class="p-pill-name">Tannklinikk</div><div class="p-pill-status">I utvikling</div></div></div>
+  <div class="p-pill"><span class="p-pill-icon">💐</span><div><div class="p-pill-name">Blomsterbutikk</div><div class="p-pill-status">Planlagt</div></div></div>
+  <div class="p-pill"><span class="p-pill-icon">🏋️</span><div><div class="p-pill-name">Fysioterapi</div><div class="p-pill-status">Pipeline</div></div></div>
+  <div class="p-pill"><span class="p-pill-icon">🐾</span><div><div class="p-pill-name">Veterinær</div><div class="p-pill-status">Pipeline</div></div></div>
+</div>
+
+<!-- ═══ INTEGRATION ═══ -->
+<div class="section-label">Fungerer med systemene du allerede bruker</div>
+<div class="glass integration-card">
+  <div style="font-size:16px;font-weight:800;">Legger seg oppå ditt eksisterende system</div>
+  <div class="int-logos">
+    <span class="int-logo">Planyo</span>
+    <span class="int-logo">Timma</span>
+    <span class="int-logo">Fixit</span>
+    <span class="int-logo">SuperSaaS</span>
+    <span class="int-logo">Ditt system?</span>
+  </div>
+  <p style="font-size:13px;color:var(--text-muted);max-width:500px;margin:0 auto;">Ingen ekstra apper for de ansatte. Alt skjer i bakgrunnen — de merker bare at ting fungerer bedre.</p>
+</div>
+
+<!-- ═══ CTA ═══ -->
+<div class="glass cta">
+  <h2>Klar for en smartere salong?</h2>
+  <p>Gratis prøveperiode · Ingen binding · Sett opp på én dag</p>
+  <button class="cta-btn" onclick="alert('Demo — ta kontakt: martin@gbone.no')">Start gratis prøveperiode →</button>
+  <div class="cta-footer">martin.solutions · Norsk AI for norske bedrifter</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ── Theme switcher ──
+function setTheme(cls) {
+  document.body.className = cls;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  // Re-trigger animations
+  document.querySelectorAll('.anim').forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  });
+}
+
+// ── Animated counters ──
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// ── Floating particles ──
+function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (3 + Math.random() * 4) + 's';
+    p.style.animationDelay = Math.random() * 5 + 's';
+    container.appendChild(p);
+  }
+}
+
+// ── Init ──
+window.addEventListener('DOMContentLoaded', () => {
+  createParticles();
+  setTimeout(animateCounters, 400);
+});
+</script>
+</body>
+</html>
