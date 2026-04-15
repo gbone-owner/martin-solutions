@@ -202,10 +202,71 @@ body {
 }
 .appt-row:active { background:rgba(255,255,255,0.02); }
 .appt-time {
-  width:44px; flex-shrink:0; text-align:center; padding-top:2px;
+  width:56px; flex-shrink:0; text-align:center; padding:8px 4px;
+  border-radius:var(--radius-sm); cursor:pointer; position:relative;
+  transition:background 0.15s;
 }
+.appt-time:hover { background:rgba(255,255,255,0.03); }
+.appt-time:active { background:rgba(255,255,255,0.06); }
 .appt-time-val { font-size:15px; font-weight:900; }
 .appt-time-status { font-size:8px; font-weight:700; margin-top:1px; }
+.appt-time-arrow { font-size:7px; color:var(--text3); margin-top:1px; }
+.status-dropdown {
+  display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  background:var(--card); border:1px solid var(--accent-border);
+  border-radius:var(--radius-sm); padding:4px; z-index:50;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4); min-width:120px;
+  animation:fadeUp 0.15s ease;
+}
+.status-dropdown.open { display:block; }
+
+/* ═══ CALENDAR VIEW ═══ */
+.cal-overlay {
+  display:none; position:absolute; inset:0; z-index:60;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+  padding:60px 20px 20px;
+}
+.cal-overlay.open { display:block; animation:fadeUp 0.2s ease; }
+.cal-card {
+  background:var(--card); border:1px solid var(--accent-border);
+  border-radius:var(--radius); padding:16px; max-width:360px; margin:0 auto;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+}
+.cal-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px;
+}
+.cal-nav { font-size:18px; color:var(--text3); cursor:pointer; padding:4px 8px; }
+.cal-nav:hover { color:var(--accent); }
+.cal-month { font-size:15px; font-weight:800; }
+.cal-grid {
+  display:grid; grid-template-columns:repeat(7,1fr); gap:2px;
+  text-align:center;
+}
+.cal-day-label {
+  font-size:9px; font-weight:700; color:var(--text3); padding:4px 0;
+  letter-spacing:0.5px;
+}
+.cal-cell {
+  padding:8px 0; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all 0.15s; color:var(--text2);
+}
+.cal-cell:hover { background:rgba(255,255,255,0.04); }
+.cal-cell.today { color:var(--accent); font-weight:800; }
+.cal-cell.selected { background:var(--accent-bg2); color:var(--accent); border:1px solid var(--accent-border2); }
+.cal-cell.other-month { color:var(--text3); opacity:0.3; }
+.cal-cell.has-appt::after {
+  content:''; display:block; width:4px; height:4px;
+  border-radius:50%; background:var(--green); margin:2px auto 0;
+}
+.cal-cell.busy::after { background:var(--orange); }
+.cal-cell.full::after { background:var(--red); }
+.status-option {
+  padding:8px 12px; border-radius:6px; font-size:10px; font-weight:700;
+  cursor:pointer; transition:background 0.1s; white-space:nowrap;
+  display:flex; align-items:center; gap:6px;
+}
+.status-option:hover { background:rgba(255,255,255,0.04); }
 .appt-body { flex:1; min-width:0; }
 .appt-name { font-weight:800; font-size:14px; }
 .appt-detail { font-size:11px; color:var(--text3); margin-top:2px; line-height:1.4; }
@@ -378,6 +439,195 @@ body {
   box-shadow:0 8px 30px rgba(212,175,55,0.3);
 }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ═══ SMS NOTIFICATION (No-Show Follow-up) ═══ */
+.sms-notif {
+  position:fixed; top:60px; left:50%; transform:translateX(-50%) translateY(-120%);
+  width:340px; max-width:90vw;
+  background:var(--card); border:1px solid var(--accent-border2);
+  border-radius:var(--radius); padding:0; z-index:200;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.1);
+  opacity:0; transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow:hidden;
+}
+.sms-notif.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.sms-notif-header {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 16px; background:var(--red-bg);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.sms-notif-icon {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--red-bg); display:flex; align-items:center; justify-content:center;
+  font-size:16px; border:1px solid rgba(232,90,90,0.2);
+}
+.sms-notif-header-text { flex:1; }
+.sms-notif-title { font-size:13px; font-weight:700; color:var(--red); }
+.sms-notif-sub { font-size:10px; color:var(--text3); margin-top:1px; }
+.sms-notif-body { padding:14px 16px; }
+.sms-notif-bubble {
+  background:var(--surface); border-radius:12px 12px 12px 4px;
+  padding:12px 14px; font-size:12px; line-height:1.5;
+  color:var(--text2);
+}
+.sms-notif-bubble a {
+  color:var(--accent); text-decoration:underline;
+  font-weight:600;
+}
+.sms-notif-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; border-top:1px solid rgba(255,255,255,0.03);
+  font-size:10px; color:var(--text3);
+}
+.sms-notif-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9px; font-weight:700; color:var(--red);
+  background:var(--red-bg); padding:3px 8px; border-radius:6px;
+  margin-top:6px; letter-spacing:0.3px;
+}
+
+/* ═══ WIN-BACK SYSTEM ═══ */
+.wb-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  transition:background 0.2s;
+}
+.wb-row:last-child { border-bottom:none; }
+.wb-row:active { background:var(--card-hover); }
+.wb-avatar {
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:800; flex-shrink:0;
+  color:var(--text);
+}
+.wb-info { flex:1; min-width:0; }
+.wb-name { font-size:13px; font-weight:700; }
+.wb-detail { font-size:11px; color:var(--text3); margin-top:2px; }
+.wb-overdue {
+  font-size:10px; font-weight:700; color:var(--orange);
+  margin-top:3px;
+}
+.wb-action {
+  padding:8px 14px; border-radius:8px;
+  background:var(--accent-bg); border:1px solid var(--accent-border);
+  font-size:11px; font-weight:700; color:var(--accent);
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all 0.2s;
+}
+.wb-action:active { background:var(--accent-bg2); }
+.wb-sent {
+  padding:8px 14px; border-radius:8px;
+  background:var(--green-bg); border:1px solid rgba(92,216,122,0.2);
+  font-size:11px; font-weight:700; color:var(--green);
+  white-space:nowrap; flex-shrink:0;
+}
+
+/* ═══ MESSAGE LOG ═══ */
+.msg-item {
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.msg-item:last-child { border-bottom:none; }
+.msg-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:4px;
+}
+.msg-type {
+  font-size:9px; font-weight:700; padding:2px 8px;
+  border-radius:4px; letter-spacing:0.3px;
+}
+.msg-type-auto { background:var(--accent-bg); color:var(--accent); }
+.msg-type-manual { background:var(--blue-bg); color:var(--blue); }
+.msg-type-noshow { background:var(--red-bg); color:var(--red); }
+.msg-type-winback { background:var(--orange-bg); color:var(--orange); }
+.msg-type-confirm { background:var(--green-bg); color:var(--green); }
+.msg-type-bursdag { background:rgba(240,160,240,0.1); color:#e0a0e0; }
+.msg-time { font-size:9px; color:var(--text3); }
+.msg-text {
+  font-size:11px; color:var(--text2); line-height:1.5;
+}
+
+/* ═══ DAILY REPORT ═══ */
+.daily-report-overlay {
+  display:none; position:absolute; inset:0; z-index:60;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+  padding:50px 16px 20px; overflow-y:auto;
+}
+.daily-report-overlay.open { display:block; animation:fadeUp 0.2s ease; }
+.daily-report-card {
+  background:var(--card); border:1px solid var(--accent-border);
+  border-radius:var(--radius); padding:18px; max-width:360px; margin:0 auto;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+}
+.dr-close {
+  float:right; font-size:14px; color:var(--text3); cursor:pointer; padding:2px 6px;
+}
+.dr-close:hover { color:var(--text); }
+.dr-title { font-size:16px; font-weight:900; margin-bottom:2px; }
+.dr-sub { font-size:11px; color:var(--text3); margin-bottom:14px; }
+.dr-stat-row {
+  display:flex; align-items:center; gap:10px; padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.dr-stat-row:last-child { border-bottom:none; }
+.dr-stat-icon {
+  width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.dr-stat-info { flex:1; }
+.dr-stat-label { font-size:12px; font-weight:700; }
+.dr-stat-detail { font-size:10px; color:var(--text3); margin-top:1px; }
+.dr-stat-num { font-size:16px; font-weight:800; }
+.dr-section-label {
+  font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1px;
+  text-transform:uppercase; padding:12px 0 6px;
+}
+
+/* ═══ CHARGE POLICY OPTIONS ═══ */
+.charge-opt {
+  padding:10px 12px; border-radius:var(--radius-sm);
+  background:var(--surface); border:1px solid rgba(255,255,255,0.04);
+  cursor:pointer; transition:all 0.2s;
+}
+.charge-opt:active { background:var(--card-hover); }
+.charge-opt.selected {
+  border-color:var(--accent-border2);
+  background:var(--accent-bg);
+}
+.charge-radio {
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid var(--text3); flex-shrink:0;
+  transition:all 0.2s; position:relative;
+}
+.charge-radio.selected {
+  border-color:var(--accent);
+}
+.charge-radio.selected::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:6px; height:6px; border-radius:50%;
+  background:var(--accent);
+}
+
+/* ═══ TOGGLE SWITCH ═══ */
+.toggle-switch {
+  width:40px; height:22px; border-radius:12px;
+  background:var(--input); border:1px solid rgba(255,255,255,0.06);
+  position:relative; cursor:pointer; transition:all 0.3s;
+  flex-shrink:0;
+}
+.toggle-switch.active {
+  background:var(--accent-bg2); border-color:var(--accent-border2);
+}
+.toggle-knob {
+  width:16px; height:16px; border-radius:50%;
+  background:var(--text3); position:absolute;
+  top:2px; left:2px; transition:all 0.3s;
+}
+.toggle-switch.active .toggle-knob {
+  left:20px; background:var(--accent);
+}
 
 /* ═══ USER SWITCHER ═══ */
 .user-switcher {
@@ -787,13 +1037,35 @@ body {
 .planner-slot-block.off { background:rgba(232,90,90,0.06); border:1px solid rgba(232,90,90,0.1); color:var(--red); font-style:italic; }
 .planner-slot-block.request { background:var(--blue-bg); border:1px solid rgba(90,160,232,0.2); color:var(--blue); }
 
+/* ═══ REQUEST CAROUSEL ═══ */
+.req-carousel { margin:10px 20px; }
+.req-slide { display:none; }
+.req-slide.active { display:block; animation:fadeUp 0.2s ease; }
+.req-nav-row {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  padding:8px 0 4px;
+}
+.req-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--text3); opacity:0.3; transition:all 0.2s;
+  cursor:pointer;
+}
+.req-dot.active { opacity:1; background:var(--accent); width:16px; border-radius:3px; }
+.req-arrow {
+  font-size:16px; color:var(--text3); cursor:pointer; padding:4px;
+}
+.req-arrow:hover { color:var(--accent); }
+
 .avail-request {
-  margin:0 20px 10px; padding:14px;
+  margin:0; padding:14px;
   border-radius:var(--radius); background:var(--blue-bg);
   border:1px solid rgba(90,160,232,0.15);
+  overflow:hidden; word-wrap:break-word;
+  max-width:100%; box-sizing:border-box;
 }
+.avail-request * { max-width:100%; }
 .avail-request-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-.avail-actions { display:flex; gap:8px; margin-top:10px; }
+.avail-actions { display:flex; gap:8px; margin-top:10px; max-width:100%; }
 
 /* ═══ Customer Notes ═══ */
 .note-item { padding:10px 0; border-bottom:1px solid var(--divider); }
@@ -880,7 +1152,8 @@ body {
             <div style="font-size:24px;font-weight:900;margin-top:2px;" id="greeting-text">God morgen, Lena</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="showToast('3 nye varsler')">🔔<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--bg);"></div></div>
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="goScreen('screen-messages')">&#128172;<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);"></div></div>
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="toggleDailyReport()">&#128202;<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);"></div></div>
             <div class="user-switcher">
               <div class="user-btn" id="userBtn" onclick="toggleUserMenu()" style="background:linear-gradient(135deg,var(--accent),#c09020);">L</div>
               <div class="user-dropdown" id="userDropdown">
@@ -1189,6 +1462,34 @@ body {
           </div>
           <div style="font-size:12px;color:var(--text2);line-height:1.5;">Lena har 7,5t aktive timer — vurder å flytte 16:30-timen til Jonas (2,5t aktiv). Jonas har kapasitet og kan ta herreklipp. <strong style="color:var(--accent);">Minimal endring, bedre balanse.</strong></div>
         </div>
+
+        <!-- ═══ WIN-BACK / RE-ENGAGEMENT CARD ═══ -->
+        <div class="section-label" style="margin-top:8px;">Kunder å vinne tilbake</div>
+        <div id="winback-card" style="margin:0 20px 10px;padding:0;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--orange-bg);border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:18px;">🎣</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:var(--orange);">5 kunder klar for tilbud</div>
+              <div style="font-size:10px;color:var(--text3);">Basert på vanlig bestillingsmønster</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);">3 vunnet tilbake sist mnd</div>
+          </div>
+          <div id="winback-list"></div>
+        </div>
+
+        <!-- ═══ SEAT FILLING / EMPTY CHAIR CARD ═══ -->
+        <div class="section-label" style="margin-top:8px;">Ledige stoler &mdash; fyll opp</div>
+        <div style="margin:0 20px 10px;padding:0;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--blue-bg);border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:18px;">&#128186;</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:var(--blue);">3 ledige timer de neste 3 dagene</div>
+              <div style="font-size:10px;color:var(--text3);">Godkjenn f&oslash;r systemet sender tilbud</div>
+            </div>
+          </div>
+          <div id="seat-fill-list"></div>
+        </div>
+
       </div>
 
       <!-- Cancellation alert — visible to Lena + manager only -->
@@ -1240,9 +1541,10 @@ body {
 
       <!-- 09:00 Maren -->
       <div class="appt-row" onclick="showClient('maren')" id="appt-section">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('09:00',this,event)">
           <div class="appt-time-val">09:00</div>
-          <div class="appt-time-status" style="color:var(--green);" onclick="cycleApptStatus('09:00',this,event)">BEKREFTET</div>
+          <div class="appt-time-status" style="color:var(--green);" id="status-09:00">BEKREFTET</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Maren Haugen</div>
@@ -1256,9 +1558,10 @@ body {
 
       <!-- 10:00 Emil -->
       <div class="appt-row" onclick="showClient('emil')">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('10:00',this,event)">
           <div class="appt-time-val">10:00</div>
-          <div class="appt-time-status" style="color:var(--green);" onclick="cycleApptStatus('10:00',this,event)">BEKREFTET</div>
+          <div class="appt-time-status" style="color:var(--green);" id="status-10:00">BEKREFTET</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Emil Karlsen</div>
@@ -1272,9 +1575,10 @@ body {
 
       <!-- 11:30 Kristin — with AI recommendation -->
       <div class="appt-row" onclick="showClient('kristin')" style="background:var(--accent-bg);">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('11:30',this,event)">
           <div class="appt-time-val">11:30</div>
-          <div class="appt-time-status" style="color:var(--green);" onclick="cycleApptStatus('11:30',this,event)">BEKREFTET</div>
+          <div class="appt-time-status" style="color:var(--green);" id="status-11:30">BEKREFTET</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Kristin Moe <span class="ai-badge">AI</span></div>
@@ -1292,9 +1596,10 @@ body {
 
       <!-- 13:00 Line -->
       <div class="appt-row" onclick="showClient('line')">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('13:00',this,event)">
           <div class="appt-time-val">13:00</div>
-          <div class="appt-time-status" style="color:var(--green);" onclick="cycleApptStatus('13:00',this,event)">BEKREFTET</div>
+          <div class="appt-time-status" style="color:var(--green);" id="status-13:00">BEKREFTET</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Line Berg</div>
@@ -1308,9 +1613,10 @@ body {
 
       <!-- 15:00 Sara -->
       <div class="appt-row" onclick="showClient('sara')">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('15:00',this,event)">
           <div class="appt-time-val">15:00</div>
-          <div class="appt-time-status" style="color:var(--orange);" onclick="cycleApptStatus('15:00',this,event)">VENTER</div>
+          <div class="appt-time-status" style="color:var(--orange);" id="status-15:00">VENTER</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Sara Thorsen</div>
@@ -1324,9 +1630,10 @@ body {
 
       <!-- 16:30 Jonas -->
       <div class="appt-row" onclick="showClient('jonas')">
-        <div class="appt-time">
+        <div class="appt-time" onclick="openStatusDropdown('16:30',this,event)">
           <div class="appt-time-val">16:30</div>
-          <div class="appt-time-status" style="color:var(--green);" onclick="cycleApptStatus('16:30',this,event)">BEKREFTET</div>
+          <div class="appt-time-status" style="color:var(--green);" id="status-16:30">BEKREFTET</div>
+          <div class="appt-time-arrow">&#9660;</div>
         </div>
         <div class="appt-body">
           <div class="appt-name">Jonas Vik</div>
@@ -1345,9 +1652,16 @@ body {
           <span>·</span>
           <span>✓ 5 bekreftelser</span>
           <span>·</span>
-          <span>✓ 1 AI-anbefaling</span>
+          <span id="summary-ai-count">✓ 1 AI-anbefaling</span>
           <span>·</span>
           <span>✓ 1 bursdag funnet</span>
+          <span id="summary-noshow" style="display:none;">·</span>
+          <span id="summary-noshow-count" style="display:none;color:var(--red);">⚠ 0 ikke-møtt</span>
+          <span id="summary-winback" style="display:none;">·</span>
+          <span id="summary-winback-count" style="display:none;color:var(--orange);">🎣 0 vinn-tilbake sendt</span>
+        </div>
+        <div style="margin-top:10px;">
+          <a href="booking.html" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--accent);text-decoration:none;padding:8px 14px;border-radius:8px;background:var(--accent-bg);border:1px solid var(--accent-border);">📅 Se bookingsiden kundene ser →</a>
         </div>
       </div>
       </div><!-- /staff-appointments-section -->
@@ -1374,11 +1688,41 @@ body {
       </div>
 
 
+      <!-- Hair Profile (AI Product Matching) -->
+      <div id="hair-profile-section" style="margin:0 20px 10px;padding:12px 14px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="ai-badge">AI</span>
+          <span style="font-size:11px;font-weight:700;color:var(--text2);">H&aring;rprofil &mdash; produktmatch</span>
+        </div>
+        <div id="hair-profile-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;">
+        </div>
+      </div>
+
+      <!-- Birthday & Gift Tracking -->
+      <div id="birthday-section" style="margin:0 20px 10px;padding:12px 14px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:18px;">&#127874;</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;" id="bday-date-text">Bursdag: 17. april</div>
+              <div style="font-size:10px;color:var(--text3);" id="bday-gift-text">Sist gave: 17. apr 2025</div>
+            </div>
+          </div>
+          <div id="bday-gift-badge" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;">Gave i &aring;r</div>
+        </div>
+        <div id="bday-gift-action" style="margin-top:10px;display:none;">
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-accent" style="flex:1;padding:8px;font-size:11px;" onclick="markGiftGiven()">&#10003; Gave gitt</button>
+            <button class="btn btn-outline" style="padding:8px 14px;font-size:11px;" onclick="showToast('Hoppes over i &aring;r')">Ikke i &aring;r</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Contact & Quick Actions Bar -->
       <div class="contact-bar">
-        <div class="contact-btn contact-btn-call" onclick="showToast('Ringer Kristin...')">📞 Ring</div>
-        <div class="contact-btn contact-btn-sms" onclick="showToast('SMS åpnet')">💬 SMS</div>
-        <div class="contact-btn contact-btn-sale" onclick="openQuickSale()">🛍 Selg produkt</div>
+        <div class="contact-btn contact-btn-call" onclick="showToast('Ringer Kristin...')">&#128222; Ring</div>
+        <div class="contact-btn contact-btn-sms" onclick="showToast('SMS &aring;pnet')">&#128172; SMS</div>
+        <div class="contact-btn contact-btn-sale" onclick="openQuickSale()">&#128717; Selg produkt</div>
       </div>
       <!-- AI Recommendation -->
       <div id="client-ai-section">
@@ -1464,6 +1808,19 @@ body {
       <div class="add-note-btn" onclick="openAddNote()">
         <span style="font-size:16px;">+</span> Legg til notat
       </div>
+
+      <!-- Message Log -->
+      <div class="section-label">Meldingslogg</div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="client-msg-log" style="max-height:240px;overflow-y:auto;">
+          <!-- Populated by renderClientMessages() -->
+        </div>
+        <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.04);background:var(--surface);">
+          <input type="text" id="msg-input" placeholder="Skriv melding til kunden..." style="flex:1;padding:10px 14px;background:var(--input);border:1px solid rgba(255,255,255,0.06);border-radius:20px;color:var(--text);font-family:inherit;font-size:12px;outline:none;">
+          <button onclick="sendCustomMessage()" style="padding:8px 16px;border-radius:20px;background:var(--accent);color:#000;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">Send</button>
+        </div>
+      </div>
+
       <!-- Actions -->
       <div class="section-label">Handlinger</div>
       <div class="action-card" onclick="goScreen('screen-hair')">
@@ -1483,13 +1840,22 @@ body {
         <div class="action-arrow">›</div>
       </div>
       <div class="action-card" onclick="showToast('Anmeldelses-SMS sendt ✓')">
-        <div class="action-icon" style="background:var(--blue-bg);">⭐</div>
+        <div class="action-icon" style="background:var(--blue-bg);">&#11088;</div>
         <div class="action-body">
           <div class="action-title">Be om anmeldelse</div>
           <div class="action-desc">Send Google-anmeldelses-link via SMS</div>
         </div>
-        <div class="action-arrow">›</div>
+        <div class="action-arrow">&#8250;</div>
       </div>
+      <div class="action-card" onclick="openMoveApptFromProfile()">
+        <div class="action-icon" style="background:var(--blue-bg);border:1px solid rgba(90,160,232,0.15);">&#128197;</div>
+        <div class="action-body">
+          <div class="action-title">Flytt time</div>
+          <div class="action-desc" id="move-appt-desc">Flytt kundens time til en annen dag eller tid</div>
+        </div>
+        <div class="action-arrow">&#8250;</div>
+      </div>
+      <div id="move-appt-panel" style="display:none;margin:0 20px 10px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid var(--blue);border-color:rgba(90,160,232,0.3);"></div>
     </div>
 
     <!-- ═══════════════════════════════════
@@ -1626,6 +1992,31 @@ body {
           <span style="font-size:12px;font-weight:700;">Produktinnsikt</span>
         </div>
         <div style="font-size:12px;color:var(--text2);line-height:1.5;">Olaplex-serien har 34% salgsøkning denne måneden. 3 kunder har trolig tomme flasker basert på kjøpsmønster. Systemet har merket anbefalinger på deres neste time.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN: GLOBAL MESSAGES
+         ═══════════════════════════════════ -->
+    <div class="screen" id="screen-messages">
+      <div class="screen-header">
+        <div class="screen-back" onclick="goHome()">&#8249; Tilbake</div>
+        <div class="screen-title">Meldinger</div>
+        <div class="screen-sub">Alle SMS sendt fra salongen</div>
+      </div>
+
+      <!-- Filter chips -->
+      <div style="display:flex;gap:6px;padding:4px 20px 12px;overflow-x:auto;">
+        <div class="chip" style="cursor:pointer;background:var(--accent-bg);border-color:var(--accent-border);" onclick="filterGlobalMessages('all',this)">Alle</div>
+        <div class="chip" style="cursor:pointer;" onclick="filterGlobalMessages('confirm',this)">Bekreftelser</div>
+        <div class="chip" style="cursor:pointer;" onclick="filterGlobalMessages('noshow',this)">Ikke-m&oslash;tt</div>
+        <div class="chip" style="cursor:pointer;" onclick="filterGlobalMessages('winback',this)">Vinn-tilbake</div>
+        <div class="chip" style="cursor:pointer;" onclick="filterGlobalMessages('manual',this)">Manuelle</div>
+        <div class="chip" style="cursor:pointer;" onclick="filterGlobalMessages('bursdag',this)">Bursdager</div>
+      </div>
+
+      <div id="global-msg-list" style="padding:0 20px 20px;">
+        <!-- Populated by renderGlobalMessages() -->
       </div>
     </div>
 
@@ -1778,52 +2169,169 @@ body {
       </div>
 
       <!-- System learning -->
-      <div class="section-label">Systemet blir smartere</div>
-      <div class="card">
-        <div class="card-inner">
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-            <div style="width:36px;height:36px;border-radius:50%;background:var(--card-hover);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--text3);flex-shrink:0;">Uke 1</div>
-            <div><div style="font-size:12px;font-weight:700;">Påminnelser & bekreftelser</div><div style="font-size:11px;color:var(--text3);">Systemet samler data.</div></div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-            <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--accent);flex-shrink:0;">Mnd 1</div>
-            <div><div style="font-size:12px;font-weight:700;">Kundemønstre oppdages</div><div style="font-size:11px;color:var(--text3);">AI ser mønstre i kunder og produkter.</div></div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-            <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-bg2);border:1px solid var(--accent-border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--accent);flex-shrink:0;">Mnd 3</div>
-            <div><div style="font-size:12px;font-weight:700;">Proaktive anbefalinger</div><div style="font-size:11px;color:var(--text3);">Riktig produkt, riktig tidspunkt, automatisk.</div></div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;">
-            <div style="width:36px;height:36px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:var(--accent);flex-shrink:0;box-shadow:0 0 12px rgba(212,175,55,0.15);">6m+</div>
-            <div><div style="font-size:12px;font-weight:700;">Full autopilot 🚀</div><div style="font-size:11px;color:var(--text3);"><strong style="color:var(--accent);">Deres data. Deres AI. Deres fortrinn.</strong></div></div>
-          </div>
-        </div>
+      <!-- ═══ AUTOMATISERING ═══ -->
+      <div style="padding:20px 20px 8px;">
+        <div style="font-size:18px;font-weight:900;">Automatisering</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">Alt systemet gj&oslash;r for deg &mdash; SMS, p&aring;minnelser, bursdager, ledige stoler</div>
       </div>
 
-      <!-- Cancel policy SMS settings -->
-      <div class="section-label">Avbestillingspolicy</div>
-      <div class="policy-sms" id="policy-sms">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <span style="font-size:14px;">💬</span>
+      <!-- ── TIMEBEKREFTELSE & AVBESTILLING ── -->
+      <div style="margin:8px 20px 8px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <div style="font-size:13px;font-weight:800;margin-bottom:12px;">&#128197; Timebekreftelse &amp; avbestilling</div>
+
+        <!-- 48h SMS -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);">Bekreftelse &mdash; 48t f&oslash;r time</div>
+          <div class="toggle-switch active" id="confirm-sms-toggle" onclick="this.classList.toggle('active');showToast(this.classList.contains('active')?'Bekreftelse-SMS p&aring; \u2713':'Bekreftelse-SMS av')">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <!-- Available tags -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:4px;">TILGJENGELIGE TAGGER</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <span onclick="insertConfirmTag('{navn}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{navn}</span>
+            <span onclick="insertConfirmTag('{tid}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{tid}</span>
+            <span onclick="insertConfirmTag('{dato}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{dato}</span>
+            <span onclick="insertConfirmTag('{fris&oslash;r}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{fris&oslash;r}</span>
+            <span onclick="insertConfirmTag('{link}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{link}</span>
+            <span onclick="insertConfirmTag('{salong}')" style="font-size:9px;padding:3px 8px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;cursor:pointer;border:1px solid var(--accent-border);">{salong}</span>
+          </div>
+        </div>
+
+        <!-- Editable template -->
+        <textarea id="confirm-template" oninput="updateConfirmPreview()"
+          style="width:100%;padding:10px 14px;background:var(--input);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:12px;line-height:1.5;outline:none;resize:vertical;min-height:70px;">Hei {navn}! Du har time {dato} kl {tid} hos {fris&oslash;r}. Bekreft eller endre timen din her: {link}</textarea>
+
+        <!-- Live preview -->
+        <div style="margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);margin-bottom:16px;">
+          <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:4px;">FORH&Aring;NDSVISNING</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;" id="confirm-preview">Hei Kristin! Du har time onsdag 16. apr kl 11:30 hos Lena. Bekreft eller endre timen din her: <span style="color:var(--accent);text-decoration:underline;">salongharmoni.no/time</span></div>
+        </div>
+
+        <!-- Divider -->
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 -16px 14px;"></div>
+
+        <!-- Cancellation charge -->
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">Gebyr ved sen avbestilling / ikke-m&oslash;tt (&lt;24t)</div>
+
+        <!-- Charge slider -->
+        <div style="padding:0 4px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);">Gebyr</div>
+            <div style="font-size:18px;font-weight:900;color:var(--accent);" id="charge-pct-display">50%</div>
+          </div>
+          <input type="range" min="0" max="100" step="10" value="50" id="charge-slider"
+            oninput="updateChargeSlider(this.value)"
+            style="width:100%;accent-color:var(--accent);height:6px;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:4px;">
+            <span>0% (gratis)</span>
+            <span>50%</span>
+            <span>100% (full pris)</span>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="height:1px;background:rgba(255,255,255,0.04);margin:16px 0;"></div>
+
+        <!-- Comeback discount toggle -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:14px;">&#127873;</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;">Tilby rabatt p&aring; neste bes&oslash;k?</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:1px;">Myk landing &mdash; beholder kunden selv om de m&aring; betale gebyr</div>
+            </div>
+          </div>
+          <div class="toggle-switch active" id="comeback-toggle" onclick="toggleComeback()">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div id="comeback-slider-section">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;padding:0 4px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);">Rabatt neste gang</div>
+            <div style="font-size:16px;font-weight:800;color:var(--green);" id="comeback-pct-display">20%</div>
+          </div>
+          <input type="range" min="5" max="50" step="5" value="20" id="comeback-slider"
+            oninput="updateComebackSlider(this.value)"
+            style="width:100%;accent-color:var(--green);height:6px;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:4px;padding:0 4px;">
+            <span>5%</span>
+            <span>25%</span>
+            <span>50%</span>
+          </div>
+        </div>
+
+        <!-- Live SMS preview -->
+        <div style="margin-top:14px;padding:10px 12px;border-radius:8px;background:var(--accent-bg);border:1px solid var(--accent-border);">
+          <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:4px;">SMS-FORH&Aring;NDSVISNING</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;" id="charge-policy-preview">Avbestilling mottatt. Gebyr: 295 kr (50%). Men vi vil gjerne se deg igjen &mdash; her er 20% avslag p&aring; neste bes&oslash;k! Book her: salongharmoni.no/book</div>
+        </div>
+      </div><!-- /Timebekreftelse & avbestilling card -->
+
+      <!-- ── BURSDAGSSYSTEM ── -->
+      <div style="margin:8px 20px 8px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:800;">&#127874; Bursdager</div>
+          <div class="toggle-switch active" id="bday-master-toggle" onclick="toggleBdaySystem()">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:12px;">P&aring;minnelser, gaver, rabatter &mdash; sett opp regler og maler.</div>
+
+      <div id="bday-system-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);">Regler</div>
+          <div style="font-size:10px;color:var(--accent);font-weight:700;cursor:pointer;" onclick="addBdayRule()">+ Ny regel</div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Regler kj&oslash;res i rekkef&oslash;lge. F&oslash;rste treff vinner. Du kan alltid overstyre per kunde.</div>
+        <div id="bday-rules-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+
+        <!-- Divider -->
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:12px -16px;"></div>
+
+        <!-- Templates -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);">Meldingsmaler</div>
+          <div style="font-size:10px;color:var(--accent);font-weight:700;cursor:pointer;" onclick="addBdayTemplate()">+ Ny mal</div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">Bruk {navn} for kundens fornavn, {rabatt} for prosent.</div>
+        <div id="bday-templates-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+
+        <!-- Divider -->
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:12px -16px;"></div>
+
+        <!-- Auto-send -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <div style="font-size:12px;font-weight:700;">Automatisk SMS — 48t før time</div>
-            <div style="font-size:10px;color:var(--text3);margin-top:1px;">Sendes til alle kunder med booket time</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text2);">Send automatisk?</div>
+            <div style="font-size:10px;color:var(--text3);">Av = du godkjenner hver. P&aring; = systemet sender selv.</div>
+          </div>
+          <div class="toggle-switch" id="bday-autosend-toggle" onclick="this.classList.toggle('active');showToast(this.classList.contains('active')?'Autosending p\u00e5 \u2713':'Manuell godkjenning')">
+            <div class="toggle-knob"></div>
           </div>
         </div>
-        <div class="sms-bubble-small">
-          Hei <strong>Kristin</strong>! Du har time i morgen kl 14:00 hos Lena. Trenger du å endre? Avbestill minst 24t før — ellers kan det tilkomme et gebyr. Svar <strong>OK</strong> for å bekrefte ✓
-        </div>
-        <div style="margin-top:10px;display:flex;gap:6px;">
-          <div style="flex:1;padding:8px;border-radius:var(--radius-sm);background:var(--green-bg);text-align:center;font-size:10px;font-weight:700;color:var(--green);">✓ Aktiv</div>
-          <div style="flex:1;padding:8px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.03);text-align:center;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;">Rediger mal</div>
-        </div>
-      </div>
+      </div><!-- /bday-system-content -->
+      </div><!-- /Bursdager card -->
 
-      <!-- Theme customization -->
-      <div class="section-label">Tilpass utseende</div>
-      <div class="card" style="margin:0 20px 10px;">
-        <div class="card-inner">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">Velg en stil som passer salongen din — farger, stemning, identitet.</div>
+      <!-- ── LEDIG STOL ── -->
+      <div style="margin:8px 20px 8px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:13px;font-weight:800;">&#128186; Ledig stol-tilbud</div>
+          <div class="toggle-switch active" id="seat-fill-toggle" onclick="toggleSeatFilling()">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);line-height:1.5;margin-bottom:10px;">N&aring;r noen avbestiller, foresl&aring;r systemet kunder &aring; kontakte. Du godkjenner f&oslash;r noe sendes.</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">Velg rekkef&oslash;lge og hvem som f&aring;r tilbud. Flytt opp/ned, eller sl&aring; av.</div>
+        <div style="display:flex;flex-direction:column;gap:6px;" id="seat-fill-priority"></div>
+      </div><!-- /Ledig stol card -->
+
+      <!-- ── UTSEENDE ── -->
+      <div style="margin:8px 20px 8px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px;">&#127912; Tilpass utseende</div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Velg en stil som passer salongen din.</div>
           <div class="theme-grid">
             <div class="theme-swatch active" onclick="setTheme('gold')" data-theme="gold">
               <div class="theme-preview" style="background:#111116;">
@@ -1883,10 +2391,9 @@ body {
           <div style="margin-top:10px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--accent-bg);border:1px solid var(--accent-border);font-size:10px;color:var(--text2);text-align:center;">
             Alle farger tilpasses salongens profil ved oppsett
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      </div><!-- /Utseende card -->
+
+    </div><!-- /screen-stats -->
 
     <!-- ═══════════════════════════════════
          SCREEN 6: WEEKLY PLANNER
@@ -1899,102 +2406,79 @@ body {
 
       <!-- Week navigation -->
       <div class="planner-week-nav">
-        <div class="planner-arrow" onclick="showToast('Forrige uke')">‹</div>
-        <div class="planner-week-label">Uke 16 · 14.–19. april</div>
-        <div class="planner-arrow" onclick="showToast('Neste uke')">›</div>
+        <div class="planner-arrow" onclick="shiftWeek(-1)">&#8249;</div>
+        <div class="planner-week-label" id="planner-week-label" onclick="toggleCalendarView()" style="cursor:pointer;">Uke 16 &middot; 14.&ndash;19. april</div>
+        <div class="planner-arrow" onclick="shiftWeek(1)">&#8250;</div>
       </div>
 
-      <!-- Day selector -->
-      <div class="planner-days">
-        <div class="planner-day today selected" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Man</div>
-          <div class="planner-day-num">14</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--orange);"></div>
+      <!-- Day selector (rendered dynamically) -->
+      <div class="planner-days" id="planner-day-chips"></div>
+
+      <!-- Calendar overlay -->
+      <div class="cal-overlay" id="cal-overlay" onclick="if(event.target===this)toggleCalendarView()">
+        <div class="cal-card">
+          <div class="cal-header">
+            <div class="cal-nav" onclick="shiftCalMonth(-1)">&#8249;</div>
+            <div class="cal-month" id="cal-month-label">April 2026</div>
+            <div class="cal-nav" onclick="shiftCalMonth(1)">&#8250;</div>
           </div>
-        </div>
-        <div class="planner-day" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Tir</div>
-          <div class="planner-day-num">15</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-          </div>
-        </div>
-        <div class="planner-day" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Ons</div>
-          <div class="planner-day-num">16</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--blue);"></div>
-          </div>
-        </div>
-        <div class="planner-day" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Tor</div>
-          <div class="planner-day-num">17</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-          </div>
-        </div>
-        <div class="planner-day" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Fre</div>
-          <div class="planner-day-num">18</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-          </div>
-        </div>
-        <div class="planner-day" onclick="selectPlannerDay(this)">
-          <div class="planner-day-name">Lør</div>
-          <div class="planner-day-num">19</div>
-          <div class="planner-day-dots">
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-            <div class="planner-day-dot" style="background:var(--green);"></div>
-          </div>
+          <div class="cal-grid" id="cal-grid"></div>
         </div>
       </div>
 
-      <!-- Employee availability request -->
-      <div class="avail-request">
-        <div class="avail-request-header">
-          <span style="font-size:14px;">📩</span>
-          <div>
-            <div style="font-size:13px;font-weight:800;">Forespørsel fra Priya</div>
-            <div style="font-size:11px;color:var(--text3);">For 2 timer siden</div>
+      <!-- ═══ EMPLOYEE SELF-SERVICE VIEW ═══ -->
+      <div id="planner-employee-view" style="display:none;">
+
+        <!-- Week summary -->
+        <div style="margin:8px 20px;padding:12px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar-sm" id="emp-planner-avatar" style="background:linear-gradient(135deg,var(--accent),#c09020);">L</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:800;" id="emp-planner-name">Din uke, Lena</div>
+              <div style="font-size:11px;color:var(--text3);" id="emp-planner-summary">24 kunder denne uken</div>
+            </div>
           </div>
         </div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.5;">
-          «Kan jeg bytte onsdag 16. april til torsdag 17. april? Har legetime onsdag formiddag.»
+
+        <!-- Inline day content (drops down under day chips) -->
+        <div id="emp-day-content" style="padding:0 20px;"></div>
+
+        <!-- Request swap -->
+        <div class="section-label">Be om endring</div>
+        <div style="margin:0 20px 10px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px;">Bytte dag eller flytte kunde?</div>
+          <textarea id="emp-swap-input" placeholder="F.eks: Kan jeg bytte onsdag til torsdag? Har legetime..."
+            style="width:100%;padding:10px 14px;background:var(--input);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:12px;line-height:1.5;outline:none;resize:vertical;min-height:50px;"></textarea>
+          <button class="btn btn-accent" style="width:100%;padding:10px;margin-top:8px;font-size:12px;" onclick="submitSwapRequest()">Send foresp&oslash;rsel til leder</button>
         </div>
-        <div style="margin-top:8px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.03);">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-            <span class="ai-badge">AI</span>
-            <span style="font-size:11px;font-weight:700;">Konsekvensanalyse</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.5;">Onsdag: Priya har 2 kunder booket — begge kan flyttes til Oda (ledig 10–14). Torsdag: 2 ledige timer for Priya. <strong style="color:var(--green);">Byttet fungerer uten kundepåvirkning.</strong></div>
-        </div>
-        <div class="avail-actions">
-          <button class="btn btn-accent" style="flex:1;padding:10px;font-size:12px;" onclick="showToast('Godkjent — Priya varslet ✓')">Godkjenn bytte</button>
-          <button class="btn btn-outline" style="padding:10px 14px;font-size:12px;" onclick="showToast('Avslått')">Avslå</button>
-        </div>
+
+        <!-- Notifications -->
+        <div class="section-label">Varsler</div>
+        <div id="emp-notifications" style="padding:0 20px 20px;"></div>
+      </div>
+
+      <!-- ═══ MANAGER PLANNER VIEW ═══ -->
+      <div id="planner-manager-view">
+
+      <!-- Employee requests carousel -->
+      <div class="req-carousel" id="req-carousel">
+        <div id="req-slides"></div>
+        <div class="req-nav-row" id="req-nav-row"></div>
       </div>
 
       <!-- Staff schedules for selected day -->
-      <div class="section-label">Mandag 14. april — alle ansatte</div>
+      <div class="section-label" id="mgr-planner-day-label">Mandag 14. april &mdash; alle ansatte</div>
 
-      <!-- Lena -->
-      <div class="planner-staff-section">
-        <div class="planner-staff-card">
+      <div class="planner-staff-section" id="mgr-planner-staff">
+        <!-- Rendered dynamically by renderMgrPlanner() -->
+        <div class="planner-staff-card" id="mgr-static-placeholder">
           <div class="planner-staff-header">
             <div class="avatar-sm" style="background:linear-gradient(135deg,var(--accent),#c09020);">L</div>
             <div style="flex:1;">
               <div style="font-size:13px;font-weight:700;">Lena</div>
               <div style="font-size:10px;color:var(--text3);">6 timer booket · 09:00–17:00</div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:var(--green);">86% belegg</div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);">86% booket</div>
           </div>
           <div class="planner-staff-slots">
             <div class="planner-slot"><div class="planner-slot-time">09:00</div><div class="planner-slot-block booked">Maren H. — Klipp (45m)</div></div>
@@ -2016,7 +2500,7 @@ body {
               <div style="font-size:13px;font-weight:700;">Oda</div>
               <div style="font-size:10px;color:var(--text3);">5 timer booket · 09:00–16:00</div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:var(--green);">71% belegg</div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);">71% booket</div>
           </div>
           <div class="planner-staff-slots">
             <div class="planner-slot"><div class="planner-slot-time">09:00</div><div class="planner-slot-block booked">Hanne L. — Fargebehandling (90m)</div></div>
@@ -2036,7 +2520,7 @@ body {
               <div style="font-size:13px;font-weight:700;">Priya</div>
               <div style="font-size:10px;color:var(--text3);">4 timer booket · 10:00–15:00</div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:var(--orange);">57% belegg</div>
+            <div style="font-size:11px;font-weight:700;color:var(--orange);">57% booket</div>
           </div>
           <div class="planner-staff-slots">
             <div class="planner-slot"><div class="planner-slot-time">09:00</div><div class="planner-slot-block free">Ledig</div></div>
@@ -2056,7 +2540,7 @@ body {
               <div style="font-size:13px;font-weight:700;">Jonas</div>
               <div style="font-size:10px;color:var(--text3);">3 timer booket · 11:00–16:30</div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:var(--red);">43% belegg</div>
+            <div style="font-size:11px;font-weight:700;color:var(--red);">43% booket</div>
           </div>
           <div class="planner-staff-slots">
             <div class="planner-slot"><div class="planner-slot-time">09:00</div><div class="planner-slot-block off">Ikke tilgjengelig</div></div>
@@ -2082,15 +2566,15 @@ body {
             <strong style="color:var(--orange);">⚠ Fredag 18. april</strong> — Fullt booket fra 09–17, men ingen ekstra bemanning. Historisk sett har fredag 15% flere walk-ins. <strong style="color:var(--accent);">Vurder å sette Priya på fra 15:00.</strong>
           </div>
           <div style="font-size:12px;color:var(--text2);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:8px;">
-            <strong style="color:var(--red);">⚠ Jonas — lav belegg</strong> — 43% denne uken. Flytt venteliste-kunder til hans ledige timer? <strong style="color:var(--accent);">3 kunder på venteliste passer hans kompetanse.</strong>
+            <strong style="color:var(--red);">⚠ Jonas — lavt booket</strong> — 43% denne uken. Flytt venteliste-kunder til hans ledige timer? <strong style="color:var(--accent);">3 kunder på venteliste passer hans kompetanse.</strong>
           </div>
           <div style="font-size:12px;color:var(--text2);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:8px;">
-            <strong style="color:var(--green);">✓ Lena og Oda</strong> — god belegg hele uken. Ingen endringer nødvendig.
+            <strong style="color:var(--green);">✓ Lena og Oda</strong> — godt booket hele uken. Ingen endringer nødvendig.
           </div>
         </div>
       </div>
 
-
+      </div><!-- /planner-manager-view -->
 
     </div>
 
@@ -2124,6 +2608,13 @@ body {
       </div>
     </div>
   </div>
+  </div><!-- /phone-content -->
+
+  <!-- Daily Report Overlay -->
+  <div class="daily-report-overlay" id="daily-report" onclick="if(event.target===this)toggleDailyReport()">
+    <div class="daily-report-card" id="daily-report-content"></div>
+  </div>
+
   <div class="phone-nav">
     <div class="nav-item active" onclick="goScreen('screen-home')" data-nav="screen-home">
       <div class="nav-icon">📅</div>
@@ -2149,6 +2640,26 @@ body {
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- SMS Notification (No-Show Follow-up) -->
+<div class="sms-notif" id="sms-notif">
+  <div class="sms-notif-header">
+    <div class="sms-notif-icon">📱</div>
+    <div class="sms-notif-header-text">
+      <div class="sms-notif-title">Automatisk SMS sendt</div>
+      <div class="sms-notif-sub" id="sms-notif-recipient">Til: Maren Haugen</div>
+    </div>
+  </div>
+  <div class="sms-notif-body">
+    <div class="sms-notif-bubble" id="sms-notif-message">
+      Hei <strong>Maren</strong>! Vi savnet deg i dag. 😊 Ingen stress — book en ny time når det passer deg: <a href="booking.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/book</a>
+    </div>
+  </div>
+  <div class="sms-notif-footer">
+    <span>Sendt akkurat nå · Automatisk</span>
+    <span style="color:var(--green);">✓ Levert</span>
+  </div>
+</div>
 
 <script>
 // ── User switcher ──
@@ -2214,11 +2725,20 @@ function switchUser(id) {
   } else {
     mgrView.style.display = 'none';
     staffAppts.style.display = 'block';
+    const empData = {
+      lena:   { timer:6, bekreftet:5, venter:1, tips:2 },
+      oda:    { timer:5, bekreftet:5, venter:0, tips:1 },
+      priya:  { timer:4, bekreftet:4, venter:0, tips:1 },
+      jonas_s:{ timer:3, bekreftet:3, venter:0, tips:2 }
+    };
+    const ed = empData[id] || empData.lena;
+    const treated = window._treatedCount || 0;
     document.getElementById('status-pills').innerHTML = `
-      <div class="chip"><span style="color:var(--green);">●</span> 6 timer</div>
-      <div class="chip"><span style="color:var(--accent);">●</span> 5 bekreftet</div>
-      <div class="chip"><span style="color:var(--orange);">●</span> 1 venter</div>
-      <div class="chip"><span style="color:var(--blue);">●</span> 2 AI-tips</div>
+      <div class="chip"><span style="color:var(--green);">\u25CF</span> ${ed.timer} timer</div>
+      <div class="chip"><span style="color:var(--accent);">\u25CF</span> ${ed.bekreftet} bekreftet</div>
+      ${ed.venter > 0 ? '<div class="chip"><span style="color:var(--orange);">\u25CF</span> '+ed.venter+' venter</div>' : ''}
+      ${treated > 0 ? '<div class="chip"><span style="color:var(--green);">\u25CF</span> '+treated+' ferdig</div>' : ''}
+      <div class="chip"><span style="color:var(--blue);">\u25CF</span> ${ed.tips} AI-tips</div>
     `;
   }
   // Update active state in dropdown
@@ -2229,6 +2749,8 @@ function switchUser(id) {
   document.getElementById('userBtn').classList.remove('open');
   // Update visibility of user-specific elements
   updateAlertVisibility();
+  // Update planner view (employee vs manager)
+  if(typeof renderEmployeePlanner === 'function') renderEmployeePlanner();
   showToast('Byttet til ' + u.name);
 }
 
@@ -2352,6 +2874,13 @@ function goScreen(id) {
   document.querySelectorAll('.nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.nav === id);
   });
+  // Hooks for dynamic screens
+  if(id === 'screen-messages' && typeof renderGlobalMessages === 'function') renderGlobalMessages();
+  if(id === 'screen-planner') {
+    if(typeof renderDayChips === 'function') renderDayChips();
+    if(typeof renderEmployeePlanner === 'function') renderEmployeePlanner();
+    if(currentUser === 'manager' && typeof renderMgrPlanner === 'function') renderMgrPlanner();
+  }
 }
 
 function goHome() { goScreen('screen-home'); }
@@ -2360,12 +2889,14 @@ function goHome() { goScreen('screen-home'); }
 const clients = {
   kristin: {
     initials:'KM', name:'Kristin Moe', color:'var(--accent),#c09020',
-    meta:'Kunde siden 2022 · 18 besøk · Lena sin faste',
-    chips:['Klipp & farge','Balayage','Varme toner','⚠ Ammoniakk'],
+    meta:'Kunde siden 2022 \u00B7 18 bes\u00F8k \u00B7 Lena sin faste',
+    chips:['Klipp & farge','Balayage','Varme toner','\u26A0 Ammoniakk'],
     chipDanger: 3,
+    birthday: { date:'23. sep', lastGift:'23. sep 2025', nextGiftDue:true },
+    hairProfile: { type:'Normalt, b\u00F8lget', color:'Farget (balayage)', allergy:'\u26A0 Ammoniakk', interval:'6 uker' },
     ai: true,
-    aiText:'«Hei Kristin, trenger du påfyll av Olaplex? Jeg har den klar til deg.»',
-    aiReason:'Basert på kjøpshistorikk — 8 uker siden sist. Gjennomsnittlig brukstid: 7 uker.',
+    aiText:'\u00ABHei Kristin, trenger du p\u00E5fyll av Olaplex? Jeg har den klar til deg.\u00BB',
+    aiReason:'H\u00E5rprofil: Farget h\u00E5r + 8 uker siden sist Olaplex \u00B7 Gjennomsnittlig brukstid: 7 uker.',
     products:[
       {icon:'🧴',name:'Olaplex No.3',detail:'Kjøpt 3 ganger · Sist: 12. feb',status:'Trolig tom',statusColor:'var(--orange)'},
       {icon:'💆',name:'Kevin Murphy Hydrate',detail:'Kjøpt 1 gang · Sist: 12. feb',status:'OK',statusColor:'var(--green)'},
@@ -2373,22 +2904,38 @@ const clients = {
   },
   maren: {
     initials:'MH', name:'Maren Haugen', color:'var(--green),#40b060',
-    meta:'Kunde siden 2023 · 12 besøk · Fast kunde',
-    chips:['Klipp','Kort hår','Liker det enkelt'],
-    ai: false, products:[]
+    meta:'Kunde siden 2023 \u00B7 12 bes\u00F8k \u00B7 Fast kunde',
+    chips:['Klipp','Kort h\u00E5r','Liker det enkelt'],
+    birthday: { date:'8. nov', lastGift:'8. nov 2024', nextGiftDue:true },
+    hairProfile: { type:'Fint, tynt', color:'Naturlig', allergy:'Ingen', interval:'4 uker' },
+    ai: true,
+    aiText:'\u00ABMaren har kort, fint h\u00E5r som trenger volum. Maria Nila Volume Spray passer perfekt \u2014 og hun har aldri kj\u00F8pt stylingprodukter f\u00F8r.\u00BB',
+    aiReason:'H\u00E5rprofil: Fint, tynt h\u00E5r \u00B7 Ingen allergier \u00B7 Aldri kj\u00F8pt stylingprodukt \u2014 god salgsmulighet.',
+    products:[
+      {icon:'\uD83D\uDCAB',name:'Maria Nila Volume Spray',detail:'AI-anbefalt \u00B7 Passer fint h\u00E5r',status:'Foresl\u00E5tt',statusColor:'var(--accent)'},
+    ]
   },
   emil: {
     initials:'EK', name:'Emil Karlsen', color:'var(--blue),#4080d0',
-    meta:'Kunde siden 2025 · 3 besøk · Ny kunde',
+    meta:'Kunde siden 2025 \u00B7 3 bes\u00F8k \u00B7 Ny kunde',
     chips:['Herreklipp','Hver 6. uke'],
-    ai: false, products:[]
+    birthday: { date:'2. jul', lastGift:null, nextGiftDue:false },
+    hairProfile: { type:'Tykt, b\u00F8lget', color:'Naturlig', allergy:'Ingen', interval:'6 uker' },
+    ai: true,
+    aiText:'\u00ABEmil bruker mye voks \u2014 foresl\u00E5 Uppercut Deluxe Pomade. Naturlig finish som passer hans stil.\u00BB',
+    aiReason:'H\u00E5rprofil: Tykt, b\u00F8lget h\u00E5r \u00B7 Bruker stylingprodukt daglig \u00B7 Foretrekker matt finish.',
+    products:[
+      {icon:'\uD83E\uDDF4',name:'Uppercut Deluxe Pomade',detail:'AI-anbefalt \u00B7 Matt finish, sterk hold',status:'Foresl\u00E5tt',statusColor:'var(--accent)'},
+    ]
   },
   line: {
     initials:'LB', name:'Line Berg', color:'#a06af0,#c898ff',
     meta:'Kunde siden 2021 · 22 besøk · Bursdag 17. april 🎂',
     chips:['Balayage','Fargeekspert','Lang behandling'],
+    birthday: { date:'17. apr', lastGift:'17. apr 2025', nextGiftDue:true },
+    hairProfile: { type:'Langt, tykt', color:'Farget (balayage)', allergy:'Ingen', interval:'8 uker' },
     ai: true,
-    aiText:'«Line har bursdag om 3 dager — vurder et lite bursdagstilbud eller produkt-gave?»',
+    aiText:'\u00ABLine har bursdag om 3 dager — vurder et lite bursdagstilbud eller produkt-gave?»',
     aiReason:'Lojal kunde med 22 besøk. Bursdagskampanje øker gjennomsnittlig produktsalg med 40%.',
     products:[
       {icon:'✨',name:'Moroccanoil Treatment',detail:'Kjøpt 2 ganger · Sist: 8. mars',status:'OK',statusColor:'var(--green)'},
@@ -2397,20 +2944,27 @@ const clients = {
   sara: {
     initials:'ST', name:'Sara Thorsen', color:'var(--red),#c04040',
     meta:'Kunde siden 2024 · 6 besøk · Sist: 91 dager siden',
-    chips:['Klipp & føn','Liker lyst hår','Uregelmessig'],
+    chips:['Klipp & f\u00F8n','Liker lyst h\u00E5r','Uregelmessig'],
+    birthday: { date:'30. jan', lastGift:null, nextGiftDue:false },
+    hairProfile: { type:'Normalt, rett', color:'Lyst/blondert', allergy:'Ingen', interval:'6 uker (uregelmessig)' },
     ai: true,
-    aiText:'«Sara har vært borte i 91 dager — dette er et vinn-tilbake besøk. Gjør det til en god opplevelse!»',
+    aiText:'\u00ABSara har v\u00E6rt borte i 91 dager — dette er et vinn-tilbake besøk. Gjør det til en god opplevelse!»',
     aiReason:'Kunder som ikke rebooker etter 90 dager har 60% sjanse for å forsvinne helt. Ekstra oppmerksomhet nå kan redde henne.',
     products:[]
   },
   jonas: {
     initials:'JV', name:'Jonas Vik', color:'var(--orange),#d08020',
-    meta:'Ny kunde · 1. besøk i dag',
+    meta:'Ny kunde \u00B7 1. bes\u00F8k i dag',
     chips:['Skjegg & klipp','Ny kunde'],
+    birthday: { date:'Ukjent', lastGift:null, nextGiftDue:false },
+    hairProfile: { type:'Kort, tykt', color:'M\u00F8rkt naturlig', allergy:'Ukjent (ny kunde)', interval:'Ukjent' },
     ai: true,
-    aiText:'«Første besøk — husk å spørre om preferanser og lagre dem. Gi et godt førsteinntrykk!»',
-    aiReason:'Nye kunder som får personlig oppfølging har 3x høyere sannsynlighet for å rebooke.',
-    products:[]
+    aiText:'\u00ABF\u00F8rste bes\u00F8k \u2014 sp\u00F8r om h\u00E5r- og skjeggrutiner. Basert p\u00E5 skjegg & klipp-bestilling: foresl\u00E5 Proraso skjeggolje.\u00BB',
+    aiReason:'Ny kunde \u00B7 Skjegg-behandling \u2192 76% av skjeggkunder kj\u00F8per pleieprodukter p\u00E5 1. bes\u00F8k n\u00E5r de anbefales.',
+    products:[
+      {icon:'\uD83E\uDDD4',name:'Proraso Skjeggolje',detail:'AI-anbefalt \u00B7 Passer skjeggkunder',status:'Foresl\u00E5tt',statusColor:'var(--accent)'},
+      {icon:'\uD83E\uDDF4',name:'Uppercut Deluxe Clay',detail:'AI-anbefalt \u00B7 Matt finish for kort h\u00E5r',status:'Foresl\u00E5tt',statusColor:'var(--accent)'},
+    ]
   }
 };
 
@@ -2426,6 +2980,63 @@ function showClient(id) {
   chips.innerHTML = c.chips.map((ch,i) =>
     `<div class="chip" ${i===c.chipDanger?'style="border-color:var(--red);color:var(--red);"':''}>${ch}</div>`
   ).join('');
+
+  // Render birthday / gift tracking
+  const bdaySection = document.getElementById('birthday-section');
+  if(c.birthday && c.birthday.date !== 'Ukjent') {
+    bdaySection.style.display = 'block';
+    document.getElementById('bday-date-text').textContent = 'Bursdag: ' + c.birthday.date;
+    const badge = document.getElementById('bday-gift-badge');
+    const action = document.getElementById('bday-gift-action');
+    if(c.birthday.lastGift) {
+      document.getElementById('bday-gift-text').textContent = 'Sist gave: ' + c.birthday.lastGift;
+    } else {
+      document.getElementById('bday-gift-text').textContent = 'Aldri f\u00E5tt gave';
+    }
+    if(c.birthday.nextGiftDue) {
+      badge.style.background = 'var(--accent-bg)';
+      badge.style.color = 'var(--accent)';
+      badge.style.border = '1px solid var(--accent-border)';
+      badge.textContent = '\uD83C\uDF81 Gave i \u00E5r';
+      action.style.display = 'block';
+    } else {
+      badge.style.background = 'var(--surface)';
+      badge.style.color = 'var(--text3)';
+      badge.style.border = '1px solid rgba(255,255,255,0.04)';
+      badge.textContent = 'Ikke gave\u00E5r';
+      action.style.display = 'none';
+    }
+  } else {
+    bdaySection.style.display = c.birthday && c.birthday.date === 'Ukjent' ? 'none' : 'none';
+  }
+
+  // Render hair profile
+  const hpSection = document.getElementById('hair-profile-section');
+  const hpGrid = document.getElementById('hair-profile-grid');
+  if(c.hairProfile) {
+    hpSection.style.display = 'block';
+    const hp = c.hairProfile;
+    const allergyStyle = hp.allergy.includes('\u26A0') ? 'color:var(--red);font-weight:700;' : '';
+    hpGrid.innerHTML = `
+      <div style="padding:6px 10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:0.5px;">H\u00C5RTYPE</div>
+        <div style="font-weight:600;margin-top:2px;">${hp.type}</div>
+      </div>
+      <div style="padding:6px 10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:0.5px;">FARGE</div>
+        <div style="font-weight:600;margin-top:2px;">${hp.color}</div>
+      </div>
+      <div style="padding:6px 10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:0.5px;">ALLERGI</div>
+        <div style="font-weight:600;margin-top:2px;${allergyStyle}">${hp.allergy}</div>
+      </div>
+      <div style="padding:6px 10px;background:var(--surface);border-radius:8px;">
+        <div style="font-size:9px;color:var(--text3);font-weight:700;letter-spacing:0.5px;">INTERVALL</div>
+        <div style="font-weight:600;margin-top:2px;">${hp.interval}</div>
+      </div>`;
+  } else {
+    hpSection.style.display = 'none';
+  }
 
   const aiSection = document.getElementById('client-ai-section');
   if(c.ai) {
@@ -2455,6 +3066,9 @@ function showClient(id) {
 
   // Render notes for this client
   renderClientNotes(id);
+
+  // Render message log for this client
+  renderClientMessages(id);
 
   // Store current client id for notes
   window._currentClientId = id;
@@ -2557,6 +3171,603 @@ function saveNote() {
 }
 
 // ═══════════════════════════════════════
+//  FEATURE: Win-Back / Re-engagement System
+// ═══════════════════════════════════════
+const WINBACK_CUSTOMERS = [
+  { name:'Sara Thorsen', initials:'ST', color:'var(--red),#c04040', lastVisit:'91 dager siden', interval:'6 uker', overdueDays:49, service:'Klipp & f\u00F8n', suggestion:'15% avslag' },
+  { name:'Ingrid Bakken', initials:'IB', color:'var(--blue),#4080c0', lastVisit:'78 dager siden', interval:'5 uker', overdueDays:43, service:'Balayage', suggestion:'Gratis Olaplex' },
+  { name:'Hanne Lie', initials:'HL', color:'#a06af0,#c898ff', lastVisit:'64 dager siden', interval:'4 uker', overdueDays:36, service:'Klipp & farge', suggestion:'20% avslag' },
+  { name:'Magnus Str\u00F8m', initials:'MS', color:'var(--green),#30a050', lastVisit:'58 dager siden', interval:'4 uker', overdueDays:30, service:'Herreklipp', suggestion:'Gratis skjeggtrim' },
+  { name:'Nora Dahl', initials:'ND', color:'var(--orange),#c08030', lastVisit:'52 dager siden', interval:'5 uker', overdueDays:17, service:'Klipp', suggestion:'10% avslag' }
+];
+
+function renderWinbackList() {
+  const list = document.getElementById('winback-list');
+  if(!list) return;
+  list.innerHTML = WINBACK_CUSTOMERS.map((c, i) => `
+    <div class="wb-row">
+      <div class="wb-avatar" style="background:linear-gradient(135deg,${c.color});">${c.initials}</div>
+      <div class="wb-info">
+        <div class="wb-name">${c.name}</div>
+        <div class="wb-detail">${c.service} \u00B7 Sist: ${c.lastVisit}</div>
+        <div class="wb-overdue">\u23F0 ${c.overdueDays} dager over normalt intervall (${c.interval})</div>
+      </div>
+      <div class="wb-action" id="wb-btn-${i}" onclick="event.stopPropagation();sendWinback(${i})">Send tilbud</div>
+    </div>
+  `).join('');
+}
+
+function sendWinback(idx) {
+  const c = WINBACK_CUSTOMERS[idx];
+  const btn = document.getElementById('wb-btn-' + idx);
+  if(!btn || btn.classList.contains('wb-sent')) return;
+  btn.className = 'wb-sent';
+  btn.textContent = '\u2713 Sendt';
+  btn.onclick = null;
+  winbackSentCount++;
+  updateSummaryCounters();
+  // Show SMS notification reusing the no-show notification panel
+  const notif = document.getElementById('sms-notif');
+  document.getElementById('sms-notif-recipient').textContent = 'Til: ' + c.name;
+  const header = notif.querySelector('.sms-notif-title');
+  header.textContent = 'Vinn-tilbake SMS sendt';
+  header.style.color = 'var(--orange)';
+  notif.querySelector('.sms-notif-icon').style.background = 'var(--orange-bg)';
+  notif.querySelector('.sms-notif-icon').style.borderColor = 'rgba(240,160,64,0.2)';
+  notif.querySelector('.sms-notif-header').style.background = 'var(--orange-bg)';
+  document.getElementById('sms-notif-message').innerHTML =
+    'Hei <strong>' + c.name.split(' ')[0] + '</strong>! Vi har en ledig time denne uken \u2014 ' + c.suggestion + ' p\u00E5 ' + c.service.toLowerCase() + ' bare for deg. Book her: <a href="booking.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/book</a>';
+  notif.classList.remove('show');
+  void notif.offsetWidth;
+  notif.classList.add('show');
+  clearTimeout(window._smsTimer);
+  window._smsTimer = setTimeout(() => {
+    notif.classList.remove('show');
+    // Reset colors for no-show usage
+    header.textContent = 'Automatisk SMS sendt';
+    header.style.color = 'var(--red)';
+    notif.querySelector('.sms-notif-icon').style.background = 'var(--red-bg)';
+    notif.querySelector('.sms-notif-icon').style.borderColor = 'rgba(232,90,90,0.2)';
+    notif.querySelector('.sms-notif-header').style.background = 'var(--red-bg)';
+  }, 5000);
+  showToast('Tilbud sendt til ' + c.name.split(' ')[0] + ' \u2713');
+}
+
+// ═══════════════════════════════════════
+//  FEATURE: Message Log
+// ═══════════════════════════════════════
+const clientMessages = {
+  kristin: [
+    { type:'confirm', label:'BEKREFTELSE', time:'14. apr 09:00', text:'Hei Kristin! Du har time i morgen kl 11:30 hos Lena. Avbestill minst 24t f\u00F8r. Svar OK for \u00E5 bekrefte \u2713' },
+    { type:'confirm', label:'BEKREFTET', time:'14. apr 09:12', text:'Kristin svarte OK \u2713' },
+    { type:'confirm', label:'BEKREFTELSE', time:'10. feb 09:00', text:'Hei Kristin! Du har time onsdag kl 11:30 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+    { type:'confirm', label:'BEKREFTET', time:'10. feb 09:45', text:'Kristin svarte OK \u2713' },
+  ],
+  maren: [
+    { type:'confirm', label:'BEKREFTELSE', time:'14. apr 09:00', text:'Hei Maren! Du har time i dag kl 09:00 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+    { type:'confirm', label:'BEKREFTET', time:'14. apr 09:08', text:'Maren svarte OK \u2713' },
+    { type:'confirm', label:'BEKREFTELSE', time:'17. mar 09:00', text:'Hei Maren! Du har time i morgen kl 09:00 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+  ],
+  emil: [
+    { type:'confirm', label:'BEKREFTELSE', time:'14. apr 09:00', text:'Hei Emil! Du har time i dag kl 10:00 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+    { type:'confirm', label:'BEKREFTET', time:'14. apr 09:22', text:'Emil svarte OK \u2713' },
+  ],
+  line: [
+    { type:'confirm', label:'BEKREFTELSE', time:'14. apr 09:00', text:'Hei Line! Du har time i dag kl 13:00 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+    { type:'confirm', label:'BEKREFTET', time:'14. apr 09:31', text:'Line svarte OK \u2713' },
+    { type:'bursdag', label:'BURSDAGSHILSEN', time:'14. apr 08:00', text:'Gratulerer med dagen, Line! \u{1F382} Vi gleder oss til \u00E5 se deg.' },
+  ],
+  sara: [
+    { type:'winback', label:'VINN-TILBAKE', time:'10. apr 10:00', text:'Hei Sara! Vi har en ledig time denne uken \u2014 15% avslag p\u00E5 klipp & f\u00F8n bare for deg. Book her: salongharmoni.no/book' },
+    { type:'confirm', label:'BEKREFTELSE', time:'14. jan 09:00', text:'Hei Sara! Du har time i morgen kl 15:00 hos Lena. Svar OK for \u00E5 bekrefte \u2713' },
+  ],
+  jonas: [
+    { type:'confirm', label:'BEKREFTELSE', time:'14. apr 09:00', text:'Hei Jonas! Du har time i dag kl 16:30 hos Lena. Velkommen til oss \u2014 f\u00F8rste gang hos oss! \u{1F60A}' },
+    { type:'confirm', label:'BEKREFTET', time:'14. apr 09:05', text:'Jonas svarte OK \u2713' },
+  ]
+};
+
+function renderClientMessages(clientId) {
+  const container = document.getElementById('client-msg-log');
+  if(!container) return;
+  const msgs = clientMessages[clientId] || [];
+  if(msgs.length === 0) {
+    container.innerHTML = '<div style="padding:16px;text-align:center;font-size:11px;color:var(--text3);">Ingen meldinger enn\u00E5</div>';
+    return;
+  }
+  container.innerHTML = msgs.map(m => `
+    <div class="msg-item">
+      <div class="msg-header">
+        <span class="msg-type msg-type-${m.type}">${m.label}</span>
+        <span class="msg-time">${m.time}</span>
+      </div>
+      <div class="msg-text">${m.text}</div>
+    </div>
+  `).join('');
+}
+
+function sendCustomMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const clientId = window._currentClientId;
+  if(!clientId || !clientMessages[clientId]) return;
+  const newMsg = { type:'manual', label:'MANUELL', time:'N\u00E5', text:text };
+  clientMessages[clientId].unshift(newMsg);
+  renderClientMessages(clientId);
+  // Also log to global
+  if(!window._globalMsgLog) window._globalMsgLog = [];
+  const c = clients[clientId];
+  window._globalMsgLog.unshift({ customer:c ? c.name : clientId, ...newMsg });
+  input.value = '';
+  showToast('SMS sendt \u2713');
+}
+
+// Hook automated messages into the log
+function logAutoMessage(clientId, type, label, text) {
+  if(!clientMessages[clientId]) clientMessages[clientId] = [];
+  const now = new Date();
+  const timeStr = now.getDate() + '. ' + ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][now.getMonth()] + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const msg = { type:type, label:label, time:timeStr, text:text };
+  clientMessages[clientId].unshift(msg);
+  if(!window._globalMsgLog) window._globalMsgLog = [];
+  const c = clients[clientId];
+  window._globalMsgLog.unshift({ customer:c ? c.name : clientId, ...msg });
+}
+
+// ═══ Birthday System — Rules + Templates ═══
+
+// --- Rules ---
+let bdayRules = [
+  { id:1, condition:'all', frequency:1, action:'greeting', template:'hilsen', discount:0, enabled:true },
+  { id:2, condition:'loyal', frequency:3, action:'gift', template:'gave', discount:0, enabled:true },
+  { id:3, condition:'vip', frequency:1, action:'discount', template:'rabatt', discount:15, enabled:true },
+];
+let bdayRuleNextId = 4;
+
+const BDAY_CONDITIONS = {
+  'all':    'Alle kunder',
+  'loyal':  'Lojale (5+ bes\u00F8k)',
+  'vip':    'VIP (10+ bes\u00F8k)',
+  'new':    'Nye (under 3 bes\u00F8k)',
+  'custom': 'Egendefinert'
+};
+const BDAY_ACTIONS = {
+  'greeting': '\uD83D\uDC4B Hilsen',
+  'gift':     '\uD83C\uDF81 Gave',
+  'discount': '\uD83C\uDFF7 Rabatt'
+};
+
+function renderBdayRules() {
+  const el = document.getElementById('bday-rules-list');
+  if(!el) return;
+  el.innerHTML = bdayRules.map((r,i) => {
+    const condLabel = BDAY_CONDITIONS[r.condition] || r.condition;
+    const actLabel = BDAY_ACTIONS[r.action] || r.action;
+    const freqLabel = r.frequency === 1 ? 'hvert \u00E5r' : 'hvert ' + r.frequency + '. \u00E5r';
+    const discountInfo = r.action === 'discount' ? ' \u00B7 ' + r.discount + '%' : '';
+    const tplName = (bdayTemplates.find(t => t.id === r.template) || {}).name || r.template;
+    return `<div style="padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid rgba(255,255,255,0.04);${r.enabled ? '' : 'opacity:0.35;'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:12px;font-weight:700;">${condLabel} \u2192 ${actLabel}${discountInfo}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;cursor:pointer;color:var(--text3);" onclick="editBdayRule(${r.id})">&#9998;</span>
+          <div class="toggle-switch ${r.enabled ? 'active' : ''}" onclick="toggleBdayRule(${r.id})" style="width:32px;height:18px;min-width:32px;">
+            <div class="toggle-knob" style="width:12px;height:12px;${r.enabled ? 'left:16px;' : 'left:2px;'}top:2px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);">${freqLabel} \u00B7 Mal: ${tplName}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleBdayRule(id) {
+  const r = bdayRules.find(x => x.id === id);
+  if(r) { r.enabled = !r.enabled; renderBdayRules(); }
+}
+
+function editBdayRule(id) {
+  const r = bdayRules.find(x => x.id === id);
+  if(!r) return;
+  // Cycle through conditions as a simple edit demo
+  const condKeys = Object.keys(BDAY_CONDITIONS);
+  const ci = condKeys.indexOf(r.condition);
+  r.condition = condKeys[(ci + 1) % condKeys.length];
+  renderBdayRules();
+  showToast('Regel oppdatert \u2713');
+}
+
+function addBdayRule() {
+  bdayRules.push({
+    id: bdayRuleNextId++,
+    condition:'all', frequency:1, action:'greeting', template:'hilsen', discount:0, enabled:true
+  });
+  renderBdayRules();
+  showToast('Ny regel lagt til \u2713');
+}
+
+// --- Templates ---
+let bdayTemplates = [
+  { id:'hilsen', name:'Bursdagshilsen', text:'Gratulerer med dagen, {navn}! \uD83C\uDF82 Vi gleder oss til \u00E5 se deg.' },
+  { id:'gave',   name:'Gave-melding',   text:'Gratulerer med dagen, {navn}! \uD83C\uDF81 Vi har en liten overraskelse til deg neste gang du er innom.' },
+  { id:'rabatt', name:'Rabatt-melding',  text:'Gratulerer med dagen, {navn}! \uD83C\uDF89 Som bursdagsgave f\u00E5r du {rabatt}% avslag p\u00E5 neste bes\u00F8k. Book her: salongharmoni.no/book' },
+];
+
+let editingTemplateId = null;
+
+function renderBdayTemplates() {
+  const el = document.getElementById('bday-templates-list');
+  if(!el) return;
+  el.innerHTML = bdayTemplates.map(t => {
+    const isEditing = editingTemplateId === t.id;
+    const preview = t.text.replace('{navn}','Kristin').replace('{rabatt}','15');
+    return `<div style="padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid ${isEditing ? 'var(--accent-border2)' : 'rgba(255,255,255,0.04)'};">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="font-size:12px;font-weight:700;">${t.name}</div>
+        <span style="font-size:10px;cursor:pointer;color:var(--accent);font-weight:600;" onclick="toggleEditTemplate('${t.id}')">${isEditing ? 'Lukk' : 'Rediger'}</span>
+      </div>
+      ${isEditing ? `
+        <div style="margin-top:6px;">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:4px;">NAVN</div>
+          <input type="text" value="${t.name}" onchange="updateTemplateName('${t.id}',this.value)" style="width:100%;padding:8px 10px;background:var(--input);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:var(--text);font-family:inherit;font-size:11px;outline:none;margin-bottom:8px;">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:4px;">MELDING &mdash; bruk {navn} og {rabatt}</div>
+          <textarea onchange="updateTemplateText('${t.id}',this.value)" style="width:100%;padding:8px 10px;background:var(--input);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:var(--text);font-family:inherit;font-size:11px;line-height:1.5;outline:none;resize:vertical;min-height:50px;">${t.text}</textarea>
+          <div style="margin-top:6px;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.02);">
+            <div style="font-size:9px;color:var(--text3);margin-bottom:2px;">FORH\u00C5NDSVISNING</div>
+            <div style="font-size:11px;color:var(--text2);">${preview}</div>
+          </div>
+        </div>
+      ` : `
+        <div style="font-size:10px;color:var(--text3);line-height:1.4;">${preview}</div>
+      `}
+    </div>`;
+  }).join('');
+}
+
+function toggleEditTemplate(id) {
+  editingTemplateId = editingTemplateId === id ? null : id;
+  renderBdayTemplates();
+}
+
+function updateTemplateName(id, val) {
+  const t = bdayTemplates.find(x => x.id === id);
+  if(t) { t.name = val; renderBdayTemplates(); }
+}
+
+function updateTemplateText(id, val) {
+  const t = bdayTemplates.find(x => x.id === id);
+  if(t) { t.text = val; renderBdayTemplates(); }
+}
+
+function addBdayTemplate() {
+  const newId = 'custom-' + Date.now();
+  bdayTemplates.push({ id:newId, name:'Ny mal', text:'Hei {navn}! Skriv din melding her.' });
+  editingTemplateId = newId;
+  renderBdayTemplates();
+  showToast('Ny mal opprettet \u2713');
+}
+
+function toggleBdaySystem() {
+  const toggle = document.getElementById('bday-master-toggle');
+  toggle.classList.toggle('active');
+  const content = document.getElementById('bday-system-content');
+  const isOn = toggle.classList.contains('active');
+  content.style.opacity = isOn ? '1' : '0.3';
+  content.style.pointerEvents = isOn ? 'auto' : 'none';
+  showToast(isOn ? 'Bursdagssystem aktivert \u2713' : 'Bursdagssystem deaktivert');
+}
+
+// Init
+renderBdayRules();
+renderBdayTemplates();
+
+// ═══ Birthday Gift Tracking ═══
+function markGiftGiven() {
+  const cid = window._currentClientId;
+  if(!cid || !clients[cid] || !clients[cid].birthday) return;
+  const now = new Date();
+  const dateStr = now.getDate() + '. ' + ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][now.getMonth()] + ' ' + now.getFullYear();
+  clients[cid].birthday.lastGift = dateStr;
+  clients[cid].birthday.nextGiftDue = false;
+  // Re-render
+  const badge = document.getElementById('bday-gift-badge');
+  badge.style.background = 'var(--green-bg)';
+  badge.style.color = 'var(--green)';
+  badge.style.border = '1px solid rgba(92,216,122,0.2)';
+  badge.textContent = '\u2713 Gave gitt ' + dateStr;
+  document.getElementById('bday-gift-text').textContent = 'Sist gave: ' + dateStr;
+  document.getElementById('bday-gift-action').style.display = 'none';
+  showToast('Gave registrert \u2713');
+}
+
+// ═══ Global Messages View ═══
+function buildGlobalLog() {
+  const all = [];
+  for(const [cid, msgs] of Object.entries(clientMessages)) {
+    const c = clients[cid];
+    const name = c ? c.name : cid;
+    for(const m of msgs) {
+      all.push({ customer:name, clientId:cid, ...m });
+    }
+  }
+  // Also include any runtime messages
+  if(window._globalMsgLog) {
+    for(const m of window._globalMsgLog) {
+      if(!all.find(a => a.text === m.text && a.customer === m.customer)) {
+        all.push(m);
+      }
+    }
+  }
+  return all;
+}
+
+let globalMsgFilter = 'all';
+function renderGlobalMessages(filter) {
+  if(filter) globalMsgFilter = filter;
+  const container = document.getElementById('global-msg-list');
+  if(!container) return;
+  let msgs = buildGlobalLog();
+  if(globalMsgFilter !== 'all') {
+    msgs = msgs.filter(m => m.type === globalMsgFilter);
+  }
+  if(msgs.length === 0) {
+    container.innerHTML = '<div style="padding:30px;text-align:center;font-size:12px;color:var(--text3);">Ingen meldinger med dette filteret</div>';
+    return;
+  }
+  container.innerHTML = msgs.map(m => `
+    <div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;font-weight:700;">${m.customer}</span>
+          <span class="msg-type msg-type-${m.type}">${m.label}</span>
+        </div>
+        <span class="msg-time">${m.time}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.4;">${m.text}</div>
+    </div>
+  `).join('');
+}
+
+function filterGlobalMessages(type, el) {
+  // Update chip styles
+  el.parentNode.querySelectorAll('.chip').forEach(c => {
+    c.style.background = 'var(--card)';
+    c.style.borderColor = 'rgba(255,255,255,0.04)';
+  });
+  el.style.background = 'var(--accent-bg)';
+  el.style.borderColor = 'var(--accent-border)';
+  renderGlobalMessages(type);
+}
+
+// goScreen hooks are built into the main goScreen function
+
+// Render winback on load
+renderWinbackList();
+
+// ═══════════════════════════════════════
+//  FEATURE: Cancellation Policy & Seat Filling
+// ═══════════════════════════════════════
+// ═══ Confirmation SMS Template ═══
+const CONFIRM_TAG_VALUES = {
+  '{navn}': 'Kristin',
+  '{tid}': '11:30',
+  '{dato}': 'onsdag 16. apr',
+  '{fris\u00F8r}': 'Lena',
+  '{link}': '<a href="confirm.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/time</a>',
+  '{salong}': 'Salong Harmoni'
+};
+
+function insertConfirmTag(tag) {
+  const textarea = document.getElementById('confirm-template');
+  if(!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  textarea.value = text.substring(0, start) + tag + text.substring(end);
+  textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+  textarea.focus();
+  updateConfirmPreview();
+}
+
+function updateConfirmPreview() {
+  const textarea = document.getElementById('confirm-template');
+  const preview = document.getElementById('confirm-preview');
+  if(!textarea || !preview) return;
+  let text = textarea.value;
+  for(const [tag, val] of Object.entries(CONFIRM_TAG_VALUES)) {
+    text = text.split(tag).join(val);
+  }
+  preview.innerHTML = text;
+}
+
+let chargePercent = 50;
+let comebackEnabled = true;
+let comebackPercent = 20;
+const EXAMPLE_PRICE = 590;
+
+function updateChargeSlider(val) {
+  chargePercent = parseInt(val);
+  document.getElementById('charge-pct-display').textContent = chargePercent + '%';
+  updateChargeSMSPreview();
+}
+
+function updateComebackSlider(val) {
+  comebackPercent = parseInt(val);
+  document.getElementById('comeback-pct-display').textContent = comebackPercent + '%';
+  updateChargeSMSPreview();
+}
+
+function toggleComeback() {
+  comebackEnabled = !comebackEnabled;
+  document.getElementById('comeback-toggle').classList.toggle('active', comebackEnabled);
+  document.getElementById('comeback-slider-section').style.opacity = comebackEnabled ? '1' : '0.3';
+  document.getElementById('comeback-slider-section').style.pointerEvents = comebackEnabled ? 'auto' : 'none';
+  updateChargeSMSPreview();
+}
+
+function updateChargeSMSPreview() {
+  const preview = document.getElementById('charge-policy-preview');
+  if(!preview) return;
+  const fee = Math.round(EXAMPLE_PRICE * chargePercent / 100);
+  let sms = '';
+  if(chargePercent === 0) {
+    sms = 'Vi har mottatt avbestillingen din. Ingen gebyr.';
+  } else {
+    sms = 'Avbestilling mottatt. Gebyr: ' + fee + ' kr (' + chargePercent + '%).';
+  }
+  if(comebackEnabled) {
+    sms += ' Men vi vil gjerne se deg igjen \u2014 her er ' + comebackPercent + '% avslag p\u00E5 neste bes\u00F8k!';
+  }
+  sms += ' Book her: salongharmoni.no/book';
+  preview.textContent = sms;
+}
+
+let seatFillingEnabled = true;
+function toggleSeatFilling() {
+  seatFillingEnabled = !seatFillingEnabled;
+  const toggle = document.getElementById('seat-fill-toggle');
+  toggle.classList.toggle('active', seatFillingEnabled);
+  const priority = document.getElementById('seat-fill-priority');
+  if(priority) priority.style.opacity = seatFillingEnabled ? '1' : '0.3';
+  if(priority) priority.style.pointerEvents = seatFillingEnabled ? 'auto' : 'none';
+  showToast(seatFillingEnabled ? 'Ledig stol-tilbud aktivert \u2713' : 'Ledig stol-tilbud deaktivert');
+}
+
+// Priority list — reorderable + toggleable
+let seatPriority = [
+  { id:'venteliste', label:'Venteliste', desc:'Vil allerede komme', enabled:true },
+  { id:'lenge-siden', label:'Lenge siden sist', desc:'God grunn til \u00E5 ta kontakt', enabled:true },
+  { id:'snart-aktuell', label:'Snart aktuell', desc:'Passer timingen deres', enabled:true }
+];
+
+function renderSeatPriority() {
+  const el = document.getElementById('seat-fill-priority');
+  if(!el) return;
+  el.innerHTML = seatPriority.map((p, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--surface);font-size:11px;${p.enabled ? '' : 'opacity:0.35;'}">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-right:2px;">
+        <span onclick="movePriority(${i},-1)" style="cursor:pointer;font-size:10px;line-height:1;color:${i === 0 ? 'var(--input)' : 'var(--text3)'};">\u25B2</span>
+        <span onclick="movePriority(${i},1)" style="cursor:pointer;font-size:10px;line-height:1;color:${i === seatPriority.length-1 ? 'var(--input)' : 'var(--text3)'};">\u25BC</span>
+      </div>
+      <span style="font-size:12px;font-weight:800;color:var(--accent);width:18px;">${i+1}.</span>
+      <span style="font-weight:600;">${p.label}</span>
+      <span style="color:var(--text3);margin-left:auto;margin-right:8px;">${p.desc}</span>
+      <div class="toggle-switch ${p.enabled ? 'active' : ''}" onclick="togglePriorityItem(${i})" style="width:32px;height:18px;min-width:32px;">
+        <div class="toggle-knob" style="width:12px;height:12px;${p.enabled ? 'left:16px;' : 'left:2px;'}top:2px;"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function movePriority(idx, dir) {
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= seatPriority.length) return;
+  const temp = seatPriority[idx];
+  seatPriority[idx] = seatPriority[newIdx];
+  seatPriority[newIdx] = temp;
+  renderSeatPriority();
+  showToast('Rekkef\u00F8lge oppdatert \u2713');
+}
+
+function togglePriorityItem(idx) {
+  seatPriority[idx].enabled = !seatPriority[idx].enabled;
+  renderSeatPriority();
+  showToast(seatPriority[idx].label + (seatPriority[idx].enabled ? ' aktivert' : ' deaktivert'));
+}
+
+renderSeatPriority();
+
+// ═══ Seat Filling — Manager View Card ═══
+const SEAT_FILL_SLOTS = [
+  { day:'Torsdag', date:'17. apr', time:'14:00', cancelledBy:'Ingrid Bakken', reason:'Avbestilt 2t siden',
+    suggestions:[
+      { name:'Hanne Lie', type:'venteliste', detail:'Klipp & farge \u00B7 Har ventet p\u00E5 ledig time', discount:false },
+      { name:'Magnus Str\u00F8m', type:'lenge-siden', detail:'Herreklipp \u00B7 58 dager siden sist', discount:true, offer:'15%' },
+    ]
+  },
+  { day:'Fredag', date:'18. apr', time:'10:00', cancelledBy:null, reason:'Ingen booking',
+    suggestions:[
+      { name:'Nora Dahl', type:'snart-aktuell', detail:'Klipp \u00B7 Pleier \u00E5 komme rundt n\u00E5', discount:false },
+    ]
+  },
+  { day:'Fredag', date:'18. apr', time:'15:30', cancelledBy:null, reason:'Ingen booking',
+    suggestions:[
+      { name:'Lars Henriksen', type:'venteliste', detail:'Herreklipp \u00B7 Har ventet p\u00E5 ledig time', discount:false },
+    ]
+  }
+];
+
+function renderSeatFilling() {
+  const container = document.getElementById('seat-fill-list');
+  if(!container) return;
+  container.innerHTML = SEAT_FILL_SLOTS.map((slot, si) => {
+    const sugRows = slot.suggestions.map((s, ri) => {
+      const typeLabels = { 'venteliste':'Venteliste', 'lenge-siden':'Lenge siden sist', 'snart-aktuell':'Snart aktuell' };
+      const typeColors = { 'venteliste':'var(--green)', 'lenge-siden':'var(--orange)', 'snart-aktuell':'var(--blue)' };
+      const typeBgs = { 'venteliste':'var(--green-bg)', 'lenge-siden':'var(--orange-bg)', 'snart-aktuell':'var(--blue-bg)' };
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${ri > 0 ? 'border-top:1px solid rgba(255,255,255,0.03);' : ''}">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;">${s.name}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:1px;">${s.detail}</div>
+        </div>
+        <span style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;background:${typeBgs[s.type]};color:${typeColors[s.type]};">${typeLabels[s.type]}</span>
+        <div class="wb-action" id="sf-btn-${si}-${ri}" onclick="event.stopPropagation();approveSeatFill(${si},${ri})" style="padding:6px 12px;font-size:10px;">Send</div>
+      </div>`;
+    }).join('');
+    return `<div style="padding:12px 16px;${si > 0 ? 'border-top:1px solid rgba(255,255,255,0.04);' : ''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;">${slot.day} ${slot.date} \u00B7 kl ${slot.time}</div>
+          <div style="font-size:10px;color:var(--text3);">${slot.cancelledBy ? slot.cancelledBy + ' \u2014 ' + slot.reason : slot.reason}</div>
+        </div>
+      </div>
+      ${sugRows}
+    </div>`;
+  }).join('');
+}
+
+function approveSeatFill(slotIdx, sugIdx) {
+  const slot = SEAT_FILL_SLOTS[slotIdx];
+  const sug = slot.suggestions[sugIdx];
+  const btn = document.getElementById('sf-btn-' + slotIdx + '-' + sugIdx);
+  if(!btn || btn.classList.contains('wb-sent')) return;
+  btn.className = 'wb-sent';
+  btn.textContent = '\u2713 Sendt';
+  btn.style.padding = '6px 12px';
+  btn.style.fontSize = '10px';
+  btn.onclick = null;
+  // Show notification
+  const notif = document.getElementById('sms-notif');
+  document.getElementById('sms-notif-recipient').textContent = 'Til: ' + sug.name;
+  const header = notif.querySelector('.sms-notif-title');
+  header.textContent = 'Ledig stol-tilbud sendt';
+  header.style.color = 'var(--blue)';
+  notif.querySelector('.sms-notif-icon').style.background = 'var(--blue-bg)';
+  notif.querySelector('.sms-notif-icon').style.borderColor = 'rgba(90,160,232,0.2)';
+  notif.querySelector('.sms-notif-header').style.background = 'var(--blue-bg)';
+  const msg = sug.discount
+    ? 'Hei <strong>' + sug.name.split(' ')[0] + '</strong>! Vi har f\u00E5tt en ledig time ' + slot.day.toLowerCase() + ' kl ' + slot.time + ' \u2014 ' + sug.offer + ' avslag bare for deg. Book her: <a href="booking.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/book</a>'
+    : 'Hei <strong>' + sug.name.split(' ')[0] + '</strong>! Vi har f\u00E5tt en ledig time ' + slot.day.toLowerCase() + ' kl ' + slot.time + '. Book her: <a href="booking.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/book</a>';
+  document.getElementById('sms-notif-message').innerHTML = msg;
+  notif.classList.remove('show');
+  void notif.offsetWidth;
+  notif.classList.add('show');
+  clearTimeout(window._smsTimer);
+  window._smsTimer = setTimeout(function(){
+    notif.classList.remove('show');
+    header.textContent = 'Automatisk SMS sendt';
+    header.style.color = 'var(--red)';
+    notif.querySelector('.sms-notif-icon').style.background = 'var(--red-bg)';
+    notif.querySelector('.sms-notif-icon').style.borderColor = 'rgba(232,90,90,0.2)';
+    notif.querySelector('.sms-notif-header').style.background = 'var(--red-bg)';
+  }, 5000);
+  showToast('Tilbud sendt til ' + sug.name.split(' ')[0] + ' \u2713');
+}
+
+renderSeatFilling();
+
+// ═══════════════════════════════════════
 //  FEATURE 2: Appointment Status System
 // ═══════════════════════════════════════
 const apptStatuses = {
@@ -2578,32 +3789,132 @@ const STATUS_COLORS = {
   'done':'var(--text3)','no-show':'var(--red)','waiting':'var(--orange)'
 };
 
-function cycleApptStatus(timeKey, el, ev) {
+// Customer name mapping for SMS notifications
+const APPT_CUSTOMERS = {
+  '09:00': { full:'Maren Haugen', first:'Maren', phone:'923 45 678', clientId:'maren' },
+  '10:00': { full:'Emil Karlsen', first:'Emil', phone:'412 34 567', clientId:'emil' },
+  '11:30': { full:'Kristin Moe', first:'Kristin', phone:'987 65 432', clientId:'kristin' },
+  '13:00': { full:'Line Berg', first:'Line', phone:'456 78 901', clientId:'line' },
+  '15:00': { full:'Sara Thorsen', first:'Sara', phone:'934 56 789', clientId:'sara' },
+  '16:30': { full:'Jonas Vik', first:'Jonas', phone:'478 90 123', clientId:'jonas' }
+};
+
+// ── Summary counters ──
+let noShowCount = 0;
+let winbackSentCount = 0;
+
+function updateSummaryCounters() {
+  const nsSpan = document.getElementById('summary-noshow');
+  const nsCount = document.getElementById('summary-noshow-count');
+  const wbSpan = document.getElementById('summary-winback');
+  const wbCount = document.getElementById('summary-winback-count');
+  if(noShowCount > 0 && nsSpan && nsCount) {
+    nsSpan.style.display = 'inline';
+    nsCount.style.display = 'inline';
+    nsCount.textContent = '\u26A0 ' + noShowCount + ' ikke-m\u00F8tt';
+  }
+  if(winbackSentCount > 0 && wbSpan && wbCount) {
+    wbSpan.style.display = 'inline';
+    wbCount.style.display = 'inline';
+    wbCount.textContent = '\uD83C\uDFA3 ' + winbackSentCount + ' vinn-tilbake sendt';
+  }
+}
+
+function showNoShowSMS(timeKey) {
+  const customer = APPT_CUSTOMERS[timeKey];
+  if(!customer) return;
+  // Log to message history
+  if(customer.clientId && typeof logAutoMessage === 'function') {
+    logAutoMessage(customer.clientId, 'noshow', 'IKKE-M\u00D8TT', 'Vi savnet deg i dag! Book en ny time n\u00E5r det passer: salongharmoni.no/book');
+  }
+  const notif = document.getElementById('sms-notif');
+  document.getElementById('sms-notif-recipient').textContent = 'Til: ' + customer.full + ' (' + customer.phone + ')';
+  document.getElementById('sms-notif-message').innerHTML =
+    'Hei <strong>' + customer.first + '</strong>! Vi savnet deg i dag. \u{1F60A} Ingen stress \u2014 book en ny time n\u00E5r det passer deg: <a href="booking.html" target="_blank" style="color:var(--accent);text-decoration:underline;">salongharmoni.no/book</a>';
+  notif.classList.remove('show');
+  void notif.offsetWidth;
+  notif.classList.add('show');
+  clearTimeout(window._smsTimer);
+  window._smsTimer = setTimeout(() => notif.classList.remove('show'), 5000);
+}
+
+function openStatusDropdown(timeKey, el, ev) {
   ev.stopPropagation();
-  let current = apptStatuses[timeKey] || 'confirmed';
-  if(current === 'waiting') current = 'confirmed';
-  let idx = STATUS_FLOW.indexOf(current);
-  idx = (idx + 1) % STATUS_FLOW.length;
-  const next = STATUS_FLOW[idx];
-  apptStatuses[timeKey] = next;
-  el.textContent = STATUS_LABELS[next];
-  el.style.color = STATUS_COLORS[next];
-  // Update the row style
-  const row = el.closest('.appt-row');
+  // Close any existing dropdown
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.remove());
+  const current = apptStatuses[timeKey] || 'confirmed';
+  // Build dropdown
+  const dd = document.createElement('div');
+  dd.className = 'status-dropdown open';
+  const allStatuses = [
+    { key:'confirmed', label:'BEKREFTET', icon:'\u2705', color:'var(--green)' },
+    { key:'arrived',   label:'ANKOMMET',  icon:'\uD83D\uDC4B', color:'var(--blue)' },
+    { key:'in-chair',  label:'I STOLEN',  icon:'\u2702\uFE0F', color:'var(--accent)' },
+    { key:'done',      label:'FERDIG',    icon:'\u2713',       color:'var(--text3)' },
+    { key:'no-show',   label:'IKKE M\u00D8TT', icon:'\u274C', color:'var(--red)' }
+  ];
+  dd.innerHTML = allStatuses.map(s =>
+    `<div class="status-option" onclick="event.stopPropagation();selectStatus('${timeKey}','${s.key}')" style="${s.key === current ? 'background:var(--accent-bg);' : ''}">
+      <span>${s.icon}</span>
+      <span style="color:${s.color};">${s.label}</span>
+      ${s.key === current ? '<span style="margin-left:auto;color:var(--accent);font-size:8px;">\u25CF</span>' : ''}
+    </div>`
+  ).join('');
+  el.appendChild(dd);
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function closer() {
+      dd.remove();
+      document.removeEventListener('click', closer);
+    });
+  }, 10);
+}
+
+function selectStatus(timeKey, newStatus) {
+  // Close dropdown
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.remove());
+  const prev = apptStatuses[timeKey];
+  apptStatuses[timeKey] = newStatus;
+  // Update status label
+  const statusEl = document.getElementById('status-' + timeKey);
+  if(statusEl) {
+    statusEl.textContent = STATUS_LABELS[newStatus];
+    statusEl.style.color = STATUS_COLORS[newStatus];
+  }
+  // Update row style
+  const row = statusEl ? statusEl.closest('.appt-row') : null;
   if(row) {
-    row.style.opacity = next === 'done' ? '0.5' : '1';
-    if(next === 'in-chair') {
+    row.style.opacity = newStatus === 'done' ? '0.5' : '1';
+    // Track treated count
+    if(newStatus === 'done' && prev !== 'done') {
+      if(!window._treatedCount) window._treatedCount = 0;
+      window._treatedCount++;
+      updateEmployeePills();
+      updateEmpWeekSummary();
+    }
+    if(newStatus === 'in-chair') {
       row.style.borderLeft = '3px solid var(--accent)';
       row.style.paddingLeft = '13px';
-    } else if(next === 'no-show') {
+    } else if(newStatus === 'no-show') {
       row.style.borderLeft = '3px solid var(--red)';
       row.style.paddingLeft = '13px';
+      if(!row.querySelector('.sms-notif-badge')) {
+        const badge = document.createElement('div');
+        badge.className = 'sms-notif-badge';
+        badge.innerHTML = '\u{1F4F1} SMS sendt automatisk';
+        row.querySelector('.appt-body').appendChild(badge);
+      }
+      noShowCount++;
+      updateSummaryCounters();
+      setTimeout(() => showNoShowSMS(timeKey), 400);
     } else {
       row.style.borderLeft = 'none';
       row.style.paddingLeft = '16px';
+      const badge = row.querySelector('.sms-notif-badge');
+      if(badge) badge.remove();
     }
   }
-  showToast(STATUS_LABELS[next] + ' ✓');
+  showToast(STATUS_LABELS[newStatus] + ' \u2713');
 }
 
 // ═══════════════════════════════════════
@@ -2659,9 +3970,1133 @@ function toggleStaffCard(id) {
 }
 
 // Select planner day
+// ═══ Calendar View ═══
+let calMonth = 3; // 0-indexed, 3 = April
+let calYear = 2026;
+const MONTH_NAMES = ['Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember'];
+const DAY_LABELS = ['Ma','Ti','On','To','Fr','L\u00F8','S\u00F8'];
+
+// Demo data: days with appointments (for dot indicators)
+const CAL_APPT_DAYS = {
+  '2026-4': { 14:'full', 15:'busy', 16:'has-appt', 17:'has-appt', 18:'full', 19:'has-appt', 21:'busy', 22:'has-appt', 23:'has-appt', 24:'has-appt', 25:'full', 28:'has-appt', 29:'has-appt', 30:'has-appt' },
+  '2026-5': { 1:'has-appt', 2:'busy', 3:'has-appt', 5:'has-appt', 6:'has-appt', 7:'busy', 8:'has-appt', 9:'full', 12:'has-appt', 13:'has-appt', 14:'has-appt', 15:'busy', 16:'full' }
+};
+
+function toggleCalendarView() {
+  const overlay = document.getElementById('cal-overlay');
+  overlay.classList.toggle('open');
+  if(overlay.classList.contains('open')) renderCalendar();
+}
+
+function shiftCalMonth(dir) {
+  calMonth += dir;
+  if(calMonth > 11) { calMonth = 0; calYear++; }
+  if(calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('cal-month-label').textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('cal-grid');
+
+  // Day labels
+  let html = DAY_LABELS.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  // First day of month (Mon-start grid)
+  // Demo: April 14 = Monday, so April 1 = Sunday. Force this for April 2026.
+  let firstDay;
+  if(calYear === 2026 && calMonth === 3) {
+    firstDay = 2; // Tuesday, so 14th lands on Monday in the grid
+  } else {
+    firstDay = new Date(calYear, calMonth, 1).getDay();
+  }
+  const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+
+  // Days in month
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate();
+
+  // Appointment data for this month
+  const apptKey = calYear + '-' + (calMonth + 1);
+  const appts = CAL_APPT_DAYS[apptKey] || {};
+
+  // Today
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === calYear && today.getMonth() === calMonth;
+
+  // Previous month filler
+  for(let i = startOffset - 1; i >= 0; i--) {
+    html += `<div class="cal-cell other-month">${daysInPrevMonth - i}</div>`;
+  }
+
+  // Current month
+  for(let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const apptClass = appts[d] || '';
+    html += `<div class="cal-cell ${isToday ? 'today' : ''} ${apptClass ? apptClass + ' has-appt' : ''}" onclick="selectCalDay(${d})">${d}</div>`;
+  }
+
+  // Next month filler
+  const totalCells = startOffset + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for(let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-cell other-month">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function selectCalDay(day) {
+  // Find which week this day belongs to and navigate there
+  const dayOfWeek = new Date(calYear, calMonth, day).getDay();
+  const mondayDate = day - (dayOfWeek === 0 ? 6 : dayOfWeek - 1);
+
+  // Check if it matches one of our week data sets
+  if(calMonth === 3 && calYear === 2026) {
+    if(mondayDate <= 14 && mondayDate + 5 >= 14) { weekOffset = 0; }
+    else if(mondayDate <= 21 && mondayDate + 5 >= 21) { weekOffset = 1; }
+    else if(mondayDate <= 28) { weekOffset = 2; }
+  }
+
+  // Update week display
+  if(weekOffset < WEEK_DATA.length) {
+    const w = WEEK_DATA[weekOffset];
+    document.getElementById('planner-week-label').textContent = 'Uke ' + w.num + ' \u00B7 ' + w.range;
+
+    // Select the specific day within the week
+    const dayIdx = w.dates.indexOf(day);
+    empExpandedDay = dayIdx >= 0 ? dayIdx : 0;
+  }
+
+  // Re-render everything
+  renderDayChips();
+  if(currentUser === 'manager') {
+    if(typeof renderMgrPlanner === 'function') renderMgrPlanner();
+  } else {
+    if(typeof renderEmpDayContent === 'function') renderEmpDayContent();
+  }
+  toggleCalendarView();
+  showToast(day + '. ' + MONTH_NAMES[calMonth].toLowerCase().substring(0,3));
+}
+
+// ═══ Day Chips (Dynamic) ═══
+function renderDayChips() {
+  const container = document.getElementById('planner-day-chips');
+  if(!container) return;
+  const w = WEEK_DATA[weekOffset] || WEEK_DATA[0];
+
+  container.innerHTML = w.days.map((dayName, i) => {
+    const isSelected = i === (empExpandedDay >= 0 ? empExpandedDay : 0);
+    const isToday = weekOffset === 0 && i === 0;
+
+    // Calculate dots based on schedule data
+    let dots = '';
+    if(currentUser === 'manager' && typeof MGR_SCHEDULE !== 'undefined') {
+      // Manager: one dot per employee, colored by their occupancy
+      for(const [uid, emp] of Object.entries(MGR_SCHEDULE)) {
+        const daySlots = emp.days[i] || [];
+        const booked = daySlots.filter(s => !s.free && !s.off && !s.canceled).length;
+        const total = daySlots.filter(s => !s.off).length;
+        const ratio = total > 0 ? booked / total : 0;
+        let color = 'var(--green)';
+        if(ratio >= 0.85) color = 'var(--red)';
+        else if(ratio >= 0.6) color = 'var(--orange)';
+        else if(total === 0) color = 'var(--text3)';
+        dots += '<div class="planner-day-dot" style="background:' + color + ';"></div>';
+      }
+    } else {
+      // Employee: one dot per slot — green=booked, dim=free
+      const data = (typeof EMP_WEEK !== 'undefined') ? EMP_WEEK[currentUser] : null;
+      if(data && data.days[i]) {
+        data.days[i].slots.forEach(s => {
+          if(s.free) {
+            dots += '<div class="planner-day-dot" style="background:var(--text3);opacity:0.25;"></div>';
+          } else {
+            dots += '<div class="planner-day-dot" style="background:var(--green);"></div>';
+          }
+        });
+      }
+    }
+
+    return `<div class="planner-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="selectPlannerDay(this)">
+      <div class="planner-day-name">${dayName}</div>
+      <div class="planner-day-num">${w.dates[i]}</div>
+      <div class="planner-day-dots">${dots}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ Week Navigation ═══
+let weekOffset = 0;
+const WEEK_DATA = [
+  { num:16, range:'14.\u201319. april', days:['Man','Tir','Ons','Tor','Fre','L\u00F8r'], dates:[14,15,16,17,18,19], month:'april' },
+  { num:17, range:'21.\u201326. april', days:['Man','Tir','Ons','Tor','Fre','L\u00F8r'], dates:[21,22,23,24,25,26], month:'april' },
+  { num:18, range:'28. apr\u20133. mai', days:['Man','Tir','Ons','Tor','Fre','L\u00F8r'], dates:[28,29,30,1,2,3], month:'apr/mai' },
+];
+
+function shiftWeek(dir) {
+  weekOffset += dir;
+  if(weekOffset < 0) weekOffset = 0;
+  if(weekOffset >= WEEK_DATA.length) weekOffset = WEEK_DATA.length - 1;
+  const w = WEEK_DATA[weekOffset];
+  document.getElementById('planner-week-label').textContent = 'Uke ' + w.num + ' \u00B7 ' + w.range;
+  // Reset expanded day
+  empExpandedDay = 0;
+  // Re-render chips and views
+  renderDayChips();
+  if(currentUser !== 'manager' && typeof renderEmployeePlanner === 'function') {
+    renderEmployeePlanner();
+  }
+  if(currentUser === 'manager' && typeof renderMgrPlanner === 'function') {
+    renderMgrPlanner();
+  }
+  showToast('Uke ' + w.num + (weekOffset === 0 ? ' (denne uken)' : ''));
+}
+
 function selectPlannerDay(el) {
   document.querySelectorAll('.planner-day').forEach(d => d.classList.remove('selected'));
   el.classList.add('selected');
+  const days = Array.from(el.parentNode.children);
+  const idx = days.indexOf(el);
+  empExpandedDay = idx;
+  if(currentUser !== 'manager' && EMP_WEEK[currentUser]) {
+    renderEmpDayContent();
+  } else if(currentUser === 'manager') {
+    renderMgrPlanner();
+  }
+}
+
+// ═══ Employee Self-Service Planner (Week View) ═══
+const EMP_WEEK = {
+  lena: {
+    weekSummary:'24 kunder denne uken',
+    days:[
+      { day:'Mandag', date:'14. apr', today:true, hours:'09:00\u201317:00', customers:6, free:1, occ:86,
+        slots:[
+          { time:'09:00', name:'Maren Haugen', service:'Klipp', dur:'45m', notes:'Liker det kort og enkelt.', tags:['Fast'], ai:null },
+          { time:'10:00', name:'Emil Karlsen', service:'Herreklipp', dur:'30m', notes:'Matt finish, bruker voks.', tags:[], ai:'Uppercut Pomade' },
+          { time:'10:30', free:true },
+          { time:'11:30', name:'Kristin Moe', service:'Klipp & farge', dur:'90m', notes:'Varme toner, 30vol maks. Olaplex tom.', tags:['\u2605 Fast','\u26A0 Ammoniakk'], ai:'Olaplex No.3' },
+          { time:'13:00', name:'Line Berg', service:'Balayage', dur:'120m', notes:'Fargeekspert. Bursdag 17. apr!', tags:['\uD83C\uDF82 Bursdag'], ai:null },
+          { time:'15:00', name:'Sara Thorsen', service:'Klipp & f\u00F8n', dur:'60m', notes:'91 dager siden sist \u2014 gi god opplevelse.', tags:['Vinn-tilbake'], ai:null },
+          { time:'16:30', name:'Jonas Vik', service:'Skjegg & klipp', dur:'45m', notes:'Ny kunde \u2014 sp\u00F8r preferanser.', tags:['Ny'], ai:'Proraso skjeggolje' }
+        ]},
+      { day:'Tirsdag', date:'15. apr', today:false, hours:'09:00\u201316:00', customers:5, free:1, occ:78, slots:[
+          { time:'09:00', name:'Tone Lund', service:'Klipp', dur:'45m', notes:null, tags:[], ai:null },
+          { time:'10:00', name:'Grete Holm', service:'Farge', dur:'60m', notes:'Allergisk mot PPD.', tags:['\u26A0 PPD'], ai:null },
+          { time:'11:30', name:'Ida Bakke', service:'Klipp & f\u00F8n', dur:'60m', notes:null, tags:[], ai:null },
+          { time:'13:00', free:true },
+          { time:'14:00', name:'Camilla Dahl', service:'Balayage', dur:'120m', notes:'F\u00F8rste gang balayage.', tags:[], ai:null },
+          { time:'16:00', name:'Sofie Aas', service:'Klipp', dur:'45m', notes:null, tags:['Fast'], ai:null }
+        ]},
+      { day:'Onsdag', date:'16. apr', today:false, hours:'09:00\u201315:00', customers:4, free:2, occ:64, slots:[
+          { time:'09:00', name:'Vibeke Strand', service:'Farge', dur:'60m', notes:null, tags:[], ai:null },
+          { time:'10:30', free:true },
+          { time:'11:00', name:'Marit Olsen', service:'Klipp & farge', dur:'90m', notes:null, tags:[], ai:null },
+          { time:'13:00', name:'Ingrid Bakken', service:'Klipp', dur:'45m', notes:null, tags:[], ai:null },
+          { time:'14:00', free:true },
+          { time:'15:00', name:'Randi Haugen', service:'Klipp & f\u00F8n', dur:'60m', notes:null, tags:[], ai:null }
+        ]},
+      { day:'Torsdag', date:'17. apr', today:false, hours:'10:00\u201316:00', customers:3, free:2, occ:50, slots:[
+          { time:'10:00', name:'Anne Kristin Voll', service:'Balayage', dur:'120m', notes:null, tags:[], ai:null },
+          { time:'12:30', free:true },
+          { time:'13:00', name:'Helene Berg', service:'Klipp', dur:'45m', notes:null, tags:['Ny'], ai:null },
+          { time:'14:00', free:true },
+          { time:'15:00', name:'Sissel Fjeld', service:'Farge', dur:'60m', notes:null, tags:[], ai:null }
+        ]},
+      { day:'Fredag', date:'18. apr', today:false, hours:'09:00\u201317:00', customers:6, free:0, occ:95, slots:[
+          { time:'09:00', name:'Kristin Moe', service:'Klipp', dur:'45m', notes:'Bare klipp denne gangen.', tags:['\u2605 Fast'], ai:null },
+          { time:'10:00', name:'Live Norberg', service:'Farge', dur:'60m', notes:null, tags:[], ai:null },
+          { time:'11:30', name:'Julie Sande', service:'Klipp & farge', dur:'90m', notes:null, tags:[], ai:null },
+          { time:'13:30', name:'Hanna Bj\u00F8rk', service:'Balayage', dur:'120m', notes:null, tags:[], ai:null },
+          { time:'15:30', name:'Mona Elstad', service:'Klipp & f\u00F8n', dur:'60m', notes:null, tags:[], ai:null },
+          { time:'16:30', name:'Nora Dahl', service:'Klipp', dur:'45m', notes:null, tags:[], ai:null }
+        ]},
+      { day:'L\u00F8rdag', date:'19. apr', today:false, hours:'10:00\u201314:00', customers:3, free:1, occ:72, slots:[
+          { time:'10:00', name:'Anja Lie', service:'Klipp & farge', dur:'90m', notes:null, tags:[], ai:null },
+          { time:'11:30', free:true },
+          { time:'12:00', name:'Therese Gran', service:'Klipp', dur:'45m', notes:null, tags:[], ai:null },
+          { time:'13:00', name:'Maren Haugen', service:'Klipp', dur:'45m', notes:'Fast \u2014 annenhver l\u00F8rdag.', tags:['Fast'], ai:null }
+        ]}
+    ]
+  }
+};
+// Oda/Priya/Jonas share Lena's structure with different names — for demo, reuse Lena's with label swap
+['oda','priya','jonas_s'].forEach(uid => {
+  if(!EMP_WEEK[uid]) {
+    EMP_WEEK[uid] = JSON.parse(JSON.stringify(EMP_WEEK.lena));
+    const names = { oda:'Oda', priya:'Priya', jonas_s:'Jonas' };
+    EMP_WEEK[uid].weekSummary = EMP_WEEK[uid].weekSummary.replace('24','18');
+    EMP_WEEK[uid].days.forEach(d => { d.customers = Math.max(2, d.customers - 1); d.occ = Math.max(40, d.occ - 15); });
+  }
+});
+
+const EMP_NOTIFICATIONS = {
+  lena: [
+    { icon:'\u2705', text:'Kristin Moe bekreftet mandag 11:30', time:'09:12' },
+    { icon:'\u26A0\uFE0F', text:'Sara Thorsen har ikke bekreftet mandag 15:00', time:'09:00' },
+    { icon:'\uD83D\uDCAC', text:'Daglig leder: "Husk produktkampanje denne uken"', time:'I g\u00E5r' },
+  ],
+  oda: [
+    { icon:'\u2705', text:'Alle kunder bekreftet for mandag', time:'09:30' },
+    { icon:'\uD83D\uDCAC', text:'Daglig leder: "Fredag blir fullbooket \u2014 sett av lunsj"', time:'I g\u00E5r' },
+  ],
+  priya: [
+    { icon:'\uD83D\uDCAC', text:'Foresp\u00F8rselen om \u00E5 bytte onsdag er sendt til leder', time:'For 2t siden' },
+    { icon:'\u2705', text:'Alle kunder bekreftet for mandag', time:'09:00' },
+  ],
+  jonas_s: [
+    { icon:'\uD83D\uDCAC', text:'Daglig leder: "3 venteliste-kunder passer dine ledige timer"', time:'08:30' },
+  ]
+};
+
+// Update employee pills when status changes
+function updateEmployeePills() {
+  if(currentUser === 'manager') return;
+  const empData = {
+    lena:   { timer:6, bekreftet:5, venter:1, tips:2 },
+    oda:    { timer:5, bekreftet:5, venter:0, tips:1 },
+    priya:  { timer:4, bekreftet:4, venter:0, tips:1 },
+    jonas_s:{ timer:3, bekreftet:3, venter:0, tips:2 }
+  };
+  const ed = empData[currentUser] || empData.lena;
+  const treated = window._treatedCount || 0;
+  const pills = document.getElementById('status-pills');
+  if(!pills) return;
+  pills.innerHTML = `
+    <div class="chip"><span style="color:var(--green);">\u25CF</span> ${ed.timer} timer</div>
+    <div class="chip"><span style="color:var(--accent);">\u25CF</span> ${ed.bekreftet} bekreftet</div>
+    ${ed.venter > 0 ? '<div class="chip"><span style="color:var(--orange);">\u25CF</span> '+ed.venter+' venter</div>' : ''}
+    ${treated > 0 ? '<div class="chip"><span style="color:var(--green);">\u25CF</span> '+treated+' ferdig</div>' : ''}
+    <div class="chip"><span style="color:var(--blue);">\u25CF</span> ${ed.tips} AI-tips</div>
+  `;
+}
+
+// Update employee week summary with treated count
+function updateEmpWeekSummary() {
+  const el = document.getElementById('emp-planner-summary');
+  if(!el || currentUser === 'manager') return;
+  const data = EMP_WEEK[currentUser];
+  if(!data) return;
+  const treated = window._treatedCount || 0;
+  el.textContent = data.weekSummary + (treated > 0 ? ' \u00B7 ' + treated + ' ferdig i dag' : '');
+}
+
+// Map customer names to client IDs (for clickable profiles)
+function empNameToClientId(name) {
+  if(!name) return null;
+  const map = {
+    'Maren Haugen':'maren', 'Emil Karlsen':'emil', 'Kristin Moe':'kristin',
+    'Line Berg':'line', 'Sara Thorsen':'sara', 'Jonas Vik':'jonas'
+  };
+  return map[name] || null;
+}
+
+let empExpandedDay = 0; // default: expand today (index 0)
+
+function renderEmployeePlanner() {
+  const uid = currentUser;
+  if(uid === 'manager' || !EMP_WEEK[uid]) {
+    document.getElementById('planner-employee-view').style.display = 'none';
+    document.getElementById('planner-manager-view').style.display = 'block';
+    return;
+  }
+  document.getElementById('planner-employee-view').style.display = 'block';
+  document.getElementById('planner-manager-view').style.display = 'none';
+
+  const data = EMP_WEEK[uid];
+  const u = userProfiles[uid];
+
+  // Header
+  document.getElementById('emp-planner-avatar').style.background = 'linear-gradient(135deg,' + u.color + ')';
+  document.getElementById('emp-planner-avatar').textContent = u.initial;
+  document.getElementById('emp-planner-name').textContent = 'Din uke, ' + u.name;
+  const treated = window._treatedCount || 0;
+  document.getElementById('emp-planner-summary').textContent = data.weekSummary + (treated > 0 ? ' \u00B7 ' + treated + ' ferdig i dag' : '');
+
+  // Render selected day's content inline
+  renderEmpDayContent();
+
+  // Notifications
+  const notifs = EMP_NOTIFICATIONS[uid] || [];
+  const notifContainer = document.getElementById('emp-notifications');
+  notifContainer.innerHTML = notifs.length === 0
+    ? '<div style="padding:12px;text-align:center;font-size:11px;color:var(--text3);">Ingen nye varsler</div>'
+    : notifs.map(n => `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-bottom:6px;border-radius:var(--radius-sm);background:var(--card);border:1px solid rgba(255,255,255,0.03);">
+        <span style="font-size:14px;">${n.icon}</span>
+        <div style="flex:1;"><div style="font-size:12px;color:var(--text2);line-height:1.4;">${n.text}</div><div style="font-size:9px;color:var(--text3);margin-top:3px;">${n.time}</div></div>
+      </div>`).join('');
+}
+
+function renderEmpDayContent() {
+  const uid = currentUser;
+  const data = EMP_WEEK[uid];
+  const container = document.getElementById('emp-day-content');
+  if(!data || !container) { if(container) container.innerHTML = ''; return; }
+  if(empExpandedDay < 0 || empExpandedDay >= data.days.length) { container.innerHTML = ''; return; }
+
+  const d = data.days[empExpandedDay];
+  let html = `<div style="margin:8px 0 4px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--accent-bg);border:1px solid var(--accent-border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:13px;font-weight:800;">${d.day}${d.today ? ' <span style="font-size:8px;padding:2px 6px;border-radius:4px;background:var(--accent-bg2);color:var(--accent);font-weight:700;">I DAG</span>' : ''}</div>
+      <div style="font-size:10px;color:var(--text3);">${d.customers} kunder \u00B7 ${d.hours}${d.free > 0 ? ' \u00B7 ' + d.free + ' ledig' : ''}</div>
+    </div>
+  </div>`;
+
+  html += d.slots.map(s => {
+    if(s.free) {
+      return `<div style="padding:10px 14px;margin:4px 0;border-radius:var(--radius-sm);background:var(--surface);border:1px dashed rgba(255,255,255,0.06);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-size:12px;font-weight:800;color:var(--text3);width:40px;">${s.time}</div>
+          <div style="font-size:11px;color:var(--text3);font-style:italic;">Ledig</div>
+        </div>
+      </div>`;
+    }
+    const tagHtml = (s.tags||[]).map(t => {
+      let st = 'background:var(--card-hover);color:var(--text2);';
+      if(t.includes('\u26A0')) st = 'background:var(--red-bg);color:var(--red);';
+      else if(t.includes('Vinn')) st = 'background:var(--red-bg);color:var(--red);';
+      else if(t.includes('\u2605') || t.includes('Fast')) st = 'background:var(--accent-bg);color:var(--accent);';
+      else if(t.includes('Ny')) st = 'background:var(--blue-bg);color:var(--blue);';
+      else if(t.includes('\uD83C\uDF82')) st = 'background:rgba(240,160,240,0.1);color:#e0a0e0;';
+      return '<span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;' + st + '">' + t + '</span>';
+    }).join(' ');
+    const noteHtml = s.notes ? '<div style="font-size:10px;color:var(--text2);margin-top:4px;padding:5px 8px;border-radius:6px;background:var(--surface);line-height:1.4;">\uD83D\uDCDD ' + s.notes + '</div>' : '';
+    const aiHtml = s.ai ? '<div style="font-size:9px;color:var(--accent);margin-top:3px;display:flex;align-items:center;gap:4px;"><span class="ai-badge" style="font-size:6px;padding:1px 4px;">AI</span> ' + s.ai + '</div>' : '';
+    const cid = empNameToClientId(s.name);
+    return `<div style="padding:10px 14px;margin:4px 0;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);${cid ? 'cursor:pointer;' : ''}"${cid ? ` onclick="showClient('${cid}')"` : ''}>
+      <div style="display:flex;align-items:flex-start;gap:10px;${cid ? 'pointer-events:none;' : ''}">
+        <div style="font-size:12px;font-weight:800;color:var(--accent);width:40px;padding-top:1px;">${s.time}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;">${s.name} <span style="font-weight:400;color:var(--text3);font-size:10px;">\u00B7 ${s.service} \u00B7 ${s.dur}</span>${cid ? ' <span style="color:var(--accent);font-size:10px;">\u203A</span>' : ''}</div>
+          ${tagHtml ? '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;">' + tagHtml + '</div>' : ''}
+          ${noteHtml}
+          ${aiHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+// ═══ Manager Planner — Dynamic Day View ═══
+const MGR_SCHEDULE = {
+  lena: {
+    name:'Lena', color:'var(--accent),#c09020', initial:'L',
+    days: {
+      0: [{t:'09:00',c:'Maren H.',s:'Klipp',d:'45m'},{t:'10:00',c:'Emil K.',s:'Herreklipp',d:'30m'},{t:'10:30',free:true},{t:'11:30',c:'Kristin M.',s:'Klipp & farge',d:'90m',star:true,warn:'Ammoniakk'},{t:'13:00',c:'Line B.',s:'Balayage',d:'120m',tag:'Bursdag'},{t:'14:00',canceled:'Ingrid B.'},{t:'15:00',c:'Sara T.',s:'Klipp & f\u00F8n',d:'60m',tag:'Vinn-tilbake'},{t:'16:30',c:'Jonas V.',s:'Skjegg & klipp',d:'45m',tag:'Ny'}],
+      1: [{t:'09:00',c:'Tone L.',s:'Klipp',d:'45m'},{t:'10:00',c:'Grete H.',s:'Farge',d:'60m'},{t:'11:30',c:'Ida B.',s:'Klipp & f\u00F8n',d:'60m'},{t:'13:00',free:true},{t:'14:00',c:'Camilla D.',s:'Balayage',d:'120m'},{t:'16:00',c:'Sofie A.',s:'Klipp',d:'45m'}],
+      2: [{t:'09:00',c:'Vibeke S.',s:'Farge',d:'60m'},{t:'10:30',free:true},{t:'11:00',c:'Marit O.',s:'Klipp & farge',d:'90m'},{t:'13:00',c:'Ingrid B.',s:'Klipp',d:'45m'},{t:'14:00',free:true},{t:'15:00',c:'Randi H.',s:'Klipp & f\u00F8n',d:'60m'}],
+      3: [{t:'10:00',c:'Anne K.V.',s:'Balayage',d:'120m'},{t:'12:30',free:true},{t:'13:00',c:'Helene B.',s:'Klipp',d:'45m',tag:'Ny'},{t:'14:00',free:true},{t:'15:00',c:'Sissel F.',s:'Farge',d:'60m'}],
+      4: [{t:'09:00',c:'Kristin M.',s:'Klipp',d:'45m',star:true},{t:'10:00',c:'Live N.',s:'Farge',d:'60m'},{t:'11:30',c:'Julie S.',s:'Klipp & farge',d:'90m'},{t:'13:30',c:'Hanna B.',s:'Balayage',d:'120m'},{t:'15:30',c:'Mona E.',s:'Klipp & f\u00F8n',d:'60m'},{t:'16:30',c:'Nora D.',s:'Klipp',d:'45m'}],
+      5: [{t:'10:00',c:'Anja L.',s:'Klipp & farge',d:'90m'},{t:'11:30',free:true},{t:'12:00',c:'Therese G.',s:'Klipp',d:'45m'},{t:'13:00',c:'Maren H.',s:'Klipp',d:'45m'}]
+    }
+  },
+  oda: {
+    name:'Oda', color:'#a06af0,#c898ff', initial:'O',
+    days: {
+      0: [{t:'09:00',c:'Hanne L.',s:'Farge',d:'90m'},{t:'10:30',c:'Silje R.',s:'Klipp',d:'45m'},{t:'11:30',free:true},{t:'13:00',c:'Elin N.',s:'Balayage',d:'120m'},{t:'15:00',c:'Maria F.',s:'Klipp & toning',d:'75m'},{t:'16:30',free:true}],
+      1: [{t:'09:00',c:'Trine K.',s:'Klipp',d:'45m'},{t:'10:00',c:'Beate M.',s:'Farge',d:'60m'},{t:'11:30',c:'Lise A.',s:'Klipp & f\u00F8n',d:'60m'},{t:'13:00',free:true},{t:'14:00',c:'Karin B.',s:'Klipp',d:'45m'},{t:'15:00',free:true}],
+      2: [{t:'09:00',c:'Wenche D.',s:'Balayage',d:'120m'},{t:'11:00',free:true},{t:'12:00',c:'Rita H.',s:'Klipp',d:'45m'},{t:'13:00',c:'Eva G.',s:'Farge',d:'60m'},{t:'14:30',free:true}],
+      3: [{t:'09:00',c:'Inger L.',s:'Klipp & farge',d:'90m'},{t:'10:30',c:'Bente S.',s:'Klipp',d:'45m'},{t:'11:30',free:true},{t:'13:00',c:'Unni A.',s:'Farge',d:'60m'},{t:'14:30',c:'Gunn F.',s:'Klipp & f\u00F8n',d:'60m'}],
+      4: [{t:'09:00',c:'Solveig K.',s:'Klipp',d:'45m'},{t:'10:00',c:'Astrid N.',s:'Balayage',d:'120m'},{t:'12:00',c:'Torunn H.',s:'Klipp & farge',d:'90m'},{t:'14:00',c:'Bodil E.',s:'Klipp',d:'45m'},{t:'15:00',c:'Anne M.',s:'Farge',d:'60m'},{t:'16:00',c:'Gerd T.',s:'Klipp & f\u00F8n',d:'60m'}],
+      5: [{t:'10:00',c:'Jorunn B.',s:'Klipp',d:'45m'},{t:'11:00',c:'Maiken S.',s:'Farge',d:'60m'},{t:'12:30',free:true}]
+    }
+  },
+  priya: {
+    name:'Priya', color:'var(--green),#40b060', initial:'P',
+    days: {
+      0: [{t:'09:00',free:true},{t:'10:00',c:'Kari A.',s:'Klipp & f\u00F8n',d:'60m'},{t:'11:00',c:'Thomas B.',s:'Herreklipp',d:'30m'},{t:'12:00',c:'Nina S.',s:'Farge',d:'90m'},{t:'13:30',c:'Berit H.',s:'Klipp',d:'45m'},{t:'14:30',free:true}],
+      1: [{t:'09:00',c:'Heidi L.',s:'Klipp',d:'45m'},{t:'10:00',free:true},{t:'11:00',c:'Ragnhild B.',s:'Farge',d:'60m'},{t:'12:30',c:'Kirsten A.',s:'Klipp & f\u00F8n',d:'60m'},{t:'14:00',free:true}],
+      2: [{t:'Fri',free:true,label:'Legetime'}],
+      3: [{t:'09:00',c:'Liv M.',s:'Klipp',d:'45m'},{t:'10:00',c:'Siv H.',s:'Herreklipp',d:'30m'},{t:'11:00',free:true},{t:'12:00',c:'Hilde K.',s:'Farge',d:'60m'},{t:'13:30',free:true}],
+      4: [{t:'09:00',c:'Turid G.',s:'Klipp & f\u00F8n',d:'60m'},{t:'10:30',c:'Bjørg S.',s:'Klipp',d:'45m'},{t:'11:30',free:true},{t:'13:00',c:'Oddny F.',s:'Farge',d:'60m'},{t:'14:30',c:'Ranveig T.',s:'Klipp',d:'45m'}],
+      5: [{t:'10:00',free:true},{t:'11:00',c:'Elsa B.',s:'Klipp',d:'45m'},{t:'12:00',free:true}]
+    }
+  },
+  jonas_s: {
+    name:'Jonas', color:'var(--blue),#4080d0', initial:'J',
+    days: {
+      0: [{t:'09:00',off:true},{t:'10:00',off:true},{t:'11:00',c:'Per G.',s:'Skjegg',d:'30m'},{t:'12:00',c:'Arne T.',s:'Herreklipp',d:'30m'},{t:'13:00',free:true},{t:'14:00',free:true},{t:'15:00',free:true},{t:'16:00',c:'Ny kunde',s:'Skjegg & klipp',d:'45m',tag:'Ny'}],
+      1: [{t:'09:00',off:true},{t:'10:00',off:true},{t:'11:00',c:'Ole H.',s:'Herreklipp',d:'30m'},{t:'12:00',free:true},{t:'13:00',c:'Erik S.',s:'Skjegg & klipp',d:'45m'},{t:'14:00',free:true}],
+      2: [{t:'11:00',c:'Svein K.',s:'Herreklipp',d:'30m'},{t:'12:00',c:'Trond B.',s:'Skjegg',d:'30m'},{t:'13:00',free:true},{t:'14:00',c:'Geir A.',s:'Skjegg & klipp',d:'45m'},{t:'15:00',free:true}],
+      3: [{t:'11:00',free:true},{t:'12:00',c:'Petter L.',s:'Herreklipp',d:'30m'},{t:'13:00',free:true},{t:'14:00',free:true},{t:'15:00',c:'Morten F.',s:'Skjegg & klipp',d:'45m'}],
+      4: [{t:'09:00',c:'Knut R.',s:'Herreklipp',d:'30m'},{t:'10:00',c:'Terje N.',s:'Skjegg & klipp',d:'45m'},{t:'11:00',c:'Håkon E.',s:'Herreklipp',d:'30m'},{t:'12:00',free:true},{t:'13:00',c:'Vegard M.',s:'Skjegg',d:'30m'},{t:'14:00',c:'Stian O.',s:'Skjegg & klipp',d:'45m'}],
+      5: [{t:'10:00',c:'Roy G.',s:'Herreklipp',d:'30m'},{t:'11:00',c:'Jan B.',s:'Skjegg',d:'30m'},{t:'12:00',free:true}]
+    }
+  }
+};
+
+const MGR_DAY_NAMES = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','L\u00F8rdag'];
+const MGR_DAY_DATES = ['14. april','15. april','16. april','17. april','18. april','19. april'];
+
+// ═══ Manager Request Carousel ═══
+const MGR_REQUESTS = [
+  {
+    from:'Priya', color:'var(--green),#40b060', initial:'P', time:'For 2 timer siden',
+    message:'\u00ABKan jeg bytte onsdag 16. april til torsdag 17. april? Har legetime onsdag formiddag.\u00BB',
+    aiText:'Onsdag: Priya har 2 kunder booket \u2014 begge kan flyttes til Oda (ledig 10\u201314). Torsdag: 2 ledige timer for Priya.',
+    aiResult:'Byttet fungerer uten kundep\u00E5virkning.',
+    aiGood:true
+  },
+  {
+    from:'Jonas', color:'var(--blue),#4080d0', initial:'J', time:'I g\u00E5r 16:30',
+    message:'\u00ABKan jeg f\u00E5 fri fredag 18. april? Har flyttet mine 3 kunder til andre dager allerede.\u00BB',
+    aiText:'Jonas har 6 kunder fredag \u2014 3 er allerede flyttet av Jonas selv. 3 gjenst\u00E5r: Knut R., Terje N., H\u00E5kon E. Alle kan flyttes til Lena (ledig 14\u201316).',
+    aiResult:'Mulig med 3 ombookinger. Jonas har ryddet selv \u2014 bra initiativ.',
+    aiGood:true
+  },
+  {
+    from:'Oda', color:'#a06af0,#c898ff', initial:'O', time:'I dag 08:15',
+    message:'\u00ABKan Lena ta over Elin N. (balayage) p\u00E5 mandag kl 13:00? Jeg f\u00E5r ikke tid pga forrige kunde tar lengre.\u00BB',
+    aiText:'Lena har avbestilling kl 14:00 mandag \u2014 men Elins balayage starter 13:00 (120 min). Lena er opptatt 11:30\u201313:00 med Kristin.',
+    aiResult:'Lena kan ikke ta over \u2014 overlapper med Kristin. Priya har ledig 13:00.',
+    aiGood:false
+  }
+];
+
+let reqSlideIdx = 0;
+
+function renderReqCarousel() {
+  const container = document.getElementById('req-slides');
+  const nav = document.getElementById('req-nav-row');
+  if(!container || !nav) return;
+
+  container.innerHTML = MGR_REQUESTS.map((r, i) => `
+    <div class="req-slide ${i === reqSlideIdx ? 'active' : ''}" id="req-slide-${i}">
+      <div class="avail-request">
+        <div class="avail-request-header">
+          <div class="avatar-sm" style="background:linear-gradient(135deg,${r.color});width:30px;height:30px;font-size:11px;">${r.initial}</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;">Foresp\u00F8rsel fra ${r.from}</div>
+            <div style="font-size:11px;color:var(--text3);">${r.time}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;">${r.message}</div>
+        <div style="margin-top:8px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.03);">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <span class="ai-badge">AI</span>
+            <span style="font-size:11px;font-weight:700;">Konsekvensanalyse</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5;">${r.aiText} <strong style="color:${r.aiGood ? 'var(--green)' : 'var(--orange)'};">${r.aiResult}</strong></div>
+        </div>
+        <div class="avail-actions">
+          <button class="btn btn-accent" style="flex:1;padding:10px;font-size:12px;" id="req-approve-${i}" onclick="approveRequest(${i})">Godkjenn</button>
+          <button class="btn btn-outline" style="padding:10px 14px;font-size:12px;" id="req-decline-${i}" onclick="declineRequest(${i})">Avsl\u00E5</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  updateReqNav();
+}
+
+function updateReqNav() {
+  const nav = document.getElementById('req-nav-row');
+  if(!nav) return;
+  nav.innerHTML = `<span class="req-arrow" onclick="shiftReqSlide(-1)">\u2039</span>` +
+    MGR_REQUESTS.map((_, i) =>
+      `<div class="req-dot ${i === reqSlideIdx ? 'active' : ''}" onclick="goToReqSlide(${i})"></div>`
+    ).join('') +
+    `<span class="req-arrow" onclick="shiftReqSlide(1)">\u203A</span>`;
+}
+
+function goToReqSlide(idx) {
+  reqSlideIdx = idx;
+  document.querySelectorAll('.req-slide').forEach((s, i) => s.classList.toggle('active', i === idx));
+  updateReqNav();
+}
+
+function shiftReqSlide(dir) {
+  reqSlideIdx += dir;
+  if(reqSlideIdx < 0) reqSlideIdx = MGR_REQUESTS.length - 1;
+  if(reqSlideIdx >= MGR_REQUESTS.length) reqSlideIdx = 0;
+  goToReqSlide(reqSlideIdx);
+}
+
+function approveRequest(idx) {
+  const btn = document.getElementById('req-approve-' + idx);
+  const dec = document.getElementById('req-decline-' + idx);
+  if(!btn) return;
+  btn.textContent = '\u2713 Godkjent';
+  btn.style.background = 'var(--green)';
+  btn.style.pointerEvents = 'none';
+  if(dec) { dec.style.opacity = '0.3'; dec.style.pointerEvents = 'none'; }
+  showToast(MGR_REQUESTS[idx].from + ' er varslet \u2713');
+  // Auto-advance after a moment
+  setTimeout(() => { if(reqSlideIdx < MGR_REQUESTS.length - 1) shiftReqSlide(1); }, 1500);
+}
+
+function declineRequest(idx) {
+  const btn = document.getElementById('req-decline-' + idx);
+  const app = document.getElementById('req-approve-' + idx);
+  if(!btn) return;
+  btn.textContent = 'Avsl\u00E5tt';
+  btn.style.background = 'var(--red-bg)';
+  btn.style.color = 'var(--red)';
+  btn.style.pointerEvents = 'none';
+  if(app) { app.style.opacity = '0.3'; app.style.pointerEvents = 'none'; }
+  showToast('Avsl\u00E5tt \u2014 ' + MGR_REQUESTS[idx].from + ' varslet');
+  setTimeout(() => { if(reqSlideIdx < MGR_REQUESTS.length - 1) shiftReqSlide(1); }, 1500);
+}
+
+// Init carousel
+renderReqCarousel();
+
+// Touch swipe support for request carousel
+(function() {
+  let startX = 0;
+  const el = document.getElementById('req-carousel');
+  if(!el) return;
+  el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+  el.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if(Math.abs(diff) > 40) shiftReqSlide(diff > 0 ? 1 : -1);
+  }, {passive:true});
+})();
+
+function mgrNameToClientId(shortName) {
+  if(!shortName) return null;
+  const map = {
+    'Maren H.':'maren','Emil K.':'emil','Kristin M.':'kristin',
+    'Line B.':'line','Sara T.':'sara','Jonas V.':'jonas'
+  };
+  return map[shortName] || null;
+}
+
+function renderMgrPlanner() {
+  if(currentUser !== 'manager') return;
+  const dayIdx = empExpandedDay >= 0 ? empExpandedDay : 0;
+  const container = document.getElementById('mgr-planner-staff');
+  const label = document.getElementById('mgr-planner-day-label');
+  if(!container || !label) return;
+
+  label.textContent = MGR_DAY_NAMES[dayIdx] + ' ' + MGR_DAY_DATES[dayIdx] + ' \u2014 alle ansatte';
+
+  let html = '';
+  for(const [uid, emp] of Object.entries(MGR_SCHEDULE)) {
+    const daySlots = emp.days[dayIdx] || [];
+    const booked = daySlots.filter(s => !s.free && !s.off && !s.canceled).length;
+    const free = daySlots.filter(s => s.free).length;
+    const total = daySlots.length;
+    const occ = total > 0 ? Math.round((booked / total) * 100) : 0;
+    const occColor = occ >= 80 ? 'var(--green)' : occ >= 55 ? 'var(--accent)' : occ >= 40 ? 'var(--orange)' : 'var(--red)';
+    const hours = daySlots.length > 0 ? daySlots[0].t + '\u2013' + daySlots[daySlots.length-1].t : 'Fri';
+
+    // Check if day off
+    const isOff = daySlots.length === 1 && daySlots[0].free && daySlots[0].label;
+
+    html += `<div class="planner-staff-card">
+      <div class="planner-staff-header">
+        <div class="avatar-sm" style="background:linear-gradient(135deg,${emp.color});">${emp.initial}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;">${emp.name}</div>
+          <div style="font-size:10px;color:var(--text3);">${isOff ? daySlots[0].label : booked + ' kunder \u00B7 ' + hours + (free > 0 ? ' \u00B7 ' + free + ' ledig' : '')}</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:${isOff ? 'var(--text3)' : occColor};">${isOff ? 'Fri' : occ + '% booket'}</div>
+      </div>
+      <div class="planner-staff-slots">`;
+
+    daySlots.forEach(s => {
+      if(s.off) {
+        html += `<div class="planner-slot"><div class="planner-slot-time">${s.t}</div><div class="planner-slot-block off">Ikke tilgjengelig</div></div>`;
+      } else if(s.free) {
+        html += `<div class="planner-slot"><div class="planner-slot-time">${s.label || s.t}</div><div class="planner-slot-block free">${s.label || 'Ledig'}</div></div>`;
+      } else if(s.canceled) {
+        html += `<div class="planner-slot"><div class="planner-slot-time">${s.t}</div><div class="planner-slot-block canceled">\u26A0 Avbestilt \u2014 ${s.canceled}</div></div>`;
+      } else {
+        let extra = '';
+        if(s.star) extra += ' \u2605';
+        if(s.warn) extra += ' \u26A0 ' + s.warn;
+        if(s.tag) extra += ` <span style="font-size:8px;padding:1px 5px;border-radius:3px;background:${s.tag==='Ny'?'var(--blue-bg);color:var(--blue)':s.tag==='Vinn-tilbake'?'var(--red-bg);color:var(--red)':s.tag==='Bursdag'?'rgba(240,160,240,0.1);color:#e0a0e0':'var(--accent-bg);color:var(--accent)'};font-weight:700;">${s.tag}</span>`;
+        const cid = mgrNameToClientId(s.c);
+        const slotI = daySlots.indexOf(s);
+        html += `<div class="planner-slot" style="display:flex;align-items:center;gap:4px;">
+          <div class="planner-slot-time">${s.t}</div>
+          <div class="planner-slot-block booked" style="display:flex;align-items:center;flex:1;cursor:pointer;" onclick="${cid ? "showClient('"+cid+"')" : "showToast('Kundeprofil: "+s.c+"')"}">
+            <span style="flex:1;">${s.c} \u2014 ${s.s} (${s.d})${extra}</span>
+            <span style="color:var(--accent);font-size:12px;">\u203A</span>
+          </div>
+          <div onclick="event.stopPropagation();try{openMgrSlotMove('${uid}',${dayIdx},${slotI})}catch(e){showToast('Feil: '+e.message)}" style="padding:6px 8px;border-radius:6px;background:var(--blue-bg);border:1px solid rgba(90,160,232,0.15);cursor:pointer;font-size:9px;font-weight:700;color:var(--blue);white-space:nowrap;">\u2194</div>
+        </div>`;
+      }
+    });
+
+    html += '</div></div>';
+  }
+  container.innerHTML = html;
+}
+
+// ═══ Move Appointment (from Customer Profile) ═══
+function openMoveApptFromProfile() {
+  const uid = currentUser;
+  const cid = window._currentClientId;
+  const panel = document.getElementById('move-appt-panel');
+  if(!panel || !cid) return;
+
+  // Toggle
+  if(panel.style.display === 'block') { panel.style.display = 'none'; return; }
+
+  const clientName = clients[cid] ? clients[cid].name : null;
+  if(!clientName) { showToast('Kunde ikke funnet'); return; }
+
+  // Manager mode: search across all employees in MGR_SCHEDULE
+  // Employee mode: search own schedule in EMP_WEEK
+  const isManager = uid === 'manager';
+  let data = null;
+  let foundDay = -1, foundSlot = -1, foundEmployee = null;
+
+  if(isManager) {
+    // Search MGR_SCHEDULE for the customer's short name
+    const shortNames = { 'Maren Haugen':'Maren H.', 'Emil Karlsen':'Emil K.', 'Kristin Moe':'Kristin M.', 'Line Berg':'Line B.', 'Sara Thorsen':'Sara T.', 'Jonas Vik':'Jonas V.' };
+    const shortName = shortNames[clientName] || clientName;
+    for(const [empId, emp] of Object.entries(MGR_SCHEDULE)) {
+      for(const [dayIdx, slots] of Object.entries(emp.days)) {
+        slots.forEach((s, si) => {
+          if(!s.free && !s.off && !s.canceled && s.c === shortName) {
+            foundDay = parseInt(dayIdx); foundSlot = si; foundEmployee = empId; data = emp;
+          }
+        });
+      }
+    }
+  } else {
+    data = EMP_WEEK[uid];
+    if(data) {
+      data.days.forEach((day, di) => {
+        day.slots.forEach((s, si) => {
+          if(!s.free && s.name === clientName) { foundDay = di; foundSlot = si; }
+        });
+      });
+    }
+  }
+
+  if(foundDay === -1 || !data) {
+    panel.style.display = 'block';
+    panel.innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:8px;">Ingen planlagt time funnet for denne kunden denne uken.</div>';
+    return;
+  }
+
+  // For employee mode, use existing flow
+  const sourceDay = isManager ? { day:MGR_DAY_NAMES[foundDay], date:MGR_DAY_DATES[foundDay], slots:data.days[foundDay] } : data.days[foundDay];
+  const sourceSlot = isManager ? data.days[foundDay][foundSlot] : sourceDay.slots[foundSlot];
+
+  // Store for use by calendar
+  window._moveSource = { foundDay, foundSlot, clientName, data, isManager, foundEmployee };
+  window._moveCalMonth = 3; // April (0-indexed)
+  window._moveCalYear = 2026;
+
+  const empName = isManager && foundEmployee ? (MGR_SCHEDULE[foundEmployee] ? MGR_SCHEDULE[foundEmployee].name : '') : '';
+  let html = `<div style="font-size:12px;font-weight:700;margin-bottom:4px;">Flytt ${clientName}</div>`;
+  html += `<div style="font-size:10px;color:var(--text3);margin-bottom:12px;">N\u00E5: ${sourceDay.day} ${sourceDay.date} kl ${isManager ? sourceSlot.t : sourceSlot.time}${empName ? ' hos ' + empName : ''} \u00B7 ${isManager ? sourceSlot.s : sourceSlot.service}</div>`;
+
+  // Calendar container
+  html += '<div id="move-cal"></div>';
+
+  // Legend
+  html += `<div style="display:flex;gap:10px;justify-content:center;margin:6px 0 10px;font-size:8px;color:var(--text3);">
+    <span><span style="color:var(--green);">\u25CF</span> Ledig</span>
+    <span><span style="color:var(--orange);">\u25CF</span> Nesten fullt</span>
+    <span><span style="color:var(--red);">\u25CF</span> Fullt</span>
+    <span><span style="color:var(--accent);">\u25CF</span> N\u00E5v\u00E6rende</span>
+  </div>`;
+
+  // Slots list
+  html += '<div id="move-slots-list"></div>';
+
+  panel.style.display = 'block';
+  panel.innerHTML = html;
+
+  try { renderMoveCalendar(); } catch(e) { showToast('Kal.feil: ' + e.message); }
+  // Don't show slots by default — let the user pick a day on the calendar first
+  document.getElementById('move-slots-list').innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:8px;">Velg en dag i kalenderen over</div>';
+}
+
+function shiftMoveCal(dir) {
+  window._moveCalMonth += dir;
+  if(window._moveCalMonth > 11) { window._moveCalMonth = 0; window._moveCalYear++; }
+  if(window._moveCalMonth < 0) { window._moveCalMonth = 11; window._moveCalYear--; }
+  renderMoveCalendar();
+}
+
+function renderMoveCalendar() {
+  const container = document.getElementById('move-cal');
+  if(!container) return;
+  const m = window._moveCalMonth;
+  const y = window._moveCalYear;
+  const src = window._moveSource;
+
+  // Header with nav
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div onclick="shiftMoveCal(-1)" style="font-size:16px;color:var(--text3);cursor:pointer;padding:4px 8px;">\u2039</div>
+    <div style="font-size:13px;font-weight:800;">${MONTH_NAMES[m]} ${y}</div>
+    <div onclick="shiftMoveCal(1)" style="font-size:16px;color:var(--text3);cursor:pointer;padding:4px 8px;">\u203A</div>
+  </div>`;
+
+  // Grid
+  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;">';
+  ['Ma','Ti','On','To','Fr','L\u00F8','S\u00F8'].forEach(d => {
+    html += `<div style="font-size:8px;font-weight:700;color:var(--text3);padding:3px 0;">${d}</div>`;
+  });
+
+  // Calculate first day (demo: April 1 2026 = Tuesday for our fictional calendar)
+  let firstDay;
+  if(y === 2026 && m === 3) {
+    firstDay = 2; // Tuesday
+  } else {
+    firstDay = new Date(y, m, 1).getDay();
+  }
+  const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysInPrev = new Date(y, m, 0).getDate();
+
+  // Prev month filler
+  for(let i = startOffset - 1; i >= 0; i--) {
+    html += `<div style="font-size:11px;padding:6px 0;border-radius:6px;color:var(--text3);opacity:0.2;">${daysInPrev - i}</div>`;
+  }
+
+  // Current month
+  for(let d = 1; d <= daysInMonth; d++) {
+    // Check what day of week this is (0=Mon in our grid)
+    const cellIdx = startOffset + d - 1;
+    const dow = cellIdx % 7; // 0=Mon ... 6=Sun
+    const isSunday = dow === 6;
+
+    if(isSunday) {
+      html += `<div style="font-size:11px;padding:6px 0;border-radius:6px;color:var(--text3);opacity:0.2;">${d}</div>`;
+      continue;
+    }
+
+    // Check if this date matches schedule data
+    const isThisMonth = (y === 2026 && m === 3);
+    let dayDataIdx = -1;
+    let freeCount = 0, totalCount = 0;
+    let isCurrentAppt = false;
+
+    if(isThisMonth && src) {
+      // Map date number to day index (14=0, 15=1, ... 19=5)
+      const di = d - 14;
+      if(di >= 0 && di <= 5) {
+        dayDataIdx = di;
+        isCurrentAppt = di === src.foundDay;
+        if(src.isManager) {
+          // Aggregate across all employees
+          for(const [eid, emp] of Object.entries(MGR_SCHEDULE)) {
+            const slots = emp.days[di] || [];
+            freeCount += slots.filter(s => s.free && !s.off && !s.label).length;
+            totalCount += slots.filter(s => !s.off).length;
+          }
+        } else if(src.data && src.data.days && src.data.days[di]) {
+          const dd = src.data.days[di];
+          freeCount = dd.slots.filter(s => s.free).length;
+          totalCount = dd.slots.length;
+        }
+      }
+    }
+
+    const isToday = (y === 2026 && m === 3 && d === 15);
+    const ratio = totalCount > 0 ? freeCount / totalCount : 0;
+
+    let capColor = 'var(--text2)';
+    let capBg = 'transparent';
+    let border = '';
+    if(isCurrentAppt) {
+      capColor = 'var(--accent)'; capBg = 'var(--accent-bg)'; border = 'border:1px solid var(--accent-border2);';
+    } else if(dayDataIdx >= 0) {
+      if(freeCount === 0) { capColor = 'var(--red)'; capBg = 'var(--red-bg)'; }
+      else if(ratio < 0.25) { capColor = 'var(--orange)'; capBg = 'var(--orange-bg)'; }
+      else { capColor = 'var(--green)'; capBg = 'var(--green-bg)'; }
+    } else if(!isThisMonth) {
+      // Future months — simulate some availability
+      const pseudoFree = ((d * 7 + m * 13) % 5);
+      if(pseudoFree === 0) { capColor = 'var(--red)'; capBg = 'var(--red-bg)'; }
+      else if(pseudoFree === 1) { capColor = 'var(--orange)'; capBg = 'var(--orange-bg)'; }
+      else { capColor = 'var(--green)'; capBg = 'var(--green-bg)'; }
+    }
+
+    const clickable = !isCurrentAppt && capColor !== 'var(--red)';
+    const clickAction = clickable ? (dayDataIdx >= 0 ? `selectMoveDay(${dayDataIdx})` : `selectMoveDayGeneric(${d},${m},${y})`) : '';
+
+    html += `<div onclick="${clickAction}" style="font-size:11px;font-weight:${isToday ? '800' : '600'};padding:6px 0;border-radius:6px;color:${capColor};background:${capBg};${border}${clickable ? 'cursor:pointer;' : ''}">${d}</div>`;
+  }
+
+  // Next month filler
+  const totalCells = startOffset + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for(let i = 1; i <= remaining; i++) {
+    html += `<div style="font-size:11px;padding:6px 0;border-radius:6px;color:var(--text3);opacity:0.2;">${i}</div>`;
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function selectMoveDay(dayIdx) {
+  renderMoveSlots(dayIdx);
+}
+
+function selectMoveDayGeneric(day, month, year) {
+  const container = document.getElementById('move-slots-list');
+  if(!container) return;
+  const src = window._moveSource;
+  const monthStr = MONTH_NAMES[month].toLowerCase().substring(0,3);
+  const seed = day * 7 + month * 13 + year;
+  const allTimes = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
+
+  let html = '';
+
+  if(src && src.isManager) {
+    // Manager: show per-employee generated slots
+    html += `<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;">${day}. ${monthStr} ${year === 2026 ? '' : year}</div>`;
+    const empList = Object.entries(MGR_SCHEDULE);
+    empList.forEach(([eid, emp], ei) => {
+      // Generate different free slots per employee using seed + employee index
+      const empSeed = seed + ei * 17;
+      const freeSlots = allTimes.filter((t, i) => ((empSeed + i * 3) % 5) > 1);
+      if(freeSlots.length === 0) return;
+      html += `<div style="display:flex;align-items:center;gap:6px;margin:8px 0 4px;">
+        <div class="avatar-sm" style="background:linear-gradient(135deg,${emp.color});width:20px;height:20px;font-size:9px;">${emp.initial}</div>
+        <span style="font-size:10px;font-weight:700;">${emp.name}</span>
+        <span style="font-size:9px;color:var(--text3);">${freeSlots.length} ledig</span>
+      </div>`;
+      html += freeSlots.slice(0,4).map(t =>
+        `<div onclick="showToast('${src.clientName} flyttet til ${emp.name} ${day}. ${monthStr} kl ${t} \u2713');document.getElementById('move-appt-panel').style.display='none';goScreen('screen-planner');" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:2px 0;border-radius:6px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;font-size:12px;">
+          <span style="font-weight:600;">${t}</span>
+          <span style="font-size:9px;color:var(--green);font-weight:700;">Flytt \u2192</span>
+        </div>`
+      ).join('');
+      if(freeSlots.length > 4) html += `<div style="font-size:9px;color:var(--text3);padding:2px 10px;">+${freeSlots.length-4} flere</div>`;
+    });
+  } else {
+    // Employee: simple slot list
+    const freeSlots = allTimes.filter((t, i) => ((seed + i * 3) % 5) > 1);
+    html += `<div style="font-size:10px;font-weight:700;color:var(--text3);margin:8px 0 4px;">${day}. ${monthStr} \u00B7 ${freeSlots.length} ledig</div>`;
+    html += freeSlots.map(t =>
+      `<div onclick="showToast('${src ? src.clientName : ''} flyttet til ${day}. ${monthStr} kl ${t} \u2713');document.getElementById('move-appt-panel').style.display='none';goScreen('screen-planner');" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin:3px 0;border-radius:8px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;">
+        <span style="font-size:13px;font-weight:700;">${t}</span>
+        <span style="font-size:10px;color:var(--green);font-weight:700;">Flytt hit \u2192</span>
+      </div>`
+    ).join('');
+  }
+
+  container.innerHTML = html;
+}
+
+function renderMoveSlots(filterDay) {
+  const src = window._moveSource;
+  if(!src) return;
+  const container = document.getElementById('move-slots-list');
+  if(!container) return;
+
+  const { foundDay, foundSlot, data, isManager, foundEmployee } = src;
+  let html = '';
+  let hasOptions = false;
+
+  if(isManager) {
+    // Manager: show free slots for selected day only, grouped by employee
+    if(filterDay < 0) {
+      html = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:8px;">Velg en dag i kalenderen over</div>';
+      container.innerHTML = html;
+      return;
+    }
+    html += `<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;">${MGR_DAY_NAMES[filterDay]} ${MGR_DAY_DATES[filterDay]}</div>`;
+    for(const [empId, emp] of Object.entries(MGR_SCHEDULE)) {
+      if(empId === foundEmployee && filterDay === foundDay) continue;
+      const slots = emp.days[filterDay] || [];
+      const freeSlots = slots.filter(s => s.free && !s.off && !s.label);
+      if(freeSlots.length === 0) continue;
+      hasOptions = true;
+      html += `<div style="display:flex;align-items:center;gap:6px;margin:8px 0 4px;">
+        <div class="avatar-sm" style="background:linear-gradient(135deg,${emp.color});width:20px;height:20px;font-size:9px;">${emp.initial}</div>
+        <span style="font-size:10px;font-weight:700;color:var(--text2);">${emp.name}</span>
+        <span style="font-size:9px;color:var(--text3);">${freeSlots.length} ledig</span>
+      </div>`;
+      html += freeSlots.map(fs =>
+        `<div onclick="mgrMoveAppt('${foundEmployee}',${foundDay},${foundSlot},'${empId}',${filterDay},'${fs.t}');document.getElementById('move-appt-panel').style.display='none';goScreen('screen-planner');" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin:3px 0;border-radius:8px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;">
+          <span style="font-size:13px;font-weight:700;">${fs.t}</span>
+          <span style="font-size:10px;color:var(--green);font-weight:700;">Flytt hit \u2192</span>
+        </div>`
+      ).join('');
+    }
+  } else {
+    // Employee: own schedule only
+    data.days.forEach((day, di) => {
+      if(di === foundDay) return;
+      if(filterDay >= 0 && di !== filterDay) return;
+      const freeSlots = day.slots.filter(s => s.free);
+      if(freeSlots.length === 0) return;
+      hasOptions = true;
+      html += `<div style="font-size:10px;font-weight:700;color:var(--text3);margin:8px 0 4px;">${day.day} ${day.date} \u00B7 ${freeSlots.length} ledig</div>`;
+      html += freeSlots.map(fs =>
+        `<div onclick="moveApptTo(${foundDay},${foundSlot},${di},'${fs.time}');document.getElementById('move-appt-panel').style.display='none';goScreen('screen-planner');" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin:3px 0;border-radius:8px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;">
+          <span style="font-size:13px;font-weight:700;">${fs.time}</span>
+          <span style="font-size:10px;color:var(--green);font-weight:700;">Flytt hit \u2192</span>
+        </div>`
+      ).join('');
+    });
+  }
+
+  if(!hasOptions) {
+    html = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:8px 0;">${filterDay >= 0 ? 'Ingen ledige timer denne dagen.' : 'Ingen ledige timer \u00E5 flytte til.'}</div>`;
+  }
+
+  if(filterDay >= 0) {
+    html += `<div onclick="renderMoveSlots(-1)" style="font-size:10px;color:var(--accent);text-align:center;padding:8px;margin-top:4px;cursor:pointer;">Vis alle dager</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+// Open quick move from planner slot
+function openMgrSlotMove(empId, dayIdx, slotIdx) {
+  const emp = MGR_SCHEDULE[empId];
+  if(!emp) return;
+  const slot = emp.days[dayIdx][slotIdx];
+  if(!slot || slot.free || slot.off || slot.canceled) return;
+
+  // Check if panel already exists, toggle it
+  const existingPanel = document.getElementById('mgr-inline-move');
+  if(existingPanel) { existingPanel.remove(); return; }
+
+  // Build inline move panel
+  const panel = document.createElement('div');
+  panel.id = 'mgr-inline-move';
+  panel.style.cssText = 'margin:8px 20px;padding:14px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(90,160,232,0.3);';
+
+  // Show only same-day free slots at other employees (compact)
+  const currentDayIdx = empExpandedDay >= 0 ? empExpandedDay : 0;
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div>
+      <div style="font-size:12px;font-weight:700;">Flytt ${slot.c}</div>
+      <div style="font-size:10px;color:var(--text3);">Fra ${emp.name} kl ${slot.t}</div>
+    </div>
+    <div onclick="document.getElementById('mgr-inline-move').remove()" style="font-size:12px;color:var(--text3);cursor:pointer;padding:4px 8px;">\u2715</div>
+  </div>`;
+
+  html += `<div style="font-size:10px;font-weight:700;color:var(--text2);margin-bottom:6px;">${MGR_DAY_NAMES[currentDayIdx]} \u2014 ledige hos andre:</div>`;
+
+  let hasOptions = false;
+  for(const [eid, e] of Object.entries(MGR_SCHEDULE)) {
+    if(eid === empId) continue;
+    const slots = e.days[currentDayIdx] || [];
+    const freeSlots = slots.filter(s => s.free && !s.off && !s.label);
+    if(freeSlots.length === 0) continue;
+    hasOptions = true;
+    html += `<div style="display:flex;align-items:center;gap:6px;margin:6px 0 3px;">
+      <div class="avatar-sm" style="background:linear-gradient(135deg,${e.color});width:18px;height:18px;font-size:8px;">${e.initial}</div>
+      <span style="font-size:10px;font-weight:700;">${e.name}</span>
+    </div>`;
+    html += freeSlots.map(fs =>
+      `<div onclick="mgrMoveAppt('${empId}',${dayIdx},${slotIdx},'${eid}',${currentDayIdx},'${fs.t}');document.getElementById('mgr-inline-move').remove();" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:2px 0;border-radius:6px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;font-size:12px;">
+        <span style="font-weight:600;">${fs.t}</span>
+        <span style="font-size:9px;color:var(--green);font-weight:700;">Flytt \u2192</span>
+      </div>`
+    ).join('');
+  }
+
+  if(!hasOptions) html += '<div style="font-size:11px;color:var(--text3);text-align:center;padding:6px;">Ingen ledige hos andre i dag.</div>';
+  html += `<div style="font-size:9px;color:var(--accent);text-align:center;padding:6px;margin-top:4px;">For andre dager: \u00E5pne kundeprofil \u2192 Flytt time</div>`;
+
+  panel.innerHTML = html;
+
+  // Insert after the staff section
+  const staffSection = document.getElementById('mgr-planner-staff');
+  if(staffSection) staffSection.parentNode.insertBefore(panel, staffSection.nextSibling);
+}
+
+// Manager move: between employees
+function mgrMoveAppt(fromEmp, fromDay, fromSlot, toEmp, toDay, toTime) {
+  const srcSlots = MGR_SCHEDULE[fromEmp].days[fromDay];
+  const dstSlots = MGR_SCHEDULE[toEmp].days[toDay];
+  const srcSlot = srcSlots[fromSlot];
+  const dstIdx = dstSlots.findIndex(s => s.free && s.t === toTime);
+  if(dstIdx === -1) return;
+  // Move
+  dstSlots[dstIdx] = { ...srcSlot, t:toTime };
+  srcSlots[fromSlot] = { t:srcSlot.t, free:true };
+  // Re-render
+  renderMgrPlanner();
+  renderDayChips();
+  const fromName = MGR_SCHEDULE[fromEmp].name;
+  const toName = MGR_SCHEDULE[toEmp].name;
+  showToast(srcSlot.c + ' flyttet fra ' + fromName + ' til ' + toName + ' \u2713');
+}
+
+function openMoveAppt(dayIdx, slotIdx) {
+  const uid = currentUser;
+  const data = EMP_WEEK[uid];
+  if(!data) return;
+  const panel = document.getElementById('move-panel-' + dayIdx + '-' + slotIdx);
+  if(!panel) return;
+
+  // Toggle
+  if(panel.style.display === 'block') { panel.style.display = 'none'; return; }
+  // Close any other open panels
+  document.querySelectorAll('[id^="move-panel-"]').forEach(p => p.style.display = 'none');
+  panel.style.display = 'block';
+
+  const sourceSlot = data.days[dayIdx].slots[slotIdx];
+  if(!sourceSlot || sourceSlot.free) return;
+
+  // Find all free slots across the week (excluding current day)
+  let html = '<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;">Flytt til ledig time:</div>';
+  let hasOptions = false;
+
+  data.days.forEach((day, di) => {
+    if(di === dayIdx) return; // skip current day
+    const freeSlots = day.slots.filter(s => s.free);
+    if(freeSlots.length === 0) return;
+    hasOptions = true;
+    html += `<div style="font-size:10px;font-weight:700;color:var(--text3);margin:6px 0 4px;">${day.day} ${day.date}</div>`;
+    html += freeSlots.map(fs =>
+      `<div onclick="event.stopPropagation();moveApptTo(${dayIdx},${slotIdx},${di},'${fs.time}')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:3px 0;border-radius:6px;background:var(--surface);border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s;">
+        <span style="font-size:12px;font-weight:600;">${fs.time}</span>
+        <span style="font-size:9px;color:var(--green);font-weight:700;">Flytt hit \u2192</span>
+      </div>`
+    ).join('');
+  });
+
+  if(!hasOptions) {
+    html += '<div style="font-size:11px;color:var(--text3);padding:8px 0;">Ingen ledige timer denne uken \u00E5 flytte til.</div>';
+  }
+
+  html += '<div onclick="event.stopPropagation();document.getElementById(\'move-panel-'+dayIdx+'-'+slotIdx+'\').style.display=\'none\'" style="font-size:10px;color:var(--text3);text-align:center;padding:6px;margin-top:6px;cursor:pointer;">Avbryt</div>';
+  panel.innerHTML = html;
+}
+
+function moveApptTo(fromDay, fromSlot, toDay, toTime) {
+  const uid = currentUser;
+  const data = EMP_WEEK[uid];
+  if(!data) return;
+
+  const source = data.days[fromDay].slots[fromSlot];
+  const targetDay = data.days[toDay];
+
+  // Find the free slot and replace it with the appointment
+  const targetSlotIdx = targetDay.slots.findIndex(s => s.free && s.time === toTime);
+  if(targetSlotIdx === -1) return;
+
+  // Move: copy appointment to target, mark source as free
+  targetDay.slots[targetSlotIdx] = { ...source, time:toTime };
+  data.days[fromDay].slots[fromSlot] = { time:source.time, free:true };
+
+  // Update counts
+  data.days[fromDay].customers--;
+  data.days[fromDay].free++;
+  targetDay.customers++;
+  targetDay.free--;
+
+  // Re-render
+  renderEmpDayContent();
+  showToast(source.name + ' flyttet til ' + targetDay.day + ' ' + toTime + ' \u2713');
+}
+
+function submitSwapRequest() {
+  const input = document.getElementById('emp-swap-input');
+  const text = input.value.trim();
+  if(!text) { showToast('Skriv hva du vil endre'); return; }
+  input.value = '';
+  showToast('Foresp\u00F8rsel sendt til leder \u2713');
 }
 
 // Update visibility of alerts based on current user
@@ -2706,8 +5141,132 @@ function setTheme(name) {
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === name));
 }
 
-// Init: run updateAlertVisibility on load
+// ═══ Daily Report ═══
+function toggleDailyReport() {
+  const overlay = document.getElementById('daily-report');
+  overlay.classList.toggle('open');
+  if(overlay.classList.contains('open')) renderDailyReport();
+}
+
+function renderDailyReport() {
+  const container = document.getElementById('daily-report-content');
+  if(!container) return;
+  const isManager = currentUser === 'manager';
+  const treated = window._treatedCount || 0;
+
+  let html = `<div class="dr-close" onclick="toggleDailyReport()">\u2715</div>`;
+  html += `<div class="dr-title">${isManager ? 'Daglig rapport' : 'Din dag'}</div>`;
+  html += `<div class="dr-sub">Mandag 14. april 2026</div>`;
+
+  if(isManager) {
+    // Manager: full overview
+    html += '<div class="dr-section-label">Bemanning</div>';
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--green-bg);"><span style="color:var(--green);">\uD83D\uDC65</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Ansatte p\u00E5 jobb</div><div class="dr-stat-detail">Lena, Oda, Priya, Jonas</div></div>
+      <div class="dr-stat-num" style="color:var(--green);">4</div>
+    </div>`;
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--accent-bg);"><span style="color:var(--accent);">\u2702\uFE0F</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Totalt kunder i dag</div><div class="dr-stat-detail">Lena 6, Oda 5, Priya 4, Jonas 3</div></div>
+      <div class="dr-stat-num" style="color:var(--accent);">18</div>
+    </div>`;
+
+    html += '<div class="dr-section-label">Automatisering</div>';
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--green-bg);"><span style="color:var(--green);">\u2705</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Bekreftelse-SMS sendt</div><div class="dr-stat-detail">5 bekreftet, 1 venter (Sara T.)</div></div>
+      <div class="dr-stat-num" style="color:var(--green);">6</div>
+    </div>`;
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--red-bg);"><span style="color:var(--red);">\u274C</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Avbestillinger</div><div class="dr-stat-detail">Ingrid B. \u2014 stol-tilbud sendt til 2 kunder</div></div>
+      <div class="dr-stat-num" style="color:var(--red);">1</div>
+    </div>`;
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--orange-bg);"><span style="color:var(--orange);">\uD83C\uDFA3</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Vinn-tilbake sendt</div><div class="dr-stat-detail">Sara T., Ingrid B. \u2014 basert p\u00E5 m\u00F8nster</div></div>
+      <div class="dr-stat-num" style="color:var(--orange);">2</div>
+    </div>`;
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:rgba(240,160,240,0.1);"><span style="color:#e0a0e0;">\uD83C\uDF82</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Bursdager denne uken</div><div class="dr-stat-detail">Line Berg \u2014 17. april (om 3 dager)</div></div>
+      <div class="dr-stat-num" style="color:#e0a0e0;">1</div>
+    </div>`;
+    if(noShowCount > 0) {
+      html += `<div class="dr-stat-row">
+        <div class="dr-stat-icon" style="background:var(--red-bg);"><span style="color:var(--red);">\uD83D\uDCF1</span></div>
+        <div class="dr-stat-info"><div class="dr-stat-label">Ikke-m\u00F8tt SMS sendt</div><div class="dr-stat-detail">Automatisk oppf\u00F8lging med bookinglenke</div></div>
+        <div class="dr-stat-num" style="color:var(--red);">${noShowCount}</div>
+      </div>`;
+    }
+
+    html += '<div class="dr-section-label">Inntekt</div>';
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--accent-bg);"><span style="color:var(--accent);">\uD83D\uDCB0</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Estimert omsetning i dag</div><div class="dr-stat-detail">\u2191 12% fra forrige mandag</div></div>
+      <div class="dr-stat-num" style="color:var(--accent);">48 200 kr</div>
+    </div>`;
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--green-bg);"><span style="color:var(--green);">\uD83D\uDED2</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Produktsalg i dag</div><div class="dr-stat-detail">Olaplex No.3 (2x), Kevin Murphy (1x)</div></div>
+      <div class="dr-stat-num" style="color:var(--green);">3</div>
+    </div>`;
+
+    html += '<div class="dr-section-label">Foresp\u00F8rsler</div>';
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--blue-bg);"><span style="color:var(--blue);">\uD83D\uDCE9</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Ventende foresp\u00F8rsler</div><div class="dr-stat-detail">Priya (dagbytte), Jonas (fri), Oda (kundebytte)</div></div>
+      <div class="dr-stat-num" style="color:var(--blue);">3</div>
+    </div>`;
+
+  } else {
+    // Employee: personal summary
+    const u = userProfiles[currentUser];
+    const empName = u ? u.name : 'deg';
+    const empData = EMP_WEEK[currentUser];
+    const todaySlots = empData ? empData.days[0].slots : [];
+    const booked = todaySlots.filter(s => !s.free).length;
+    const free = todaySlots.filter(s => s.free).length;
+
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--green-bg);"><span style="color:var(--green);">\u2705</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Kunder i dag</div><div class="dr-stat-detail">${free > 0 ? free + ' ledig' : 'Fullt booket'}</div></div>
+      <div class="dr-stat-num" style="color:var(--green);">${booked}</div>
+    </div>`;
+    if(treated > 0) {
+      html += `<div class="dr-stat-row">
+        <div class="dr-stat-icon" style="background:var(--accent-bg);"><span style="color:var(--accent);">\u2713</span></div>
+        <div class="dr-stat-info"><div class="dr-stat-label">Ferdig i dag</div><div class="dr-stat-detail">Av ${booked} planlagte</div></div>
+        <div class="dr-stat-num" style="color:var(--accent);">${treated}</div>
+      </div>`;
+    }
+    html += `<div class="dr-stat-row">
+      <div class="dr-stat-icon" style="background:var(--green-bg);"><span style="color:var(--green);">\uD83D\uDCAC</span></div>
+      <div class="dr-stat-info"><div class="dr-stat-label">Bekreftelser</div><div class="dr-stat-detail">${booked > 1 ? (booked-1) + ' bekreftet, 1 venter' : 'Alle bekreftet'}</div></div>
+      <div class="dr-stat-num" style="color:var(--green);">${booked}</div>
+    </div>`;
+
+    // Show upcoming customers with notes
+    html += '<div class="dr-section-label">Kommende kunder</div>';
+    todaySlots.filter(s => !s.free).forEach(s => {
+      html += `<div class="dr-stat-row">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);width:36px;">${s.time}</div>
+        <div class="dr-stat-info">
+          <div class="dr-stat-label">${s.name}</div>
+          <div class="dr-stat-detail">${s.service} \u00B7 ${s.dur}${s.notes ? ' \u2014 ' + s.notes.substring(0,40) + (s.notes.length > 40 ? '...' : '') : ''}</div>
+        </div>
+        ${s.ai ? '<div style="font-size:8px;padding:2px 6px;border-radius:3px;background:var(--accent-bg);color:var(--accent);font-weight:700;">AI</div>' : ''}
+      </div>`;
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+// Init: run on load after all data is defined
 updateAlertVisibility();
+renderDayChips();
 </script>
 </body>
 </html>

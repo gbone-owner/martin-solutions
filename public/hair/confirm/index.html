@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Min time — Salong Harmoni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080c;
+  --surface: #111116;
+  --card: #1a1a22;
+  --card-hover: #22222e;
+  --input: #1e1e28;
+  --text: #eeeae0;
+  --text2: #b0a890;
+  --text3: #6a6458;
+  --accent: #d4af37;
+  --accent2: #f0d060;
+  --accent-bg: rgba(212,175,55,0.08);
+  --accent-bg2: rgba(212,175,55,0.16);
+  --accent-border: rgba(212,175,55,0.18);
+  --accent-border2: rgba(212,175,55,0.3);
+  --green: #5cd87a;
+  --green-bg: rgba(92,216,122,0.1);
+  --red: #e85a5a;
+  --red-bg: rgba(232,90,90,0.1);
+  --orange: #f0a040;
+  --orange-bg: rgba(240,160,64,0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  flex: 1;
+}
+
+.header {
+  padding: 28px 0 24px;
+  text-align: center;
+}
+.salon-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.header h1 {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.header-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+/* Panels */
+.panel { display: none; animation: fadeUp 0.3s ease; }
+.panel.active { display: block; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* Phone input */
+.phone-input-wrap {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.phone-prefix {
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  width: 70px;
+  text-align: center;
+}
+.phone-field {
+  flex: 1;
+  padding: 14px 16px;
+  background: var(--input);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  letter-spacing: 1px;
+}
+.phone-field:focus { border-color: var(--accent-border2); }
+.phone-field::placeholder { color: var(--text3); font-weight: 400; }
+
+/* Appointment card */
+.appt-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 20px;
+}
+.appt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.appt-row:last-child { border-bottom: none; }
+.appt-label { font-size: 12px; color: var(--text3); }
+.appt-value { font-size: 14px; font-weight: 600; text-align: right; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 10px; margin-top: 20px; }
+.btn {
+  flex: 1; padding: 16px; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer; border: none; text-align: center; transition: all 0.2s;
+}
+.btn-confirm { background: var(--green); color: #000; }
+.btn-confirm:hover { background: #6ee88a; }
+.btn-change { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.06); }
+.btn-change:hover { background: var(--card-hover); }
+.btn-cancel { background: var(--red-bg); color: var(--red); border: 1px solid rgba(232,90,90,0.2); }
+.btn-cancel:hover { background: rgba(232,90,90,0.15); }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-primary:disabled { opacity: 0.3; cursor: default; }
+.btn-back { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.06); }
+
+/* Result screens */
+.result-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin: 0 auto 16px;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+.result-title { font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 6px; }
+.result-sub { font-size: 13px; color: var(--text3); text-align: center; line-height: 1.5; }
+
+/* Cancel reason */
+.reason-option {
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.reason-option:hover { background: var(--card-hover); }
+.reason-option.selected { border-color: var(--accent-border2); background: var(--accent-bg); }
+
+.page-footer {
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 11px;
+  color: var(--text3);
+}
+.page-footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <div class="salon-name">Salong Harmoni</div>
+    <h1>Min time</h1>
+    <div class="header-sub">Bekreft, endre eller avbestill</div>
+  </div>
+
+  <!-- PANEL 1: Phone number lookup -->
+  <div class="panel active" id="panel-lookup">
+    <div style="text-align:center;font-size:13px;color:var(--text2);line-height:1.5;">
+      Skriv inn mobilnummeret ditt for &aring; se dine kommende timer.
+    </div>
+    <div class="phone-input-wrap">
+      <div class="phone-prefix">+47</div>
+      <input class="phone-field" type="tel" id="phone-input" placeholder="XXX XX XXX" maxlength="11" oninput="checkPhone()">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-lookup" disabled onclick="lookupAppointment()">Se mine timer</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Appointment found -->
+  <div class="panel" id="panel-appointment">
+    <div class="appt-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--accent-bg2);display:flex;align-items:center;justify-content:center;font-size:20px;">&#9986;&#65039;</div>
+        <div>
+          <div style="font-size:16px;font-weight:800;" id="appt-service">Klipp &amp; farge</div>
+          <div style="font-size:11px;color:var(--text3);" id="appt-status-text">Venter p&aring; bekreftelse</div>
+        </div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Dato</div>
+        <div class="appt-value" id="appt-date">Onsdag 16. april</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Tidspunkt</div>
+        <div class="appt-value" id="appt-time">11:30</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Fris&oslash;r</div>
+        <div class="appt-value" id="appt-stylist">Lena</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Varighet</div>
+        <div class="appt-value" id="appt-duration">90 min</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Pris</div>
+        <div class="appt-value" style="color:var(--accent);font-weight:800;" id="appt-price">1 290 kr</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--orange-bg);border:1px solid rgba(240,160,64,0.15);font-size:11px;color:var(--orange);line-height:1.5;">
+      &#9888;&#65039; Avbestilling mindre enn 24 timer f&oslash;r timen kan medf&oslash;re gebyr.
+    </div>
+
+    <div class="btn-row" style="flex-direction:column;gap:8px;">
+      <button class="btn btn-confirm" onclick="confirmAppointment()" style="width:100%;">&#10003; Bekreft timen</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-change" onclick="showPanel('panel-change')" style="flex:1;">Endre time</button>
+        <button class="btn btn-cancel" onclick="showPanel('panel-cancel')" style="flex:1;">Avbestill</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: Confirmed -->
+  <div class="panel" id="panel-confirmed">
+    <div style="padding:30px 0;">
+      <div class="result-icon" style="background:var(--green-bg);">&#10003;</div>
+      <div class="result-title">Timen er bekreftet!</div>
+      <div class="result-sub">Vi gleder oss til &aring; se deg onsdag 16. april kl 11:30.</div>
+    </div>
+    <div class="appt-card" style="margin-top:0;">
+      <div class="appt-row">
+        <div class="appt-label">Tjeneste</div>
+        <div class="appt-value">Klipp &amp; farge</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Dato &amp; tid</div>
+        <div class="appt-value">Ons 16. apr &middot; 11:30</div>
+      </div>
+      <div class="appt-row">
+        <div class="appt-label">Fris&oslash;r</div>
+        <div class="appt-value">Lena</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn btn-back" onclick="addToCalendar()" style="flex:1;">&#128197; Legg til i kalender</button>
+    </div>
+  </div>
+
+  <!-- PANEL 4: Change / Rebook -->
+  <div class="panel" id="panel-change">
+    <div style="text-align:center;padding:20px 0 16px;">
+      <div style="font-size:18px;font-weight:800;">Endre timen din</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px;">Velg nytt tidspunkt &mdash; eller ring oss for hjelp</div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <a href="booking.html" style="display:block;padding:16px;border-radius:var(--radius-sm);background:var(--accent);color:#000;text-align:center;font-weight:700;font-size:14px;text-decoration:none;">Book ny time &#8594;</a>
+    </div>
+
+    <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:12px;">eller</div>
+
+    <div style="padding:14px;border-radius:var(--radius-sm);background:var(--card);border:1px solid rgba(255,255,255,0.03);text-align:center;">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Ring salongen direkte</div>
+      <a href="tel:+4798825554" style="font-size:18px;font-weight:800;color:var(--accent);text-decoration:none;">&#128222; 98 82 55 54</a>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn btn-back" onclick="showPanel('panel-appointment')">&#8592; Tilbake</button>
+    </div>
+  </div>
+
+  <!-- PANEL 5: Cancel -->
+  <div class="panel" id="panel-cancel">
+    <div style="text-align:center;padding:20px 0 16px;">
+      <div style="font-size:18px;font-weight:800;">Avbestill timen</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px;">Fortell oss gjerne hvorfor &mdash; det hjelper oss &aring; bli bedre</div>
+    </div>
+
+    <div id="cancel-reasons">
+      <div class="reason-option" onclick="selectReason(this)">Kan ikke den dagen likevel</div>
+      <div class="reason-option" onclick="selectReason(this)">Fant en annen tid som passer bedre</div>
+      <div class="reason-option" onclick="selectReason(this)">Ble syk</div>
+      <div class="reason-option" onclick="selectReason(this)">Annen grunn</div>
+    </div>
+
+    <div class="btn-row" style="flex-direction:column;gap:8px;margin-top:16px;">
+      <button class="btn btn-cancel" id="btn-cancel-confirm" onclick="cancelAppointment()" style="width:100%;opacity:0.4;pointer-events:none;">Avbestill timen</button>
+      <button class="btn btn-back" onclick="showPanel('panel-appointment')" style="width:100%;">&#8592; Tilbake</button>
+    </div>
+  </div>
+
+  <!-- PANEL 6: Cancelled -->
+  <div class="panel" id="panel-cancelled">
+    <div style="padding:30px 0;">
+      <div class="result-icon" style="background:var(--red-bg);">&#128075;</div>
+      <div class="result-title">Timen er avbestilt</div>
+      <div class="result-sub">Vi h&aring;per &aring; se deg snart! Du kan enkelt booke ny time n&aring;r det passer.</div>
+    </div>
+    <div class="btn-row" style="margin-top:0;">
+      <a href="booking.html" class="btn btn-primary" style="text-decoration:none;display:block;text-align:center;">Book ny time</a>
+    </div>
+  </div>
+
+  <!-- PANEL 7: Not found -->
+  <div class="panel" id="panel-notfound">
+    <div style="padding:30px 0;">
+      <div class="result-icon" style="background:var(--card);">&#128269;</div>
+      <div class="result-title">Ingen timer funnet</div>
+      <div class="result-sub">Vi fant ingen kommende timer p&aring; dette nummeret. Pr&oslash;v igjen eller book en ny time.</div>
+    </div>
+    <div class="btn-row" style="flex-direction:column;gap:8px;margin-top:0;">
+      <button class="btn btn-back" onclick="showPanel('panel-lookup')" style="width:100%;">&#8592; Pr&oslash;v et annet nummer</button>
+      <a href="booking.html" class="btn btn-primary" style="text-decoration:none;display:block;text-align:center;width:100%;">Book ny time</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  Drevet av <a href="https://martin.solutions" target="_blank">Martin.Solutions</a>
+</div>
+
+<script>
+// Demo appointments (keyed by phone)
+const DEMO_APPOINTMENTS = {
+  '98765432': { service:'Klipp & farge', date:'Onsdag 16. april', time:'11:30', stylist:'Lena', duration:'90 min', price:'1 290 kr' },
+  '92345678': { service:'Klipp', date:'Torsdag 17. april', time:'09:00', stylist:'Lena', duration:'45 min', price:'590 kr' },
+  '41234567': { service:'Herreklipp', date:'Torsdag 17. april', time:'10:00', stylist:'Jonas', duration:'30 min', price:'390 kr' },
+  '45678901': { service:'Balayage', date:'Onsdag 16. april', time:'13:00', stylist:'Lena', duration:'120 min', price:'1 890 kr' }
+};
+
+function checkPhone() {
+  const val = document.getElementById('phone-input').value.replace(/\s/g,'');
+  document.getElementById('btn-lookup').disabled = val.length < 8;
+}
+
+function lookupAppointment() {
+  const val = document.getElementById('phone-input').value.replace(/\s/g,'');
+  const appt = DEMO_APPOINTMENTS[val];
+  if(appt) {
+    document.getElementById('appt-service').textContent = appt.service;
+    document.getElementById('appt-date').textContent = appt.date;
+    document.getElementById('appt-time').textContent = appt.time;
+    document.getElementById('appt-stylist').textContent = appt.stylist;
+    document.getElementById('appt-duration').textContent = appt.duration;
+    document.getElementById('appt-price').textContent = appt.price;
+    showPanel('panel-appointment');
+  } else {
+    showPanel('panel-notfound');
+  }
+}
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function confirmAppointment() {
+  showPanel('panel-confirmed');
+}
+
+function selectReason(el) {
+  document.querySelectorAll('.reason-option').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('btn-cancel-confirm');
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+}
+
+function cancelAppointment() {
+  showPanel('panel-cancelled');
+}
+
+function addToCalendar() {
+  const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
+    encodeURIComponent('Klipp & farge - Salong Harmoni') +
+    '&dates=20260416T093000/20260416T110000' +
+    '&details=' + encodeURIComponent('Bekreftet via salongharmoni.no') +
+    '&location=' + encodeURIComponent('Salong Harmoni');
+  window.open(url, '_blank');
+}
+
+// Auto-focus phone input
+document.getElementById('phone-input').focus();
+</script>
+
+</body>
+</html>
