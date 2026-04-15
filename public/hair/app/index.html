@@ -1225,6 +1225,15 @@ body {
 
       <!-- Manager overview (hidden by default) -->
       <div id="manager-view" style="display:none;">
+        <!-- AI Workload balance (top of manager view, dismissable) -->
+        <div id="workload-card" style="margin:0 20px 10px;padding:12px 14px;border-radius:var(--radius);background:var(--accent-bg);border:1px solid var(--accent-border);position:relative;">
+          <div style="position:absolute;top:8px;right:10px;font-size:12px;color:var(--text3);cursor:pointer;padding:2px 6px;" onclick="this.parentElement.style.display='none'">&#10005;</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span class="ai-badge">AI</span>
+            <span style="font-size:12px;font-weight:700;">Arbeidsmengde-analyse</span>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Lena har 7,5t aktive timer — vurder å flytte 16:30-timen til Jonas (2,5t aktiv). Jonas har kapasitet og kan ta herreklipp. <strong style="color:var(--accent);">Minimal endring, bedre balanse.</strong></div>
+        </div>
         <div class="section-label">Ansatte — i dag</div>
 
         <!-- ── LENA ── -->
@@ -1479,14 +1488,7 @@ body {
           </div>
         </div>
 
-        <!-- AI Workload balance -->
-        <div style="margin:8px 20px 10px;padding:12px 14px;border-radius:var(--radius);background:var(--accent-bg);border:1px solid var(--accent-border);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span class="ai-badge">AI</span>
-            <span style="font-size:12px;font-weight:700;">Arbeidsmengde-analyse</span>
-          </div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Lena har 7,5t aktive timer — vurder å flytte 16:30-timen til Jonas (2,5t aktiv). Jonas har kapasitet og kan ta herreklipp. <strong style="color:var(--accent);">Minimal endring, bedre balanse.</strong></div>
-        </div>
+        <!-- (workload card moved to top of manager view) -->
 
         <!-- ═══ WIN-BACK / RE-ENGAGEMENT CARD ═══ -->
         <div class="section-label" style="margin-top:8px;">Kunder å vinne tilbake</div>
@@ -1613,7 +1615,7 @@ body {
           </div>
         </div>
       </div>
-      <div class="appt-ai-bar" onclick="showClient('kristin')">
+      <div class="appt-ai-bar" onclick="openProductDetail('olaplex-3')">
         <span class="ai-badge">AI</span>
         <span style="font-size:12px;font-weight:600;flex:1;">Olaplex No.3 trolig tom — foreslå påfyll (349 kr)</span>
         <span style="color:var(--accent);font-size:14px;">›</span>
@@ -1723,25 +1725,8 @@ body {
         </div>
       </div>
 
-      <!-- Birthday & Gift Tracking -->
-      <div id="birthday-section" style="margin:0 20px 10px;padding:12px 14px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,0.03);display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:18px;">&#127874;</span>
-            <div>
-              <div style="font-size:12px;font-weight:700;" id="bday-date-text">Bursdag: 17. april</div>
-              <div style="font-size:10px;color:var(--text3);" id="bday-gift-text">Sist gave: 17. apr 2025</div>
-            </div>
-          </div>
-          <div id="bday-gift-badge" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;">Gave i &aring;r</div>
-        </div>
-        <div id="bday-gift-action" style="margin-top:10px;display:none;">
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-accent" style="flex:1;padding:8px;font-size:11px;" onclick="markGiftGiven()">&#10003; Gave gitt</button>
-            <button class="btn btn-outline" style="padding:8px 14px;font-size:11px;" onclick="showToast('Hoppes over i &aring;r')">Ikke i &aring;r</button>
-          </div>
-        </div>
-      </div>
+      <!-- Birthday & Gift Tracking (dynamic) -->
+      <div id="birthday-section" style="margin:0 20px 10px;display:none;"></div>
 
       <!-- Contact & Quick Actions Bar -->
       <div class="contact-bar">
@@ -1885,7 +1870,7 @@ body {
         <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;">Hva vil du gjore?</div>
         <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';openMoveApptFromProfile();" style="margin-bottom:6px;"><div class="na-option-icon" style="background:var(--blue-bg);">&#128197;</div><div class="na-option-info"><div class="na-option-name">Flytt time</div><div class="na-option-detail">Flytt til annen dag eller tid</div></div><div style="color:var(--text3);">&#8250;</div></div>
         <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';openCancelApptFromProfile();" style="margin-bottom:6px;"><div class="na-option-icon" style="background:var(--red-bg);">&#10005;</div><div class="na-option-info"><div class="na-option-name">Avbestill time</div><div class="na-option-detail">Kanseller og varsle kunde</div></div><div style="color:var(--text3);">&#8250;</div></div>
-        <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';showToast('Tjeneste endret &#10003;');"><div class="na-option-icon" style="background:var(--accent-bg);">&#9998;</div><div class="na-option-info"><div class="na-option-name">Endre tjeneste</div><div class="na-option-detail">Bytt behandlingstype</div></div><div style="color:var(--text3);">&#8250;</div></div>
+        <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';openEditServiceModal();"><div class="na-option-icon" style="background:var(--accent-bg);">&#9998;</div><div class="na-option-info"><div class="na-option-name">Endre tjeneste</div><div class="na-option-detail">Bytt behandlingstype</div></div><div style="color:var(--text3);">&#8250;</div></div>
       </div>
     </div>
 
@@ -1950,7 +1935,7 @@ body {
 
       <div class="section-label">Bestselgere denne måneden</div>
 
-      <div class="catalog-item" onclick="showToast('Produktdetaljer åpnet')">
+      <div class="catalog-item" onclick="openProductDetail(productKeyFromName(this.querySelector('.catalog-name')?.textContent||''))">
         <div class="catalog-icon">🧴</div>
         <div class="catalog-info">
           <div class="catalog-name">Olaplex No.3</div>
@@ -1963,7 +1948,7 @@ body {
       </div>
       <div class="divider"></div>
 
-      <div class="catalog-item" onclick="showToast('Produktdetaljer åpnet')">
+      <div class="catalog-item" onclick="openProductDetail(productKeyFromName(this.querySelector('.catalog-name')?.textContent||''))">
         <div class="catalog-icon">💆</div>
         <div class="catalog-info">
           <div class="catalog-name">Kevin Murphy Hydrate-Me</div>
@@ -1976,7 +1961,7 @@ body {
       </div>
       <div class="divider"></div>
 
-      <div class="catalog-item" onclick="showToast('Produktdetaljer åpnet')">
+      <div class="catalog-item" onclick="openProductDetail(productKeyFromName(this.querySelector('.catalog-name')?.textContent||''))">
         <div class="catalog-icon">✨</div>
         <div class="catalog-info">
           <div class="catalog-name">Moroccanoil Treatment</div>
@@ -1989,7 +1974,7 @@ body {
       </div>
       <div class="divider"></div>
 
-      <div class="catalog-item" onclick="showToast('Produktdetaljer åpnet')">
+      <div class="catalog-item" onclick="openProductDetail(productKeyFromName(this.querySelector('.catalog-name')?.textContent||''))">
         <div class="catalog-icon">🧴</div>
         <div class="catalog-info">
           <div class="catalog-name">Olaplex No.4 Bond</div>
@@ -2002,7 +1987,7 @@ body {
       </div>
       <div class="divider"></div>
 
-      <div class="catalog-item" onclick="showToast('Produktdetaljer åpnet')">
+      <div class="catalog-item" onclick="openProductDetail(productKeyFromName(this.querySelector('.catalog-name')?.textContent||''))">
         <div class="catalog-icon">💇‍♀️</div>
         <div class="catalog-info">
           <div class="catalog-name">Maria Nila True Soft</div>
@@ -2935,7 +2920,7 @@ const clients = {
     meta:'Kunde siden 2022 \u00B7 18 bes\u00F8k \u00B7 Lena sin faste',
     chips:['Klipp & farge','Balayage','Varme toner','\u26A0 Ammoniakk'],
     chipDanger: 3,
-    birthday: { date:'23. sep', lastGift:'23. sep 2025', nextGiftDue:true },
+    birthday: { date:'23. sep', lastGift:'23. sep 2025', nextGiftDue:true, giftDecision:null, aiSuggestions:[{name:'Olaplex Hair Perfector No.3',reason:'Fargebehandlet hår trenger pleie'},{name:'Moroccanoil behandling',reason:'Populært blant fargekunder'},{name:'Gavekort 200 kr',reason:'Fleksibelt — kunden velger selv'}] },
     hairProfile: { type:'Normalt, b\u00F8lget', color:'Farget (balayage)', allergy:'\u26A0 Ammoniakk', interval:'6 uker' },
     ai: true,
     aiText:'\u00ABHei Kristin, trenger du p\u00E5fyll av Olaplex? Jeg har den klar til deg.\u00BB',
@@ -2949,7 +2934,7 @@ const clients = {
     initials:'MH', name:'Maren Haugen', color:'var(--green),#40b060',
     meta:'Kunde siden 2023 \u00B7 12 bes\u00F8k \u00B7 Fast kunde',
     chips:['Klipp','Kort h\u00E5r','Liker det enkelt'],
-    birthday: { date:'8. nov', lastGift:'8. nov 2024', nextGiftDue:true },
+    birthday: { date:'8. nov', lastGift:'8. nov 2024', nextGiftDue:true, giftDecision:'Kerastase mini-sett', aiSuggestions:[{name:'Kerastase mini-sett',reason:'Kort hår, liker enkle produkter'},{name:'Kevin Murphy shampoo',reason:'Match for tynt hår'},{name:'Gavekort 150 kr',reason:'Fast kunde — verdsett lojalitet'}] },
     hairProfile: { type:'Fint, tynt', color:'Naturlig', allergy:'Ingen', interval:'4 uker' },
     ai: true,
     aiText:'\u00ABMaren har kort, fint h\u00E5r som trenger volum. Maria Nila Volume Spray passer perfekt \u2014 og hun har aldri kj\u00F8pt stylingprodukter f\u00F8r.\u00BB',
@@ -2975,7 +2960,7 @@ const clients = {
     initials:'LB', name:'Line Berg', color:'#a06af0,#c898ff',
     meta:'Kunde siden 2021 · 22 besøk · Bursdag 17. april 🎂',
     chips:['Balayage','Fargeekspert','Lang behandling'],
-    birthday: { date:'17. apr', lastGift:'17. apr 2025', nextGiftDue:true },
+    birthday: { date:'17. apr', lastGift:'17. apr 2025', nextGiftDue:true, giftDecision:null, aiSuggestions:[{name:'Moroccanoil Treatment',reason:'Kjøpt 2 ganger — hun liker det'},{name:'Olaplex No.5 Conditioner',reason:'Farget balayage trenger fukt'},{name:'Bursdagsrabatt 20%',reason:'Lojal kunde med 22 besøk'}] },
     hairProfile: { type:'Langt, tykt', color:'Farget (balayage)', allergy:'Ingen', interval:'8 uker' },
     ai: true,
     aiText:'\u00ABLine har bursdag om 3 dager — vurder et lite bursdagstilbud eller produkt-gave?»',
@@ -3012,6 +2997,7 @@ const clients = {
 };
 
 function showClient(id) {
+  window._bdayExpanded = false;
   const c = clients[id];
   if(!c) return;
   document.getElementById('client-avatar').style.background = 'linear-gradient(135deg,'+c.color+')';
@@ -3024,34 +3010,8 @@ function showClient(id) {
     `<div class="chip" ${i===c.chipDanger?'style="border-color:var(--red);color:var(--red);"':''}>${ch}</div>`
   ).join('');
 
-  // Render birthday / gift tracking
-  const bdaySection = document.getElementById('birthday-section');
-  if(c.birthday && c.birthday.date !== 'Ukjent') {
-    bdaySection.style.display = 'block';
-    document.getElementById('bday-date-text').textContent = 'Bursdag: ' + c.birthday.date;
-    const badge = document.getElementById('bday-gift-badge');
-    const action = document.getElementById('bday-gift-action');
-    if(c.birthday.lastGift) {
-      document.getElementById('bday-gift-text').textContent = 'Sist gave: ' + c.birthday.lastGift;
-    } else {
-      document.getElementById('bday-gift-text').textContent = 'Aldri f\u00E5tt gave';
-    }
-    if(c.birthday.nextGiftDue) {
-      badge.style.background = 'var(--accent-bg)';
-      badge.style.color = 'var(--accent)';
-      badge.style.border = '1px solid var(--accent-border)';
-      badge.textContent = '\uD83C\uDF81 Gave i \u00E5r';
-      action.style.display = 'block';
-    } else {
-      badge.style.background = 'var(--surface)';
-      badge.style.color = 'var(--text3)';
-      badge.style.border = '1px solid rgba(255,255,255,0.04)';
-      badge.textContent = 'Ikke gave\u00E5r';
-      action.style.display = 'none';
-    }
-  } else {
-    bdaySection.style.display = c.birthday && c.birthday.date === 'Ukjent' ? 'none' : 'none';
-  }
+  // Render birthday / gift tracking (role-aware)
+  renderBirthdaySection(c);
 
   // Render hair profile
   const hpSection = document.getElementById('hair-profile-section');
@@ -3092,16 +3052,18 @@ function showClient(id) {
 
   const prodContainer = document.getElementById('client-products');
   if(c.products.length) {
-    prodContainer.innerHTML = c.products.map(p =>
-      `<div class="product-row">
+    prodContainer.innerHTML = c.products.map(p => {
+      const pk = productKeyFromName(p.name);
+      const click = pk ? `onclick="openProductDetail('${pk}')" style="cursor:pointer;"` : '';
+      return `<div class="product-row" ${click}>
         <div class="product-icon">${p.icon}</div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>
           <div class="product-detail">${p.detail}</div>
         </div>
         <div class="product-status" style="color:${p.statusColor};">${p.status}</div>
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
     document.getElementById('products-section').style.display = 'block';
   } else {
     document.getElementById('products-section').style.display = 'none';
@@ -3506,22 +3468,132 @@ renderBdayRules();
 renderBdayTemplates();
 
 // ═══ Birthday Gift Tracking ═══
-function markGiftGiven() {
+function renderBirthdaySection(c) {
+  const sec = document.getElementById('birthday-section');
+  if(!c.birthday || c.birthday.date === 'Ukjent') { sec.style.display='none'; return; }
+  sec.style.display = 'block';
+  const b = c.birthday;
+  const isMgr = currentUser === 'manager';
+  const giftText = b.lastGift ? 'Sist gave: '+b.lastGift : 'Aldri f\u00E5tt gave';
+  // Check if birthday is within 7 days
+  const bdaySoon = (function(){
+    const months={'jan':0,'feb':1,'mar':2,'apr':3,'mai':4,'jun':5,'jul':6,'aug':7,'sep':8,'okt':9,'nov':10,'des':11};
+    const parts=b.date.split('. ');if(parts.length<2)return{soon:false,days:99};
+    const day=parseInt(parts[0]);const mon=months[parts[1].toLowerCase()];if(isNaN(day)||mon===undefined)return{soon:false,days:99};
+    const now=new Date();const thisYear=now.getFullYear();
+    let bd=new Date(thisYear,mon,day);if(bd<now){bd=new Date(thisYear+1,mon,day);}
+    const diff=Math.ceil((bd-now)/(86400000));
+    return{soon:diff<=7&&diff>=0,days:diff,today:diff===0};
+  })();
+  // Status summary for collapsed header
+  let statusLabel='', statusBg='', statusColor='', statusBorder='';
+  if(b.giftDelivered) { statusLabel='\u2713 Levert'; statusBg='var(--green-bg)'; statusColor='var(--green)'; statusBorder='rgba(92,216,122,0.2)'; }
+  else if(b.giftDecision) { statusLabel='\uD83C\uDF81 '+b.giftDecision; statusBg='var(--accent-bg)'; statusColor='var(--accent)'; statusBorder='var(--accent-border)'; }
+  else if(b.nextGiftDue && isMgr) { statusLabel='\u23F3 Velg gave'; statusBg='var(--orange-bg)'; statusColor='var(--orange)'; statusBorder='rgba(240,160,64,0.15)'; }
+  else if(bdaySoon.soon) { statusLabel=bdaySoon.today?'\uD83C\uDF82 I dag!':'\uD83C\uDF82 Om '+bdaySoon.days+' dager'; statusBg='rgba(240,160,240,0.1)'; statusColor='#e0a0e0'; statusBorder='rgba(240,160,240,0.2)'; }
+  else { statusLabel=''; statusBg=''; statusColor=''; statusBorder=''; }
+  const collapsed = isMgr && !window._bdayExpanded;
+  // Highlight border if birthday is soon
+  const soonBorder = bdaySoon.soon ? 'border:1px solid rgba(240,160,240,0.25);' : 'border:1px solid rgba(255,255,255,0.03);';
+  let h = '<div style="padding:12px 14px;border-radius:var(--radius);background:var(--card);'+soonBorder+'">';
+  // Header row — clickable for manager to expand/collapse
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;'+(isMgr?'cursor:pointer;':'')+'" '+(isMgr?'onclick="toggleBdayExpand()"':'')+'>';
+  h += '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">\uD83C\uDF82</span><div><div style="font-size:12px;font-weight:700;">Bursdag: '+b.date+'</div><div style="font-size:10px;color:var(--text3);">'+giftText+'</div></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;">';
+  if(statusLabel) h += '<div style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;background:'+statusBg+';color:'+statusColor+';border:1px solid '+statusBorder+';max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+statusLabel+'</div>';
+  if(isMgr) h += '<span style="font-size:12px;color:var(--text3);transition:transform 0.2s;display:inline-block;transform:rotate('+(collapsed?'0':'90')+'deg);">\u203A</span>';
+  h += '</div></div>';
+  // Birthday soon notice for everyone
+  if(bdaySoon.soon && !b.giftDelivered) {
+    const soonMsg = bdaySoon.today ? '\uD83C\uDF82 '+c.name+' har bursdag i dag! Husk \u00E5 gratulere.' : '\uD83C\uDF82 '+c.name+' har bursdag om '+bdaySoon.days+(bdaySoon.days===1?' dag':' dager')+'!';
+    h += '<div style="margin-top:8px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(240,160,240,0.08);border:1px solid rgba(240,160,240,0.15);font-size:11px;color:#e0a0e0;line-height:1.4;">'+soonMsg+'</div>';
+  }
+  // Body — always shown for employee, collapsible for manager
+  if(!isMgr || !collapsed) {
+    if(b.nextGiftDue && !b.giftDelivered) {
+      if(isMgr) {
+        if(b.giftDecision) {
+          h += '<div style="margin-top:10px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--accent-bg);border:1px solid var(--accent-border);">';
+          h += '<div style="font-size:10px;color:var(--text3);font-weight:600;">VALGT GAVE</div>';
+          h += '<div style="font-size:13px;font-weight:700;margin-top:2px;">'+b.giftDecision+'</div>';
+          h += '<div style="margin-top:8px;display:flex;gap:6px;">';
+          h += '<button style="padding:6px 12px;border-radius:6px;background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;" onclick="event.stopPropagation();resetGiftChoice()">Endre valg</button>';
+          h += '<button style="padding:6px 12px;border-radius:6px;background:var(--surface);color:var(--text3);border:1px solid rgba(255,255,255,0.04);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;" onclick="event.stopPropagation();skipGiftThisYear()">Ingen gave</button>';
+          h += '</div></div>';
+        } else {
+          h += '<div style="margin-top:10px;">';
+          h += '<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;">Velg gave</div>';
+          if(b.aiSuggestions && b.aiSuggestions.length) {
+            h += '<div style="font-size:9px;color:var(--accent);font-weight:600;letter-spacing:0.5px;margin-bottom:6px;">AI-FORSLAG</div>';
+            b.aiSuggestions.forEach(s => {
+              h += '<div class="na-option" onclick="event.stopPropagation();pickGift(\''+s.name.replace(/'/g,"\\'")+'\')" style="margin-bottom:6px;padding:10px 12px;">';
+              h += '<div class="na-option-icon" style="background:var(--accent-bg);font-size:14px;">\uD83C\uDF81</div>';
+              h += '<div class="na-option-info"><div class="na-option-name">'+s.name+'</div><div class="na-option-detail">'+s.reason+'</div></div>';
+              h += '<div style="color:var(--text3);">\u203A</div></div>';
+            });
+          }
+          h += '<div class="na-option" onclick="event.stopPropagation();promptCustomGift()" style="margin-bottom:6px;padding:10px 12px;"><div class="na-option-icon" style="background:var(--blue-bg,rgba(90,160,232,0.1));font-size:14px;">\u270E</div><div class="na-option-info"><div class="na-option-name">Velg selv</div><div class="na-option-detail">Skriv inn gave manuelt</div></div><div style="color:var(--text3);">\u203A</div></div>';
+          h += '<div class="na-option" onclick="event.stopPropagation();skipGiftThisYear()" style="padding:10px 12px;"><div class="na-option-icon" style="background:var(--surface);font-size:14px;">\u2716</div><div class="na-option-info"><div class="na-option-name">Ingen gave i \u00E5r</div><div class="na-option-detail">Hopp over denne kunden</div></div></div>';
+          h += '</div>';
+        }
+      } else {
+        // Employee: only show gift if manager picked one
+        if(b.giftDecision) {
+          h += '<div style="margin-top:10px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--accent-bg);border:1px solid var(--accent-border);">';
+          h += '<div style="font-size:10px;color:var(--text3);font-weight:600;">GI DENNE GAVEN</div>';
+          h += '<div style="font-size:13px;font-weight:700;margin-top:2px;">'+b.giftDecision+'</div>';
+          h += '<div style="font-size:10px;color:var(--text3);margin-top:2px;">Bestemt av leder</div>';
+          h += '</div>';
+          h += '<div style="margin-top:8px;"><button class="btn btn-accent" style="width:100%;padding:10px;font-size:12px;" onclick="markGiftDelivered()">\u2713 Gave levert</button></div>';
+        }
+        // No gift decision = no gift section shown for employee (just the header with birthday notice)
+      }
+    }
+  }
+  h += '</div>';
+  sec.innerHTML = h;
+}
+window._bdayExpanded = false;
+function toggleBdayExpand() {
+  window._bdayExpanded = !window._bdayExpanded;
   const cid = window._currentClientId;
-  if(!cid || !clients[cid] || !clients[cid].birthday) return;
-  const now = new Date();
-  const dateStr = now.getDate() + '. ' + ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][now.getMonth()] + ' ' + now.getFullYear();
-  clients[cid].birthday.lastGift = dateStr;
+  if(cid && clients[cid]) renderBirthdaySection(clients[cid]);
+}
+function pickGift(name) {
+  const cid = window._currentClientId;
+  if(!cid||!clients[cid]) return;
+  clients[cid].birthday.giftDecision = name;
+  renderBirthdaySection(clients[cid]);
+  showToast('Gave valgt: '+name+' \u2713');
+}
+function promptCustomGift() {
+  const name = prompt('Skriv inn gave:');
+  if(name && name.trim()) pickGift(name.trim());
+}
+function resetGiftChoice() {
+  const cid = window._currentClientId;
+  if(!cid||!clients[cid]) return;
+  clients[cid].birthday.giftDecision = null;
+  renderBirthdaySection(clients[cid]);
+}
+function skipGiftThisYear() {
+  const cid = window._currentClientId;
+  if(!cid||!clients[cid]) return;
   clients[cid].birthday.nextGiftDue = false;
-  // Re-render
-  const badge = document.getElementById('bday-gift-badge');
-  badge.style.background = 'var(--green-bg)';
-  badge.style.color = 'var(--green)';
-  badge.style.border = '1px solid rgba(92,216,122,0.2)';
-  badge.textContent = '\u2713 Gave gitt ' + dateStr;
-  document.getElementById('bday-gift-text').textContent = 'Sist gave: ' + dateStr;
-  document.getElementById('bday-gift-action').style.display = 'none';
-  showToast('Gave registrert \u2713');
+  clients[cid].birthday.giftDecision = null;
+  renderBirthdaySection(clients[cid]);
+  showToast('Ingen gave i \u00E5r');
+}
+function markGiftDelivered() {
+  const cid = window._currentClientId;
+  if(!cid||!clients[cid]||!clients[cid].birthday) return;
+  const now = new Date();
+  const dateStr = now.getDate()+'. '+['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][now.getMonth()]+' '+now.getFullYear();
+  clients[cid].birthday.lastGift = dateStr;
+  clients[cid].birthday.giftDelivered = true;
+  renderBirthdaySection(clients[cid]);
+  showToast('Gave levert \u2713');
+  if(typeof logAutoMessage==='function') logAutoMessage(cid,'birthday','BURSDAG','Bursdagsgave levert: '+clients[cid].birthday.giftDecision);
 }
 
 // ═══ Global Messages View ═══
@@ -5188,8 +5260,63 @@ function setTheme(name) {
 function openActivityPanel(){document.getElementById('activity-overlay').classList.add('open');switchActivityTab('messages');}
 function closeActivityPanel(){document.getElementById('activity-overlay').classList.remove('open');}
 function switchActivityTab(tab,el){document.querySelectorAll('.activity-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');else document.querySelector('.activity-tab').classList.add('active');const c=document.getElementById('activity-content');if(tab==='messages')renderActivityMessages(c);else renderActivityReport(c);}
-function renderActivityMessages(c){const msgs=window._messageLog||[];const recent=msgs.slice(-8).reverse();let h='';if(!recent.length){h='<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Ingen meldinger enda.</div><div style="text-align:center;margin-top:8px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}else{recent.forEach(m=>{const tc={confirm:'var(--green)',noshow:'var(--red)',winback:'var(--accent)',manual:'var(--blue)',birthday:'#e080a0'};const col=tc[m.type]||'var(--text3)';h+='<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:700;">'+(m.clientName||'Kunde')+'</span><span style="font-size:9px;padding:2px 6px;border-radius:4px;background:'+col+'20;color:'+col+';font-weight:600;">'+(m.label||m.type)+'</span></div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(m.text||'').substring(0,60)+'</div></div>';});h+='<div style="text-align:center;margin-top:12px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}c.innerHTML=h;}
-function renderActivityReport(c){const t=window._treatedCount||0;let h='<div style="font-size:14px;font-weight:800;margin-bottom:10px;">'+(currentUser==='manager'?'Daglig rapport':'Din dag')+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Mandag 14. april 2026</div>';[{i:'👥',l:'Timer i dag',v:'6',c:'var(--green)'},{i:'✓',l:'Bekreftet',v:'5',c:'var(--green)'},{i:'⚠',l:'Venter',v:'1',c:'var(--orange)'},{i:'✂',l:'Ferdig',v:t+'',c:'var(--accent)'}].forEach(s=>{h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="width:28px;height:28px;border-radius:8px;background:'+s.c+'15;display:flex;align-items:center;justify-content:center;font-size:12px;">'+s.i+'</div><div style="flex:1;font-size:12px;color:var(--text2);">'+s.l+'</div><div style="font-size:14px;font-weight:800;color:'+s.c+';">'+s.v+'</div></div>';});c.innerHTML=h;}
+function renderActivityMessages(c){if(!window._globalMsgLog||!window._globalMsgLog.length){window._globalMsgLog=[{customer:'Maren Haugen',type:'confirm',label:'BEKREFTELSE',time:'14. apr 08:00',text:'Hei Maren! Du har time i dag kl 09:00 hos Lena. Svar OK for å bekrefte'},{customer:'Emil Karlsen',type:'confirm',label:'BEKREFTELSE',time:'14. apr 08:00',text:'Hei Emil! Du har time i dag kl 10:00 hos Lena. Svar OK for å bekrefte'},{customer:'Kristin Moe',type:'confirm',label:'BEKREFTELSE',time:'14. apr 08:01',text:'Hei Kristin! Du har time i dag kl 11:30 hos Lena.'},{customer:'Line Berg',type:'birthday',label:'BURSDAG',time:'11. apr 12:00',text:'Gratulerer med dagen, Line! Vi har en liten gave til deg neste gang'},{customer:'Ingrid B.',type:'noshow',label:'IKKE-MØTT',time:'13. apr 15:30',text:'Vi savnet deg i dag! Book en ny time når det passer'},{customer:'Thomas R.',type:'winback',label:'VINN-TILBAKE',time:'12. apr 10:00',text:'Hei Thomas! Det er 8 uker siden sist. Ledig time torsdag?'}];}const msgs=window._globalMsgLog;const recent=msgs.slice(0,8);let h='';if(!recent.length){h='<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Ingen meldinger enda.</div><div style="text-align:center;margin-top:8px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}else{recent.forEach(m=>{const tc={confirm:'var(--green)',noshow:'var(--red)',winback:'var(--accent)',manual:'var(--blue)',birthday:'#e080a0'};const col=tc[m.type]||'var(--text3)';h+='<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:700;">'+(m.clientName||m.customer||'Kunde')+'</span><span style="font-size:9px;padding:2px 6px;border-radius:4px;background:'+col+'20;color:'+col+';font-weight:600;">'+(m.label||m.type)+'</span></div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(m.text||'').substring(0,60)+'</div></div>';});h+='<div style="text-align:center;margin-top:12px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}c.innerHTML=h;}
+function renderActivityReport(c){const t=window._treatedCount||0;const isMgr=currentUser==='manager';let h='<div style="font-size:14px;font-weight:800;margin-bottom:2px;">'+(isMgr?'Daglig rapport':'Din dag')+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Mandag 14. april 2026</div>';function statRow(i,l,v,col){return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="width:28px;height:28px;border-radius:8px;background:'+col+'15;display:flex;align-items:center;justify-content:center;font-size:12px;">'+i+'</div><div style="flex:1;font-size:12px;color:var(--text2);">'+l+'</div><div style="font-size:14px;font-weight:800;color:'+col+';">'+v+'</div></div>';}if(isMgr){h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Bemanning</div>';h+=statRow('👥','Ansatte på jobb','4','var(--green)');h+=statRow('📋','Totalt timer','22','var(--accent)');h+=statRow('✓','Bekreftet','18','var(--green)');h+=statRow('⚠','Venter','3','var(--orange)');h+=statRow('❌','Ikke møtt','1','var(--red)');h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">Omsetning</div>';h+=statRow('💰','Estimert i dag','13 400 kr','var(--accent)');h+=statRow('📦','Produktsalg','2 stk','var(--blue,#5aa0e8)');h+='<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;">Automatisering</div>';h+=statRow('📨','SMS sendt i dag','6','var(--green)');h+=statRow('🎣','Vinn-tilbake aktive','5','var(--accent)');h+=statRow('🪑','Ledige stoler','2','var(--orange)');}else{h+=statRow('📋','Timer i dag','6','var(--green)');h+=statRow('✓','Bekreftet','5','var(--green)');h+=statRow('⚠','Venter','1','var(--orange)');h+=statRow('✂','Ferdig',t+'','var(--accent)');}c.innerHTML=h;}
+// === Product Database & Detail Sheet ===
+const PRODUCT_DB = {
+  'olaplex-3': {name:'Olaplex No.3 Hair Perfector',brand:'Olaplex',category:'Behandling',icon:'\uD83E\uDDF4',price:349,desc:'Hjemmebehandling som reparerer og styrker skadet h\u00E5r. Brukes f\u00F8r shampoo 1-2 ganger i uken. Spesielt egnet for farget, bleket eller varmebehandlet h\u00E5r.',ingredients:'Water, Bis-Aminopropyl Diglycol Dimaleate, Propylene Glycol, Cetearyl Alcohol, Behentrimonium Methosulfate, Cetyl Alcohol, Phenoxyethanol, Glycerin, Hydroxyethyl Ethylcellulose, Stearamidopropyl Dimethylamine, Quaternium-91, Sodium Benzoate, Polysilicone-15, Fragrance',usage:'P\u00E5f\u00F8r p\u00E5 fuktig h\u00E5r, la virke 10-30 min, skyll ut. Shampoo og balsam etterp\u00E5.',sold:24,trend:'+34%',recommendedFor:['Fargebehandlet h\u00E5r','Skadet h\u00E5r','Bleket h\u00E5r']},
+  'kevin-murphy-hydrate': {name:'Kevin Murphy Hydrate-Me.Wash',brand:'Kevin Murphy',category:'Shampoo',icon:'\uD83D\uDC86',price:289,desc:'Fuktgivende shampoo for normalt til t\u00F8rt h\u00E5r. Sulfatfri formel med kakadu plomme og honning.',ingredients:'Water, Cocamidopropyl Betaine, Sodium Lauroyl Methyl Isethionate, Glycerin, Terminalia Ferdinandiana Fruit Extract, Mel, Hydrolyzed Quinoa, Rosa Canina Fruit Oil, Citric Acid, Fragrance',usage:'Masser inn i v\u00E5tt h\u00E5r, skyll godt. Etterf\u00F8lg med Hydrate-Me.Rinse for best resultat.',sold:18,trend:'+21%',recommendedFor:['T\u00F8rt h\u00E5r','Normalt h\u00E5r','Fargebehandlet h\u00E5r']},
+  'moroccanoil-treatment': {name:'Moroccanoil Treatment Original',brand:'Moroccanoil',category:'Olje',icon:'\u2728',price:399,desc:'Allsidig arganolje som gir glans, mykhet og h\u00E5ndterbarhet. Kan brukes p\u00E5 v\u00E5tt eller t\u00F8rt h\u00E5r. Lettabsorberende, ikke-fettende.',ingredients:'Cyclomethicone, Dimethicone, Argania Spinosa Kernel Oil, Linseed Extract, Fragrance, CI 26100, CI 47000',usage:'1-2 pumpetrykk i h\u00E5ndflaten. Fordel jevnt i handkletorket h\u00E5r eller som finish p\u00E5 t\u00F8rt h\u00E5r.',sold:12,trend:'0%',recommendedFor:['Alle h\u00E5rtyper','Kruset h\u00E5r','T\u00F8rt h\u00E5r']},
+  'olaplex-4': {name:'Olaplex No.4 Bond Maintenance Shampoo',brand:'Olaplex',category:'Shampoo',icon:'\uD83E\uDDF4',price:329,desc:'Mild, reparerende shampoo som renser og tilfører fukt. Bevarer h\u00E5rfargen og styrker bindinger.',ingredients:'Water, Sodium Lauroyl Methyl Isethionate, Cocamidopropyl Betaine, Sodium Methyl Oleoyl Taurate, Bis-Aminopropyl Diglycol Dimaleate, Glycerin, Fragrance',usage:'Masser inn i v\u00E5tt h\u00E5r, la virke 1-2 min for ekstra effekt, skyll.',sold:15,trend:'+12%',recommendedFor:['Fargebehandlet h\u00E5r','Skadet h\u00E5r']},
+  'maria-nila-true-soft': {name:'Maria Nila True Soft Conditioner',brand:'Maria Nila',category:'Balsam',icon:'\uD83D\uDC87\u200D\u2640\uFE0F',price:249,desc:'Vegansk, sulfatfri balsam med arganolje. Gir intens fukt uten \u00E5 tynge h\u00E5ret. 100% Colour Guard Complex beskytter fargen.',ingredients:'Water, Cetearyl Alcohol, Behentrimonium Chloride, Argania Spinosa Kernel Oil, Glycerin, Panthenol, Hydrolyzed Wheat Protein, Citric Acid, Fragrance',usage:'P\u00E5f\u00F8r i lengdene etter shampoo, la virke 1-3 min, skyll.',sold:9,trend:'+8%',recommendedFor:['T\u00F8rt h\u00E5r','Fargebehandlet h\u00E5r','Vegansk']}
+};
+function openProductDetail(productKey) {
+  const p = PRODUCT_DB[productKey];
+  if(!p) { showToast('Produktinfo ikke tilgjengelig'); return; }
+  document.getElementById('new-appt-overlay').classList.add('open');
+  const c = document.getElementById('new-appt-content');
+  let h = '<div style="text-align:center;margin-bottom:16px;"><div style="width:64px;height:64px;border-radius:16px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;">'+p.icon+'</div>';
+  h += '<div style="font-size:10px;color:var(--accent);font-weight:600;letter-spacing:1px;">'+p.brand.toUpperCase()+'</div>';
+  h += '<div style="font-size:18px;font-weight:900;margin-top:2px;">'+p.name+'</div>';
+  h += '<div style="font-size:11px;color:var(--text3);margin-top:2px;">'+p.category+'</div></div>';
+  // Price + stats
+  h += '<div style="display:flex;gap:8px;margin-bottom:14px;">';
+  h += '<div style="flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--card);text-align:center;border:1px solid rgba(255,255,255,0.03);"><div style="font-size:10px;color:var(--text3);">Din pris</div><div style="font-size:18px;font-weight:800;color:var(--accent);margin-top:2px;">'+p.price+' kr</div></div>';
+  h += '<div style="flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--card);text-align:center;border:1px solid rgba(255,255,255,0.03);"><div style="font-size:10px;color:var(--text3);">Solgt</div><div style="font-size:18px;font-weight:800;margin-top:2px;">'+p.sold+'</div></div>';
+  h += '<div style="flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--card);text-align:center;border:1px solid rgba(255,255,255,0.03);"><div style="font-size:10px;color:var(--text3);">Trend</div><div style="font-size:18px;font-weight:800;color:'+(p.trend.includes('+')?'var(--green)':'var(--text3)')+';margin-top:2px;">'+p.trend+'</div></div></div>';
+  // Description
+  h += '<div style="margin-bottom:12px;"><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px;">BESKRIVELSE</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">'+p.desc+'</div></div>';
+  // Usage
+  h += '<div style="margin-bottom:12px;"><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px;">BRUK</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">'+p.usage+'</div></div>';
+  // Recommended for
+  h += '<div style="margin-bottom:12px;"><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px;">ANBEFALT FOR</div><div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  p.recommendedFor.forEach(r => { h += '<span style="padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border);">'+r+'</span>'; });
+  h += '</div></div>';
+  // Ingredients (collapsible)
+  h += '<div style="margin-bottom:14px;"><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px;cursor:pointer;" onclick="document.getElementById(\'prod-ingredients\').style.display=document.getElementById(\'prod-ingredients\').style.display===\'none\'?\'block\':\'none\'">INGREDIENSER \u25BE</div><div id="prod-ingredients" style="display:none;font-size:10px;color:var(--text3);line-height:1.6;">'+p.ingredients+'</div></div>';
+  // Manager: edit price
+  if(currentUser==='manager') {
+    h += '<div style="padding:10px 12px;border-radius:var(--radius-sm);background:var(--card);border:1px solid rgba(255,255,255,0.03);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:10px;color:var(--text3);font-weight:600;">SALONGENS PRIS</div><div style="font-size:14px;font-weight:800;color:var(--accent);margin-top:2px;">'+p.price+' kr</div></div><button style="padding:6px 14px;border-radius:6px;background:var(--surface);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;" onclick="var np=prompt(\'Ny pris (kr):\',\''+p.price+'\');if(np)editProductPrice(\''+productKey+'\',parseInt(np));">Endre pris</button></div>';
+  }
+  h += '<button onclick="closeNewApptModal();" style="width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Lukk</button>';
+  c.innerHTML = h;
+}
+function editProductPrice(key, newPrice) {
+  if(!PRODUCT_DB[key]||isNaN(newPrice)) return;
+  PRODUCT_DB[key].price = newPrice;
+  openProductDetail(key);
+  showToast('Pris oppdatert til '+newPrice+' kr');
+}
+function productKeyFromName(name) {
+  const n = name.toLowerCase();
+  if(n.includes('olaplex') && (n.includes('no.3')||n.includes('no 3')||n.includes('perfector'))) return 'olaplex-3';
+  if(n.includes('kevin murphy')||n.includes('hydrate')) return 'kevin-murphy-hydrate';
+  if(n.includes('moroccanoil')) return 'moroccanoil-treatment';
+  if(n.includes('olaplex') && (n.includes('no.4')||n.includes('no 4')||n.includes('bond'))) return 'olaplex-4';
+  if(n.includes('maria nila')||n.includes('true soft')) return 'maria-nila-true-soft';
+  return null;
+}
+
 // === New Appointment ===
 const NA_SERVICES=[{id:'klipp',name:'Klipp',icon:'✂️',time:45,price:590},{id:'klipp-farge',name:'Klipp & farge',icon:'🎨',time:90,price:1290},{id:'balayage',name:'Balayage',icon:'✨',time:120,price:1890},{id:'klipp-fon',name:'Klipp & føn',icon:'💨',time:60,price:790},{id:'herreklipp',name:'Herreklipp',icon:'💈',time:30,price:390},{id:'skjegg',name:'Skjegg & klipp',icon:'🧔',time:45,price:490},{id:'farge',name:'Farge',icon:'🌈',time:60,price:990},{id:'behandling',name:'Keratinbehandling',icon:'🧴',time:90,price:1490}];
 let naStep=1,naService=null,naTime=null,naCustomerName='',naCustomerPhone='';
@@ -5205,9 +5332,14 @@ function openEndreTimePanel(){const p=document.getElementById('endre-time-panel'
 let cancelReason='';
 function openCancelApptFromProfile(){document.getElementById('cancel-appt-overlay').classList.add('open');cancelReason='';renderCancelContent();}
 function closeCancelApptModal(){document.getElementById('cancel-appt-overlay').classList.remove('open');}
-function renderCancelContent(){const c=document.getElementById('cancel-appt-content');const cn=document.getElementById('client-name')?.textContent||'Kunden';let h='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Avbestill time</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+cn+'</div><div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;">Velg årsak</div>';['Kunde ringte og avbestilte','Kansellert av salong','Syk ansatt','Dobbeltbooking','Annen grunn'].forEach(r=>{h+='<div class="cancel-reason-opt'+(cancelReason===r?' selected':'')+'" onclick="pickCancelReason(\''+r.replace(/'/g,"\\'")+'\',this)">'+r+'</div>';});h+='<div style="margin-top:14px;padding:12px;border-radius:var(--radius-sm);background:var(--red-bg);border:1px solid rgba(232,90,90,0.15);font-size:11px;color:var(--red);line-height:1.5;">⚠️ Avbestilling mindre enn 24 timer kan medføre gebyr.</div>';h+='<div style="display:flex;gap:10px;margin-top:16px;"><button onclick="closeCancelApptModal();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Tilbake</button><button id="btn-confirm-cancel" onclick="confirmCancelAppt();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--red);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;">Avbestill</button></div>';c.innerHTML=h;}
+function renderCancelContent(){const c=document.getElementById('cancel-appt-content');const cn=document.getElementById('client-name')?.textContent||'Kunden';let h='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Avbestill time</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+cn+'</div><div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;">Velg årsak</div>';['Kunde ringte og avbestilte','Kansellert av salong','Syk ansatt','Dobbeltbooking','Annen grunn'].forEach(r=>{h+='<div class="cancel-reason-opt'+(cancelReason===r?' selected':'')+'" onclick="pickCancelReason(\''+r.replace(/'/g,"\\'")+'\',this)">'+r+'</div>';});h+='<div style="margin-top:14px;padding:12px;border-radius:var(--radius-sm);background:var(--red-bg);border:1px solid rgba(232,90,90,0.15);font-size:11px;color:var(--red);line-height:1.5;">⚠️ Avbestilling mindre enn 24 timer kan medføre gebyr.</div>';h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--card);border:1px solid rgba(255,255,255,0.03);"><div><div style="font-size:12px;font-weight:700;">Gebyr</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">Belast kunden for sen avbestilling</div></div><div style="position:relative;width:44px;height:24px;cursor:pointer;" onclick="toggleCancelFee(this)"><div style="width:44px;height:24px;border-radius:12px;background:var(--accent);transition:background 0.2s;" id="fee-track"></div><div style="position:absolute;top:2px;left:22px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left 0.2s;" id="fee-thumb"></div></div></div>';h+='<div style="display:flex;gap:10px;margin-top:16px;"><button onclick="closeCancelApptModal();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Tilbake</button><button id="btn-confirm-cancel" onclick="confirmCancelAppt();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--red);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;">Avbestill</button></div>';c.innerHTML=h;}
 function pickCancelReason(r,el){cancelReason=r;document.querySelectorAll('.cancel-reason-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');const b=document.getElementById('btn-confirm-cancel');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}}
-function confirmCancelAppt(){const cn=document.getElementById('client-name')?.textContent||'Kunden';const cid=window._currentClientId||'';if(cid&&typeof logAutoMessage==='function')logAutoMessage(cid,'cancel','AVBESTILT','Din time er avbestilt. Grunn: '+cancelReason+'. Book ny: salongharmoni.no/book');closeCancelApptModal();showToast(cn+' sin time er avbestilt');setTimeout(()=>goScreen('screen-home'),800);}
+function confirmCancelAppt(){const cn=document.getElementById('client-name')?.textContent||'Kunden';const fee=window._cancelFeeOn!==false;const cid=window._currentClientId||'';if(cid&&typeof logAutoMessage==='function')logAutoMessage(cid,'cancel','AVBESTILT','Din time er avbestilt.'+(fee?' Gebyr belastet.':' Ingen gebyr.')+' Grunn: '+cancelReason+'. Book ny: salongharmoni.no/book');closeCancelApptModal();showToast(cn+' sin time er avbestilt'+(fee?' (gebyr)':' (uten gebyr)'));setTimeout(()=>goScreen('screen-home'),800);}
+window._cancelFeeOn=true;
+function toggleCancelFee(el){window._cancelFeeOn=!window._cancelFeeOn;const track=document.getElementById('fee-track');const thumb=document.getElementById('fee-thumb');if(window._cancelFeeOn){track.style.background='var(--accent)';thumb.style.left='22px';}else{track.style.background='var(--card)';thumb.style.left='2px';}}
+// === Edit Service Modal ===
+function openEditServiceModal(){document.getElementById('new-appt-overlay').classList.add('open');const c=document.getElementById('new-appt-content');const cn=document.getElementById('client-name')?.textContent||'Kunden';let h='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Endre tjeneste</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+cn+' — velg ny tjeneste</div>';NA_SERVICES.forEach(s=>{h+='<div class="na-option" onclick="pickNewService(\''+s.name+'\')"><div class="na-option-icon">'+s.icon+'</div><div class="na-option-info"><div class="na-option-name">'+s.name+'</div><div class="na-option-detail">'+s.time+' min</div></div><div class="na-option-price">'+s.price+' kr</div></div>';});h+='<div style="margin-top:12px;"><button onclick="closeNewApptModal();" style="padding:14px;width:100%;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Avbryt</button></div>';c.innerHTML=h;}
+function pickNewService(name){closeNewApptModal();const cn=document.getElementById('client-name')?.textContent||'Kunden';showToast(cn+' endret til '+name+' ✓');}
 // ═══ Daily Report ═══
 function toggleDailyReport() {
   const overlay = document.getElementById('daily-report');
