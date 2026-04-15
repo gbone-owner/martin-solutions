@@ -548,6 +548,31 @@ body {
   font-size:11px; color:var(--text2); line-height:1.5;
 }
 
+/* ═══ ACTIVITY+APPT+CANCEL CSS ═══ */
+.activity-overlay{display:none;position:absolute;inset:0;z-index:60;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);padding:50px 16px 20px;overflow-y:auto;}
+.activity-overlay.open{display:block;}
+.activity-tabs{display:flex;gap:0;margin-bottom:14px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid rgba(255,255,255,0.06);}
+.activity-tab{flex:1;padding:10px 0;text-align:center;font-size:12px;font-weight:700;background:var(--card);color:var(--text3);cursor:pointer;}
+.activity-tab.active{background:var(--accent);color:#000;}
+.new-appt-overlay{display:none;position:absolute;inset:0;z-index:65;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
+.new-appt-overlay.open{display:block;}
+.new-appt-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-top-left-radius:24px;border-top-right-radius:24px;padding:20px;max-height:85%;overflow-y:auto;animation:slideUp 0.25s ease;}
+.new-appt-handle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.12);margin:0 auto 16px;}
+.na-option{padding:14px 16px;background:var(--card);border:1px solid rgba(255,255,255,0.03);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.na-option.selected{border-color:var(--accent-border2);background:var(--accent-bg);}
+.na-option-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.na-option-info{flex:1;}.na-option-name{font-size:13px;font-weight:700;}.na-option-detail{font-size:11px;color:var(--text3);margin-top:2px;}
+.na-option-price{font-size:13px;font-weight:700;color:var(--accent);}
+.na-time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.na-time-slot{padding:12px 8px;background:var(--card);border:1px solid rgba(255,255,255,0.03);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:14px;font-weight:600;}
+.na-time-slot.selected{border-color:var(--accent-border2);background:var(--accent-bg);color:var(--accent);}
+.na-customer-input{width:100%;padding:14px 16px;background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:14px;outline:none;}
+.na-customer-input:focus{border-color:var(--accent-border2);}.na-customer-input::placeholder{color:var(--text3);}
+.cancel-appt-overlay{display:none;position:absolute;inset:0;z-index:65;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
+.cancel-appt-overlay.open{display:block;}
+.cancel-appt-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-top-left-radius:24px;border-top-right-radius:24px;padding:20px;max-height:75%;overflow-y:auto;animation:slideUp 0.25s ease;}
+.cancel-reason-opt{padding:12px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.03);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;margin-bottom:6px;}
+.cancel-reason-opt.selected{border-color:var(--accent-border2);background:var(--accent-bg);}
 /* ═══ DAILY REPORT ═══ */
 .daily-report-overlay {
   display:none; position:absolute; inset:0; z-index:60;
@@ -1152,8 +1177,8 @@ body {
             <div style="font-size:24px;font-weight:900;margin-top:2px;" id="greeting-text">God morgen, Lena</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="goScreen('screen-messages')">&#128172;<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);"></div></div>
-            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="toggleDailyReport()">&#128202;<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);"></div></div>
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#000;font-weight:900;" onclick="openNewApptModal()" title="Ny time">+</div>
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;cursor:pointer;" onclick="openActivityPanel()">&#128172;<div style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);"></div></div>
             <div class="user-switcher">
               <div class="user-btn" id="userBtn" onclick="toggleUserMenu()" style="background:linear-gradient(135deg,var(--accent),#c09020);">L</div>
               <div class="user-dropdown" id="userDropdown">
@@ -1847,15 +1872,21 @@ body {
         </div>
         <div class="action-arrow">&#8250;</div>
       </div>
-      <div class="action-card" onclick="openMoveApptFromProfile()">
+      <div class="action-card" onclick="openEndreTimePanel()">
         <div class="action-icon" style="background:var(--blue-bg);border:1px solid rgba(90,160,232,0.15);">&#128197;</div>
         <div class="action-body">
-          <div class="action-title">Flytt time</div>
-          <div class="action-desc" id="move-appt-desc">Flytt kundens time til en annen dag eller tid</div>
+          <div class="action-title">Endre time</div>
+          <div class="action-desc" id="move-appt-desc">Flytt, endre eller avbestill kundens time</div>
         </div>
         <div class="action-arrow">&#8250;</div>
       </div>
       <div id="move-appt-panel" style="display:none;margin:0 20px 10px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid var(--blue);border-color:rgba(90,160,232,0.3);"></div>
+      <div id="endre-time-panel" style="display:none;margin:0 20px 10px;padding:14px 16px;border-radius:var(--radius);background:var(--card);border:1px solid rgba(90,160,232,0.3);">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;">Hva vil du gjore?</div>
+        <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';openMoveApptFromProfile();" style="margin-bottom:6px;"><div class="na-option-icon" style="background:var(--blue-bg);">&#128197;</div><div class="na-option-info"><div class="na-option-name">Flytt time</div><div class="na-option-detail">Flytt til annen dag eller tid</div></div><div style="color:var(--text3);">&#8250;</div></div>
+        <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';openCancelApptFromProfile();" style="margin-bottom:6px;"><div class="na-option-icon" style="background:var(--red-bg);">&#10005;</div><div class="na-option-info"><div class="na-option-name">Avbestill time</div><div class="na-option-detail">Kanseller og varsle kunde</div></div><div style="color:var(--text3);">&#8250;</div></div>
+        <div class="na-option" onclick="document.getElementById('endre-time-panel').style.display='none';showToast('Tjeneste endret &#10003;');"><div class="na-option-icon" style="background:var(--accent-bg);">&#9998;</div><div class="na-option-info"><div class="na-option-name">Endre tjeneste</div><div class="na-option-detail">Bytt behandlingstype</div></div><div style="color:var(--text3);">&#8250;</div></div>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════
@@ -2615,6 +2646,18 @@ body {
     <div class="daily-report-card" id="daily-report-content"></div>
   </div>
 
+
+  <!-- Activity Panel -->
+  <div class="activity-overlay" id="activity-overlay" onclick="if(event.target===this)closeActivityPanel()">
+    <div class="daily-report-card"><div class="dr-close" onclick="closeActivityPanel()">&#10005;</div>
+      <div class="activity-tabs"><div class="activity-tab active" onclick="switchActivityTab('messages',this)">Meldinger</div><div class="activity-tab" onclick="switchActivityTab('report',this)">Dagsrapport</div></div>
+      <div id="activity-content"></div>
+    </div>
+  </div>
+  <!-- New Appointment Modal -->
+  <div class="new-appt-overlay" id="new-appt-overlay" onclick="if(event.target===this)closeNewApptModal()"><div class="new-appt-sheet"><div class="new-appt-handle"></div><div id="new-appt-content"></div></div></div>
+  <!-- Cancel Appointment Modal -->
+  <div class="cancel-appt-overlay" id="cancel-appt-overlay" onclick="if(event.target===this)closeCancelApptModal()"><div class="cancel-appt-sheet"><div class="new-appt-handle"></div><div id="cancel-appt-content"></div></div></div>
   <div class="phone-nav">
     <div class="nav-item active" onclick="goScreen('screen-home')" data-nav="screen-home">
       <div class="nav-icon">📅</div>
@@ -5141,6 +5184,30 @@ function setTheme(name) {
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === name));
 }
 
+// === Activity Panel ===
+function openActivityPanel(){document.getElementById('activity-overlay').classList.add('open');switchActivityTab('messages');}
+function closeActivityPanel(){document.getElementById('activity-overlay').classList.remove('open');}
+function switchActivityTab(tab,el){document.querySelectorAll('.activity-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');else document.querySelector('.activity-tab').classList.add('active');const c=document.getElementById('activity-content');if(tab==='messages')renderActivityMessages(c);else renderActivityReport(c);}
+function renderActivityMessages(c){const msgs=window._messageLog||[];const recent=msgs.slice(-8).reverse();let h='';if(!recent.length){h='<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Ingen meldinger enda.</div><div style="text-align:center;margin-top:8px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}else{recent.forEach(m=>{const tc={confirm:'var(--green)',noshow:'var(--red)',winback:'var(--accent)',manual:'var(--blue)',birthday:'#e080a0'};const col=tc[m.type]||'var(--text3)';h+='<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:700;">'+(m.clientName||'Kunde')+'</span><span style="font-size:9px;padding:2px 6px;border-radius:4px;background:'+col+'20;color:'+col+';font-weight:600;">'+(m.label||m.type)+'</span></div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(m.text||'').substring(0,60)+'</div></div>';});h+='<div style="text-align:center;margin-top:12px;"><span style="padding:8px 16px;border-radius:20px;background:var(--card);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;" onclick="closeActivityPanel();goScreen(\'screen-messages\')">Se alle →</span></div>';}c.innerHTML=h;}
+function renderActivityReport(c){const t=window._treatedCount||0;let h='<div style="font-size:14px;font-weight:800;margin-bottom:10px;">'+(currentUser==='manager'?'Daglig rapport':'Din dag')+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Mandag 14. april 2026</div>';[{i:'👥',l:'Timer i dag',v:'6',c:'var(--green)'},{i:'✓',l:'Bekreftet',v:'5',c:'var(--green)'},{i:'⚠',l:'Venter',v:'1',c:'var(--orange)'},{i:'✂',l:'Ferdig',v:t+'',c:'var(--accent)'}].forEach(s=>{h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);"><div style="width:28px;height:28px;border-radius:8px;background:'+s.c+'15;display:flex;align-items:center;justify-content:center;font-size:12px;">'+s.i+'</div><div style="flex:1;font-size:12px;color:var(--text2);">'+s.l+'</div><div style="font-size:14px;font-weight:800;color:'+s.c+';">'+s.v+'</div></div>';});c.innerHTML=h;}
+// === New Appointment ===
+const NA_SERVICES=[{id:'klipp',name:'Klipp',icon:'✂️',time:45,price:590},{id:'klipp-farge',name:'Klipp & farge',icon:'🎨',time:90,price:1290},{id:'balayage',name:'Balayage',icon:'✨',time:120,price:1890},{id:'klipp-fon',name:'Klipp & føn',icon:'💨',time:60,price:790},{id:'herreklipp',name:'Herreklipp',icon:'💈',time:30,price:390},{id:'skjegg',name:'Skjegg & klipp',icon:'🧔',time:45,price:490},{id:'farge',name:'Farge',icon:'🌈',time:60,price:990},{id:'behandling',name:'Keratinbehandling',icon:'🧴',time:90,price:1490}];
+let naStep=1,naService=null,naTime=null,naCustomerName='',naCustomerPhone='';
+function openNewApptModal(){naStep=1;naService=null;naTime=null;naCustomerName='';naCustomerPhone='';document.getElementById('new-appt-overlay').classList.add('open');renderNewApptStep();}
+function closeNewApptModal(){document.getElementById('new-appt-overlay').classList.remove('open');}
+function renderNewApptStep(){const c=document.getElementById('new-appt-content');let h='';if(naStep===1){h+='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Ny time</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Velg tjeneste</div>';NA_SERVICES.forEach(s=>{h+='<div class="na-option" onclick="naPickService(\''+s.id+'\')"><div class="na-option-icon">'+s.icon+'</div><div class="na-option-info"><div class="na-option-name">'+s.name+'</div><div class="na-option-detail">'+s.time+' min</div></div><div class="na-option-price">'+s.price+' kr</div></div>';});}else if(naStep===2){h+='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Velg tid</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+naService.name+' · '+naService.time+' min</div>';const times=['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];const booked=new Set(Object.keys(apptStatuses));h+='<div class="na-time-grid">';times.forEach(t=>{const taken=booked.has(t);h+='<div class="na-time-slot'+(taken?'" style="opacity:0.25;text-decoration:line-through;pointer-events:none;"':'" onclick="naPickTime(\''+t+'\',this)"')+'>'+t+'</div>';});h+='</div><div style="margin-top:16px;"><button onclick="naStep=1;renderNewApptStep();" style="padding:14px;width:100%;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">← Tilbake</button></div>';}else if(naStep===3){h+='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Kunde</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+naService.name+' kl '+naTime+'</div>';h+='<input class="na-customer-input" type="text" placeholder="Kundenavn" id="na-cust-name" value="'+naCustomerName+'">';h+='<input class="na-customer-input" type="tel" placeholder="Mobilnummer" id="na-cust-phone" style="margin-top:8px;" value="'+naCustomerPhone+'">';h+='<div style="display:flex;gap:10px;margin-top:16px;"><button onclick="naStep=2;renderNewApptStep();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">← Tilbake</button><button onclick="naConfirm();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--accent);color:#000;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Legg til ✓</button></div>';}c.innerHTML=h;}
+function naPickService(id){naService=NA_SERVICES.find(s=>s.id===id);naStep=2;renderNewApptStep();}
+function naPickTime(time,el){naTime=time;document.querySelectorAll('.na-time-slot').forEach(s=>s.classList.remove('selected'));el.classList.add('selected');setTimeout(()=>{naStep=3;renderNewApptStep();},200);}
+function naConfirm(){const name=document.getElementById('na-cust-name')?.value||naCustomerName;const phone=document.getElementById('na-cust-phone')?.value||'';if(!name){showToast('Skriv inn kundenavn');return;}apptStatuses[naTime]='confirmed';APPT_CUSTOMERS[naTime]={full:name,first:name.split(' ')[0],phone:phone,clientId:''};closeNewApptModal();showToast(name+' booket kl '+naTime+' ✓');const section=document.getElementById('staff-appointments-section');if(section){const r=document.createElement('div');r.className='appt-row';r.style.animation='fadeUp 0.3s ease';r.innerHTML='<div class="appt-time" onclick="openStatusDropdown(\''+naTime+'\',this,event)"><div class="appt-time-val">'+naTime+'</div><div class="appt-time-status" style="color:var(--green);" id="status-'+naTime+'">BEKREFTET</div><div class="appt-time-arrow">▼</div></div><div class="appt-body"><div class="appt-name">'+name+'</div><div class="appt-detail">'+naService.name+' · '+naService.time+' min</div><div style="margin-top:4px;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border);">NY</span></div></div>';section.appendChild(r);}}
+// === Endre Time Panel ===
+function openEndreTimePanel(){const p=document.getElementById('endre-time-panel');const m=document.getElementById('move-appt-panel');if(m)m.style.display='none';p.style.display=p.style.display==='none'?'block':'none';}
+// === Cancel Appointment ===
+let cancelReason='';
+function openCancelApptFromProfile(){document.getElementById('cancel-appt-overlay').classList.add('open');cancelReason='';renderCancelContent();}
+function closeCancelApptModal(){document.getElementById('cancel-appt-overlay').classList.remove('open');}
+function renderCancelContent(){const c=document.getElementById('cancel-appt-content');const cn=document.getElementById('client-name')?.textContent||'Kunden';let h='<div style="font-size:18px;font-weight:900;margin-bottom:4px;">Avbestill time</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px;">'+cn+'</div><div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;">Velg årsak</div>';['Kunde ringte og avbestilte','Kansellert av salong','Syk ansatt','Dobbeltbooking','Annen grunn'].forEach(r=>{h+='<div class="cancel-reason-opt'+(cancelReason===r?' selected':'')+'" onclick="pickCancelReason(\''+r.replace(/'/g,"\\'")+'\',this)">'+r+'</div>';});h+='<div style="margin-top:14px;padding:12px;border-radius:var(--radius-sm);background:var(--red-bg);border:1px solid rgba(232,90,90,0.15);font-size:11px;color:var(--red);line-height:1.5;">⚠️ Avbestilling mindre enn 24 timer kan medføre gebyr.</div>';h+='<div style="display:flex;gap:10px;margin-top:16px;"><button onclick="closeCancelApptModal();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.06);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">Tilbake</button><button id="btn-confirm-cancel" onclick="confirmCancelAppt();" style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--red);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;">Avbestill</button></div>';c.innerHTML=h;}
+function pickCancelReason(r,el){cancelReason=r;document.querySelectorAll('.cancel-reason-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');const b=document.getElementById('btn-confirm-cancel');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}}
+function confirmCancelAppt(){const cn=document.getElementById('client-name')?.textContent||'Kunden';const cid=window._currentClientId||'';if(cid&&typeof logAutoMessage==='function')logAutoMessage(cid,'cancel','AVBESTILT','Din time er avbestilt. Grunn: '+cancelReason+'. Book ny: salongharmoni.no/book');closeCancelApptModal();showToast(cn+' sin time er avbestilt');setTimeout(()=>goScreen('screen-home'),800);}
 // ═══ Daily Report ═══
 function toggleDailyReport() {
   const overlay = document.getElementById('daily-report');
